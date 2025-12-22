@@ -3,8 +3,9 @@
 import axios from "axios";
 
 // ⭐ 수정: Post Server URL을 환경 변수에서 가져오도록 변경
-const POSTS_BASE_URL = process.env.NEXT_PUBLIC_POST_API_URL || "http://localhost:8082"; 
-const COMMENTS_BASE_API_URL = `${POSTS_BASE_URL}/api/posts`; 
+const POSTS_BASE_URL =
+  process.env.NEXT_PUBLIC_POST_API_URL || "https://minkowskim.com";
+const COMMENTS_BASE_API_URL = `${POSTS_BASE_URL}/api/posts`;
 
 // 인증이 필요한 요청을 위해 HttpOnly 쿠키를 자동으로 전송하는 Axios 인스턴스
 const authAxios = axios.create({
@@ -21,7 +22,9 @@ const authAxios = axios.create({
 export const fetchCommentsByPostId = async (postId) => {
   try {
     // 컨트롤러의 경로: /api/posts/{postId}/comments
-    const response = await axios.get(`${COMMENTS_BASE_API_URL}/${postId}/comments`);
+    const response = await axios.get(
+      `${COMMENTS_BASE_API_URL}/${postId}/comments`
+    );
     return response.data; // List<CommentResponse>
   } catch (error) {
     console.error(`Error fetching comments for post ${postId}:`, error);
@@ -40,8 +43,8 @@ export const createComment = async (postId, commentRequestData) => {
   try {
     // 컨트롤러의 경로: /api/posts/{postId}/comments
     const response = await authAxios.post(
-      `${COMMENTS_BASE_API_URL}/${postId}/comments`, 
-      commentRequestData 
+      `${COMMENTS_BASE_API_URL}/${postId}/comments`,
+      commentRequestData
     );
     return response.data; // 새로 생성된 CommentResponse 객체 반환
   } catch (error) {
@@ -59,7 +62,7 @@ export const updateComment = async (commentId, commentRequestData) => {
   try {
     // 컨트롤러의 경로: /api/posts/comments/{commentId}
     const response = await authAxios.put(
-      `${COMMENTS_BASE_API_URL}/comments/${commentId}`, 
+      `${COMMENTS_BASE_API_URL}/comments/${commentId}`,
       commentRequestData
     );
     return response.data; // 수정된 CommentResponse 객체 반환
@@ -76,7 +79,9 @@ export const updateComment = async (commentId, commentRequestData) => {
 export const deleteComment = async (commentId) => {
   try {
     // 컨트롤러의 경로: /api/posts/comments/{commentId}
-    const response = await authAxios.delete(`${COMMENTS_BASE_API_URL}/comments/${commentId}`);
+    const response = await authAxios.delete(
+      `${COMMENTS_BASE_API_URL}/comments/${commentId}`
+    );
     return response.data; // HTTP 200/204 응답 (반환 값 없을 수 있음)
   } catch (error) {
     console.error(`Error deleting comment ${commentId}:`, error);

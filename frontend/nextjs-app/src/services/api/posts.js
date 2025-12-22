@@ -1,7 +1,8 @@
 import axios from "axios";
 
 // 환경변수 또는 기본 URL 설정
-const POSTS_BASE_URL = process.env.NEXT_PUBLIC_POST_API_URL || "http://localhost:8082";
+const POSTS_BASE_URL =
+  process.env.NEXT_PUBLIC_POST_API_URL || "https://minkowskim.com";
 const POSTS_API_URL = `${POSTS_BASE_URL}/api/posts`;
 
 // 인증이 필요한 요청용 Axios 인스턴스 (쿠키 포함)
@@ -13,7 +14,12 @@ const authAxios = axios.create({
 /**
  * 게시글 목록 조회 (필터링 기능 추가)
  */
-export const fetchPosts = async (page = 0, size = 10, category = null, tag = null) => {
+export const fetchPosts = async (
+  page = 0,
+  size = 10,
+  category = null,
+  tag = null
+) => {
   try {
     let url = POSTS_API_URL;
     let params = { page, size };
@@ -22,7 +28,7 @@ export const fetchPosts = async (page = 0, size = 10, category = null, tag = nul
     if (category) {
       url = `${POSTS_API_URL}/category`;
       params.name = category;
-    } 
+    }
     // 태그가 있으면 /api/posts/tag?name=... 호출
     else if (tag) {
       url = `${POSTS_API_URL}/tag`;

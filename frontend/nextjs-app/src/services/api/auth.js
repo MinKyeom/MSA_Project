@@ -1,15 +1,34 @@
 // src/services/api/auth.js
 import axios from "axios";
 
-const BASE_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:8081";
+const BASE_URL = process.env.NEXT_PUBLIC_API_URL || "https://minkowskim.com";
 
 const authAxios = axios.create({
   baseURL: BASE_URL,
   withCredentials: true,
 });
 
+authAxios.interceptors.response.use(
+  (response) => response,
+  (error) => {
+    // 서버에서 401(미인증) 또는 403(권한없음) 응답이 올 경우
+    if (
+      error.response &&
+      (error.response.status === 401 || error.response.status === 403)
+    ) {
+      // 브라우저에 남아있는 유효하지 않은 인증 정보 삭제
+      localStorage.removeItem("currentUserId");
+      localStorage.removeItem("currentUserNickname");
+
+      // 필요한 경우 로그인 페이지로 강제 이동 (선택 사항)
+      // window.location.href = "/login";
+    }
+    return Promise.reject(error);
+  }
+);
+
 export const getAuthUser = () => {
-  if (typeof window === 'undefined') {
+  if (typeof window === "undefined") {
     return { isAuthenticated: false, id: null, nickname: null };
   }
   try {
@@ -72,7 +91,7 @@ export const registerUser = async ({ username, password, nickname }) => {
 export const checkUsernameDuplicate = async (username) => {
   try {
     const response = await authAxios.get("/user/check-username", {
-      params: { username }
+      params: { username },
     });
     return response.data; // true: 중복, false: 사용가능
   } catch (error) {
@@ -85,7 +104,7 @@ export const checkUsernameDuplicate = async (username) => {
 export const checkNicknameDuplicate = async (nickname) => {
   try {
     const response = await authAxios.get("/user/check-nickname", {
-      params: { nickname }
+      params: { nickname },
     });
     return response.data; // true: 중복, false: 사용가능
   } catch (error) {

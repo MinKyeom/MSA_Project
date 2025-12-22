@@ -1,55 +1,50 @@
 // app/layout.jsx (Server Component)
 
-import { ThemeProvider } from "../providers/ThemeProvider";
-import { AuthProvider } from "../providers/AuthProvider";
-import { ToastProvider } from "../providers/ToastProvider";
-import Header from "../components/common/Header";
+import { ThemeProvider } from "../providers/ThemeProvider"; 
+import { AuthProvider } from "../providers/AuthProvider"; 
+import { ToastProvider } from "../providers/ToastProvider"; 
+import Header from "../components/common/Header"; 
 
 import ChatbotWrapper from "../components/Chatbot/ChatbotWrapper";
 
 // 전역 스타일 임포트
 import "../styles/globals.css";
 import "../styles/Header.css"; // 🌟 추가: Header.css 임포트
-import "../components/Chatbot/Chatbot.css";
-import "../styles/Toast.css";
+import "../components/Chatbot/Chatbot.css"; 
+import "../styles/Toast.css"; 
 
 // 🌟 수정: 한국어 우선 SEO 메타데이터 업데이트
 export const metadata = {
   // 🌟 한국어 기본 타이틀
   title: {
-    default: "MinKowskiM | 구조적으로 사고하고, 시간을 초월하여 살다.",
-    template: "%s | MinKowskiM",
+    default: "MinKowski | 구조적으로 사고하고, 시간을 초월하여 살다.", 
+    template: "%s | MinKowski", 
   },
   // 🌟 한국어 상세 설명
   description:
-    "백엔드, 프론트엔드, AI/ML을 아우르는 소프트웨어 개발 트렌드와 인사이트를 공유하는 개인 개발 블로그입니다.",
+    "백엔드, 프론트엔드, AI/ML을 아우르는 소프트웨어 개발 트렌드와 인사이트를 공유하는 개인 개발 블로그입니다.", 
   keywords: [
-    "Next.js",
-    "React",
-    "Spring Boot",
-    "개발 블로그",
-    "MinKowskiM",
-    "기술 아카이브",
+    "Next.js", "React", "Spring Boot", "개발 블로그", "MinKowski", "기술 아카이브"
   ],
   alternates: {
     canonical: "https://your-blog-url.com",
     // 🌟 영문 대체 URL (선택적)
     languages: {
-      "ko-KR": "https://your-blog-url.com",
-      "en-US": "https://your-blog-url.com/en", // 영문 버전 URL이 있다면
-    },
+      'ko-KR': 'https://your-blog-url.com',
+      'en-US': 'https://your-blog-url.com/en', // 영문 버전 URL이 있다면
+    }
   },
   openGraph: {
-    title: "MinKowskiM | 구조적으로 사고하고, 시간을 초월하여 살다.",
+    title: "MinKowski | 구조적으로 사고하고, 시간을 초월하여 살다.",
     description:
       "백엔드, 프론트엔드, AI/ML을 아우르는 소프트웨어 개발 트렌드와 인사이트를 공유하는 개인 개발 블로그입니다.",
     url: "https://your-blog-url.com",
-    siteName: "MinKowskiM",
+    siteName: "MinKowski",
     type: "website",
   },
   twitter: {
     card: "summary_large_image",
-    title: "MinKowskiM",
+    title: "MinKowski",
     description:
       "백엔드, 프론트엔드, AI/ML을 아우르는 소프트웨어 개발 트렌드와 인사이트를 공유하는 개인 개발 블로그입니다.",
   },
@@ -71,23 +66,16 @@ export default function RootLayout({ children }) {
       <body>
         <ProvidersWrapper>
           <div className="App">
-            <Header />
-            <main className="main-content-container">{children}</main>
+            <Header /> 
+            <main className="main-content-container">
+              {children}
+            </main>
             <ChatbotWrapper /> {/* 챗봇 플로팅 버튼/팝업 */}
             <footer>
-              {/* 🌟 한국어 우선 푸터 텍스트 */}
-              <p
-                style={{
-                  textAlign: "center",
-                  color: "var(--color-text-sub)",
-                  padding: "20px 0",
-                  borderTop: "1px solid var(--color-border)",
-                  fontSize: "0.9em",
-                }}
-              >
-                &copy; {new Date().getFullYear()} MinKowskiM. All rights
-                reserved.
-              </p>
+                {/* 🌟 한국어 우선 푸터 텍스트 */}
+                <p style={{ textAlign: 'center', color: 'var(--color-text-sub)', padding: '20px 0', borderTop: '1px solid var(--color-border)', fontSize: '0.9em' }}>
+                    &copy; {new Date().getFullYear()} MinKowski. All rights reserved.
+                </p>
             </footer>
           </div>
         </ProvidersWrapper>
