@@ -101,12 +101,14 @@ public class UserController {
 
     // UserController.java 내 setTokenCookie 메서드 수정
     private void setTokenCookie(HttpServletResponse response, String token, int maxAge) {
-    // String.format을 사용하여 Secure와 SameSite 속성을 강제 적용
+        // SameSite=Lax를 SameSite=None으로 수정
         String cookieValue = String.format(
-            "authToken=%s; Path=/; HttpOnly; Max-Age=%d; SameSite=Lax; Secure", 
+            "authToken=%s; Path=/; Domain=minkowskim.com; HttpOnly; Max-Age=%d; SameSite=None; Secure", 
             token == null ? "" : token, 
             maxAge
         );
+        
+        // 명확하게 헤더를 추가합니다.
         response.addHeader("Set-Cookie", cookieValue);
     }
 }
