@@ -24,7 +24,7 @@ public class PostService {
     private final TagRepository tagRepository;
     private final WebClient webClient;
 
-    @Value("${user-service.url:http://localhost:8081}")
+    @Value("${USER_SERVICE_URL:http://localhost:8081}")
     private String userServiceUrl;
 
     public PostService(
@@ -42,6 +42,12 @@ public class PostService {
     public PostResponse createPost(PostRequest request, String authorId) {
         Post post = request.toEntity();
         post.setAuthorId(authorId);
+        log.info(">>> [PostService] createPost 요청 시작! 작성자 ID: {}", authorId);
+
+        if (authorId == null || authorId.isEmpty()) {
+        log.error("!!! [PostService] 작성자 ID가 없습니다. 인증에 실패했을 수 있습니다.");
+        throw new RuntimeException("인증된 사용자 정보를 찾을 수 없습니다.");
+        }
 
         if (request.getCategoryName() != null && !request.getCategoryName().isEmpty()) {
             Category category = categoryRepository.findByName(request.getCategoryName())

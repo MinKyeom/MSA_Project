@@ -27,7 +27,7 @@ public class Post {
     // private User user; // 삭제
     
     // ⭐ 추가: 작성자의 ID만 저장
-    @Column(name = "author_id", nullable = false) 
+    @Column(name = "author_id", nullable = false, length = 50) 
     private String authorId; 
 
     private LocalDateTime createdAt = LocalDateTime.now();
