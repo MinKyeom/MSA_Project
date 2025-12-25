@@ -180,13 +180,14 @@ public class PostService {
         if (authorIds.isEmpty()) return Collections.emptyMap();
         try {
             return webClient.post()
-                    .uri(userServiceUrl + "/api/users/nicknames")
+                    .uri(userServiceUrl + "/user/api/users/nicknames")
                     .bodyValue(authorIds)
                     .retrieve()
                     .bodyToMono(new ParameterizedTypeReference<Map<String, String>>() {})
                     .block(); // 외부 통신 (동기 방식 유지)
         } catch (Exception e) {
             log.error("User Service 통신 실패: {}", e.getMessage());
+            e.printStackTrace(); // 터미널(로그)에 에러 스택을 모두 출력합니다.
             return Collections.emptyMap();
         }
     }

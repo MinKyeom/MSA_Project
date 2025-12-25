@@ -17,14 +17,14 @@ import "../styles/Toast.css";
 export const metadata = {
   // 🌟 한국어 기본 타이틀
   title: {
-    default: "MinKowski | 구조적으로 사고하고, 시간을 초월하여 살다.", 
-    template: "%s | MinKowski", 
+    default: "MinKowskiM | 구조적으로 사고하고, 시간을 초월하여 살다.", 
+    template: "%s | MinKowskiM", 
   },
   // 🌟 한국어 상세 설명
   description:
     "백엔드, 프론트엔드, AI/ML을 아우르는 소프트웨어 개발 트렌드와 인사이트를 공유하는 개인 개발 블로그입니다.", 
   keywords: [
-    "Next.js", "React", "Spring Boot", "개발 블로그", "MinKowski", "기술 아카이브"
+    "Next.js", "React", "Spring Boot", "개발 블로그", "MinKowskiM", "기술 아카이브"
   ],
   alternates: {
     canonical: "https://your-blog-url.com",
@@ -35,16 +35,16 @@ export const metadata = {
     }
   },
   openGraph: {
-    title: "MinKowski | 구조적으로 사고하고, 시간을 초월하여 살다.",
+    title: "MinKowskiM | 구조적으로 사고하고, 시간을 초월하여 살다.",
     description:
       "백엔드, 프론트엔드, AI/ML을 아우르는 소프트웨어 개발 트렌드와 인사이트를 공유하는 개인 개발 블로그입니다.",
     url: "https://your-blog-url.com",
-    siteName: "MinKowski",
+    siteName: "MinKowskiM",
     type: "website",
   },
   twitter: {
     card: "summary_large_image",
-    title: "MinKowski",
+    title: "MinKowskiM",
     description:
       "백엔드, 프론트엔드, AI/ML을 아우르는 소프트웨어 개발 트렌드와 인사이트를 공유하는 개인 개발 블로그입니다.",
   },
@@ -74,7 +74,7 @@ export default function RootLayout({ children }) {
             <footer>
                 {/* 🌟 한국어 우선 푸터 텍스트 */}
                 <p style={{ textAlign: 'center', color: 'var(--color-text-sub)', padding: '20px 0', borderTop: '1px solid var(--color-border)', fontSize: '0.9em' }}>
-                    &copy; {new Date().getFullYear()} MinKowski. All rights reserved.
+                    &copy; {new Date().getFullYear()} MinKowskiM. All rights reserved.
                 </p>
             </footer>
           </div>

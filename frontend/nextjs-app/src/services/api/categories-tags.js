@@ -1,6 +1,6 @@
 import axios from "axios";
 
-const POSTS_BASE_URL = process.env.NEXT_PUBLIC_POST_API_URL || "http://localhost:8082"; 
+const POSTS_BASE_URL = process.env.NEXT_PUBLIC_POST_API_URL || "https://minkowskim.com"; 
 const POSTS_API_URL = `${POSTS_BASE_URL}/api/posts`;
 
 /**

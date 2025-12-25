@@ -71,7 +71,7 @@ export default function Sidebar({ isSidebarOpen, closeSidebar }) {
 
       <div className={`sidebar-menu ${isSidebarOpen ? "open" : ""}`}>
         <div className="sidebar-header" style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "30px" }}>
-          <span className="logo-text-header" style={{ fontSize: "1.8rem" }}>MinKowski</span>
+          <span className="logo-text-header" style={{ fontSize: "1.8rem" }}>MinKowskiM</span>
           <button onClick={closeSidebar} className="sidebar-close-btn">&times;</button>
         </div>
 

@@ -21,7 +21,7 @@ public class CommentService {
     private final PostRepository postRepository;
     private final WebClient webClient;
 
-    @Value("${user-service.url:http://localhost:8081}")
+    @Value("${USER_SERVICE_URL:http://localhost:8081}")
     private String userServiceUrl;
 
     public CommentService(CommentRepository commentRepository, PostRepository postRepository, WebClient.Builder webClientBuilder) {
@@ -74,7 +74,7 @@ public class CommentService {
         if (authorIds.isEmpty()) return Collections.emptyMap();
         try {
             return webClient.post()
-                    .uri(userServiceUrl + "/api/users/nicknames")
+                    .uri(userServiceUrl + "/user/api/users/nicknames")
                     .bodyValue(authorIds)
                     .retrieve()
                     .bodyToMono(new ParameterizedTypeReference<Map<String, String>>() {})

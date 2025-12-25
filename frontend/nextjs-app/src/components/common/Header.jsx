@@ -45,7 +45,7 @@ export default function Header() {
             </button>
 
             <Link href="/" className="logo-text-header">
-              MinKowski
+              MinKowskiM
             </Link>
 
             <HeaderThemeToggle />
