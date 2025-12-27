@@ -33,25 +33,34 @@ public class CommentService {
     public CommentResponse createComment(Long postId, CommentRequest request, String authenticatedUserId) {
         Post post = postRepository.findById(postId).orElseThrow(() -> new RuntimeException("게시글 없음"));
         
-        // ⭐ Builder 사용으로 가시성 문제 해결
         Comment comment = Comment.builder()
-                .post(post)
                 .content(request.getContent())
                 .authorId(authenticatedUserId)
+                .post(post)
                 .build();
         
-        commentRepository.save(comment);
+        Comment savedComment = commentRepository.save(comment);
         Map<String, String> nicknameMap = getAuthorNicknamesMap(List.of(authenticatedUserId));
-        return CommentResponse.fromEntity(comment, nicknameMap.getOrDefault(authenticatedUserId, "알 수 없음"));
+        return CommentResponse.fromEntity(savedComment, nicknameMap.getOrDefault(authenticatedUserId, "작성자 알 수 없음"));
     }
 
-    @Transactional(readOnly = true)
     public List<CommentResponse> getCommentsByPostId(Long postId) {
         List<Comment> comments = commentRepository.findByPostId(postId);
-        List<String> authorIds = comments.stream().map(Comment::getAuthorId).distinct().collect(Collectors.toList());
+        
+        // ⭐ 수정 포인트: 댓글들의 모든 작성자 ID를 추출하여 닉네임을 한꺼번에 조회
+        List<String> authorIds = comments.stream()
+                .map(Comment::getAuthorId)
+                .distinct()
+                .collect(Collectors.toList());
+
         Map<String, String> nicknameMap = getAuthorNicknamesMap(authorIds);
+
+        // 닉네임과 함께 Response DTO 생성
         return comments.stream()
-                .map(c -> CommentResponse.fromEntity(c, nicknameMap.getOrDefault(c.getAuthorId(), "알 수 없음")))
+                .map(comment -> {
+                    String nickname = nicknameMap.getOrDefault(comment.getAuthorId(), "작성자 알 수 없음");
+                    return CommentResponse.fromEntity(comment, nickname);
+                })
                 .collect(Collectors.toList());
     }
 
@@ -61,7 +70,7 @@ public class CommentService {
 
         comment.setContent(request.getContent());
         Map<String, String> nicknameMap = getAuthorNicknamesMap(List.of(authenticatedUserId));
-        return CommentResponse.fromEntity(comment, nicknameMap.getOrDefault(authenticatedUserId, "알 수 없음"));
+        return CommentResponse.fromEntity(comment, nicknameMap.getOrDefault(authenticatedUserId, "작성자 알 수 없음"));
     }
 
     public void deleteComment(Long commentId, String authenticatedUserId) {

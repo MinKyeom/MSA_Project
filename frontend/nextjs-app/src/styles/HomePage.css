@@ -25,7 +25,8 @@
 
 /* 🌟 수정: 블로그 이름에 필기체 폰트 적용 (MinKowski) */
 .hero-title {
-    font-family: var(--font-family-cursive); /* 필기체 폰트 적용 */
+    /*font-family: var(--font-family-cursive); 필기체 폰트 적용 */
+    font-family: var(--font-family-cursive) !important;
     font-size: 5rem; /* 더 크게 */
     font-weight: 400; /* 필기체에 맞게 */
     color: var(--color-logo); /* 로고 색상 변수 사용 */

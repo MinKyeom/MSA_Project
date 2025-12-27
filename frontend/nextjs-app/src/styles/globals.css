@@ -8,8 +8,8 @@
     /* 🌟 한국어 우선 폰트 설정 */
     --font-family-main: 'Spoqa Han Sans Neo', 'Inter', sans-serif;
     /* 🌟 감성적 디자인을 위한 필기체 폰트 변수 */
-    --font-family-cursive: 'Sacramento', cursive;
-    
+    /* --font-family-cursive: 'Sacramento', cursive; */
+    --font-family-cursive: var(--font-sacramento), 'Sacramento', cursive;
     /* 라이트 모드 색상 (세련된 톤) */
     --color-background: #fcfcfc;  /* 화면 배경 전체 (미묘한 오프 화이트) */
     --color-primary: #ffffff;     /* UI 카드, 헤더, 사이드바 배경 */
@@ -75,6 +75,13 @@ a {
 
 a:hover {
     color: var(--color-accent);
+}
+
+.cursive-title {
+    font-family: var(--font-family-cursive) !important;
+    font-size: 1.6rem !important;
+    font-weight: 400 !important;
+    margin-bottom: 15px !important;
 }
 
 /* ---------------------------------------------------------------- */
