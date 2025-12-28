@@ -1,5 +1,5 @@
 // app/layout.jsx (Server Component)
-import { Sacramento } from "next/font/google";
+import { Montserrat, Nanum_Myeongjo, Caveat } from "next/font/google"; // Caveat 추가
 
 import { ThemeProvider } from "../providers/ThemeProvider";
 import { AuthProvider } from "../providers/AuthProvider";
@@ -14,11 +14,27 @@ import "../styles/Header.css"; // 🌟 추가: Header.css 임포트
 import "../components/Chatbot/Chatbot.css";
 import "../styles/Toast.css";
 
-// 
-const sacramento = Sacramento({
-  weight: "400",
+//
+// const sacramento = Sacramento({
+//   weight: "400",
+//   subsets: ["latin"],
+//   variable: "--font-sacramento", // CSS 변수 이름 설정
+// });
+
+const caveat = Caveat({
   subsets: ["latin"],
-  variable: "--font-sacramento", // CSS 변수 이름 설정
+  variable: "--font-caveat", // CSS에서 사용할 변수명 지정
+});
+
+const montserrat = Montserrat({
+  subsets: ["latin"],
+  variable: "--font-montserrat",
+});
+
+const nanumMyeongjo = Nanum_Myeongjo({
+  weight: ["400", "700"],
+  subsets: ["latin"],
+  variable: "--font-myeongjo",
 });
 
 // 🌟 수정: 한국어 우선 SEO 메타데이터 업데이트
@@ -75,8 +91,11 @@ const ProvidersWrapper = ({ children }) => (
 export default function RootLayout({ children }) {
   return (
     // 🌟 수정: HTML 언어 코드를 'ko' (한국어)로 변경
-    <html lang="ko">
-      <body className={sacramento.variable}>
+    <html
+      lang="ko"
+      className={`${montserrat.variable} ${nanumMyeongjo.variable} ${caveat.variable}`}
+    >
+      <body>
         <ProvidersWrapper>
           <div className="App">
             <Header />
