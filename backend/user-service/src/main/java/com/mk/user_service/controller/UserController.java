@@ -70,7 +70,8 @@ public class UserController {
         );
         User user = userService.findUserByUsername(signinRequest.username());
         String token = tokenProvider.create(user);
-        setTokenCookie(response, token, 7 * 24 * 60 * 60);
+        // setTokenCookie(response, token, 7 * 24 * 60 * 60);
+        setTokenCookie(response, token, 30 * 60);
         return ResponseEntity.ok(UserResponse.fromEntity(user));
     }
 
