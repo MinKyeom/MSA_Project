@@ -1,41 +1,46 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 import redis, os, json, time, re
-from langchain_community.llms import LlamaCpp
+from langchain_google_genai import ChatGoogleGenerativeAI
 from langchain_core.prompts import PromptTemplate 
-from langchain_core.output_parsers import StrOutputParser 
+from langchain_core.output_parsers import PydanticOutputParser 
 
 from db_utils import init_db, save_info, query_info, retrieve_context
 from memory import set_session_data, get_session_data, append_chat_history, get_chat_history, clear_session
-from schemas import ChatPayload
+from schemas import ChatPayload, AgentActionSchema 
 
+# DB 초기화
 init_db()
 app = FastAPI()
 
+# CORS 설정
 origins = ["https://minkowskim.com", "https://www.minkowskim.com", "http://localhost:3000"]
-app.add_middleware(CORSMiddleware, allow_origins=origins, allow_credentials=True, allow_methods=["*"], allow_headers=["*"])
+app.add_middleware(
+    CORSMiddleware, 
+    allow_origins=origins, 
+    allow_credentials=True, 
+    allow_methods=["*"], 
+    allow_headers=["*"]
+)
 
-MODEL_PATH = "local_model.gguf" 
+# 환경 변수에서 Gemini API 키 로드
+GOOGLE_API_KEY = os.getenv("GOOGLE_API_KEY")
 
 try:
-    llm_general = LlamaCpp(
-        model_path=MODEL_PATH,
-        temperature=0.3,      # 언어 혼란을 줄이기 위해 온도를 낮춤
-        max_tokens=64,        # 불필요한 사족 방지
-        n_ctx=512,            # 컨텍스트를 줄여 집중도 향상
-        n_batch=32,
-        n_threads=4,
-        f16_kv=True,
-        repeat_penalty=2.0,   # 반복 및 패턴 고착 방지
-        top_p=0.5,            # 가장 확실한 단어만 선택하도록 제한
-        stop=["사용자:", "User:", "###", "\n", "Football", "오전"], # 이상 징후 단어 차단
-        verbose=False
+    # Gemini 모델 설정
+    llm = ChatGoogleGenerativeAI(
+        model="gemini-1.5-flash",
+        google_api_key=GOOGLE_API_KEY,
+        temperature=0.1,
+        max_output_tokens=256
     )
-    print("✅ LlamaCpp 모델 로드 완료")
+    print("✅ Gemini 에이전트 모델 로드 완료")
 except Exception as e:
-    llm_general = None
+    print(f"❌ Gemini 로드 실패: {e}")
+    llm = None
 
-general_parser = StrOutputParser()
+# 의도 분석을 위한 파서 설정
+parser = PydanticOutputParser(pydantic_object=AgentActionSchema)
 ADMIN_PASSWORD = "나인걸인증" 
 
 @app.post("/chat")
@@ -43,57 +48,84 @@ async def chat(payload: ChatPayload):
     msg = payload.message.strip()
     session_id = payload.session_id
 
+    # Redis에서 인증 상태를 포함한 세션 데이터 로드
     session = get_session_data(session_id)
-    history_list = get_chat_history(session_id)
     
-    # [1] 인증 로직
+    # [1] 관리자 인증 처리
     if msg == ADMIN_PASSWORD:
-        session["saving_mode"] = True
+        session["user_verified"] = True
         set_session_data(session_id, session)
-        return {"response": "인증 성공! 이제 관심사를 말씀하시면 저장됩니다."}
+        return {"response": "인증에 성공했습니다. 이제 말씀하시는 관심사나 공부 내용을 자동으로 분류하여 저장합니다."}
 
-    # [2] 질문 여부 판단
-    is_question = any(q in msg for q in ["?", "뭐야", "뭐지", "어때", "어디", "누구"])
-    
-    # [3] 저장 로직
-    if session.get("saving_mode") and not is_question:
-        if any(x in msg for x in ["관심사", "공부", "좋아해"]):
-            cat = "interest" if "관심사" in msg or "좋아해" in msg else "study"
-            val = re.sub(r'내\s|관심사는\s|공부는\s|좋아해|이야|야|입니다|\.', '', msg).strip()
-            if val:
-                save_info(cat, val)
-                return {"response": f"좋습니다. {val} 정보를 기억했습니다."}
+    if llm is None:
+        return {"response": "서버의 Gemini API 키 설정을 확인해 주세요."}
 
-    # [4] DB 컨텍스트
-    context = retrieve_context(msg)
-    
-    # [5] 모델이 헷갈리지 않게 아주 단순한 지시문으로 변경
-    general_prompt_template = PromptTemplate(
-        template="""당신은 한국어 AI 비서입니다. 질문에 짧고 친절하게 한 문장으로만 답하세요.
+    # [2] 에이전트 의도 판단 프롬프트
+    agent_prompt = PromptTemplate(
+        template="""당신은 사용자의 대화를 분석하여 시스템 행동을 결정하는 관리 에이전트입니다.
+사용자의 메시지를 분석하여 다음 행동 중 하나를 선택하고 JSON 형식으로 답변하세요.
+
+1. save: 사용자가 자신의 관심사, 공부하고 있는 것, 좋아하는 것을 말하며 기억해달라고 할 때
+2. query: 사용자가 이전에 저장했던 정보에 대해 물어볼 때 (예: '내 관심사 뭐야?')
+3. none: 그 외 일반적인 대화, 인사, 잡담일 때
+
+카테고리는 반드시 'interest' 또는 'study' 중 하나여야 합니다.
+
+{format_instructions}
+
+사용자 메시지: {message}""",
+        input_variables=["message"],
+        partial_variables={"format_instructions": parser.get_format_instructions()}
+    )
+
+    try:
+        # 에이전트가 의도 판단
+        agent_chain = agent_prompt | llm | parser
+        action_result = agent_chain.invoke({"message": msg})
+        
+        response_text = ""
+        
+        # [3] 판단 결과에 따른 로직 실행
+        if action_result.action == "save":
+            # 인증된 상태일 때만 실제 DB 저장 수행
+            if session.get("user_verified"):
+                save_info(action_result.category, action_result.value)
+                response_text = f"알겠습니다. {action_result.category} 카테고리에 '{action_result.value}' 내용을 저장했습니다."
+            else:
+                # 인증되지 않았다면 저장하지 않고 일반 답변
+                context = retrieve_context(msg)
+                response_text = await generate_response(msg, context)
+        
+        elif action_result.action == "query":
+            # DB 조회 후 답변 생성
+            context = retrieve_context(msg)
+            response_text = await generate_response(msg, context)
+            
+        else:
+            # 일반 대화
+            context = retrieve_context(msg)
+            response_text = await generate_response(msg, context)
+
+        # 대화 기록 기록
+        append_chat_history(session_id, "User", msg)
+        append_chat_history(session_id, "AI", response_text)
+        
+        return {"response": response_text}
+
+    except Exception as e:
+        print(f"Agent Logic Error: {e}")
+        return {"response": "죄송합니다. 요청을 처리하는 중에 문제가 발생했습니다."}
+
+async def generate_response(msg, context):
+    """최종 답변 생성을 위한 보조 함수"""
+    prompt = PromptTemplate(
+        template="""당신은 친절한 한국어 AI 비서입니다. 제공된 지식을 바탕으로 질문에 짧고 친절하게 한 문장으로 답하세요.
+지식에 없는 내용이라면 자연스럽게 대화를 이어가세요.
+
 ### 지식: {context}
 ### 질문: {msg}
 ### 답변:""",
         input_variables=["context", "msg"]
     )
-
-    if llm_general is None: return {"response": "잠시만 기다려 주세요."}
-
-    try:
-        chain = general_prompt_template | llm_general | general_parser
-        response_text = chain.invoke({
-            "context": context if context else '정보 없음',
-            "msg": msg
-        })
-        
-        res = response_text.strip()
-        
-        # [6] 한국어가 아닌 글자가 섞여있거나 이상한 패턴이면 강제 교정
-        if re.search(r'[^\uAC00-\uD7A3\s\d.?!,]', res) or len(res) < 2:
-            res = "네, 말씀하신 내용 잘 알겠습니다. 더 도와드릴까요?"
-
-        append_chat_history(session_id, "User", msg)
-        append_chat_history(session_id, "AI", res)
-        
-        return {"response": res}
-    except Exception as e:
-        return {"response": "다시 한번 말씀해 주시겠어요?"}
+    chain = prompt | llm | (lambda x: x.content)
+    return chain.invoke({"context": context if context else "저장된 정보 없음", "msg": msg})

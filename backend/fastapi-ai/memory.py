@@ -2,7 +2,7 @@ import redis
 import json
 import os
 
-# ✅ Docker Compose의 environment 환경변수 또는 서비스 이름 사용
+# Redis 연결 설정
 REDIS_HOST = os.getenv("REDIS_HOST", "msa-redis")
 REDIS_PORT = int(os.getenv("REDIS_PORT", 6379))
 
@@ -11,7 +11,6 @@ try:
     r.ping()
     IS_REDIS_CONNECTED = True
 except redis.exceptions.ConnectionError:
-    print(f"❌ Redis connection failed: {REDIS_HOST}:{REDIS_PORT}")
     IS_REDIS_CONNECTED = False
     class DummyRedis:
         def get(self, key): return None
@@ -30,6 +29,7 @@ def get_session_data(user_id: str) -> dict:
         data = r.get(f"session:{user_id}")
         if data:
             return json.loads(data)
+    # user_verified 상태를 기본적으로 False로 반환
     return {"saving_mode": False, "user_verified": False}
 
 def append_chat_history(user_id: str, role: str, message: str):
