@@ -112,3 +112,27 @@ export const checkNicknameDuplicate = async (nickname) => {
     return false;
   }
 };
+
+
+/**
+ * [추가 및 수정] 서버로부터 현재 세션의 유저 정보를 가져옴
+ * UserController.java의 @GetMapping("/me")와 연동됩니다.
+ */
+// 유저 정보 가져오기
+export const fetchMe = async () => {
+  try {
+    // 💡 UserController.java를 확인해보니 /me 엔드포인트가 @RequestParam String userId를 요구하고 있습니다.
+    // 하지만 세션 방식이라면 서버가 쿠키를 통해 ID를 알아내야 합니다. 
+    // 우선 로컬 스토리지를 참조하되, 본질적으로는 쿠키(withCredentials)가 핵심입니다.
+    const currentId = typeof window !== "undefined" ? localStorage.getItem("currentUserId") : null;
+    
+    const response = await authAxios.get("/user/me", {
+      params: { userId: currentId } // 서버 엔드포인트 요구사항에 맞춤
+    });
+    
+    return response.data; // UserResponse { id, nickname, ... }
+  } catch (error) {
+    console.error("서버 인증 확인 실패:", error);
+    return null;
+  }
+};
