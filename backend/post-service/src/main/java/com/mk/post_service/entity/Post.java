@@ -12,13 +12,15 @@ import java.util.Set;
 
 @Entity
 @Getter @Setter
+@Table(name = "POSTS")
 public class Post {
     @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
     private String title;
 
-    @Lob
+    // @Lob
+    @Column(columnDefinition = "TEXT") //PostgreSQL 오류 방지
     private String content; 
 
     // ⭐ 수정: User 엔티티와의 관계 제거
