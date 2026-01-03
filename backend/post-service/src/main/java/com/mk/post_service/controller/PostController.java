@@ -45,32 +45,33 @@ public class PostController {
     }
 
     @GetMapping
-    public Page<PostResponse> getPosts(
+    public List<PostResponse> getPosts(
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "10") int size
     ) {
         Pageable pageable = PageRequest.of(page, size);
-        return postService.getAllPosts(pageable);
+        // return postService.getAllPosts(pageable);
+        return postService.getAllPosts(pageable).getContent();
     }
 
     @GetMapping("/category")
-    public Page<PostResponse> getPostsByCategory(
+    public List<PostResponse> getPostsByCategory(
             @RequestParam String name,
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "10") int size
     ) {
         Pageable pageable = PageRequest.of(page, size);
-        return postService.getPostsByCategory(name, pageable);
+        return postService.getPostsByCategory(name, pageable).getContent();
     }
 
     @GetMapping("/tag")
-    public Page<PostResponse> getPostsByTag(
+    public List<PostResponse> getPostsByTag(
             @RequestParam String name,
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "10") int size
     ) {
         Pageable pageable = PageRequest.of(page, size);
-        return postService.getPostsByTag(name, pageable);
+        return postService.getPostsByTag(name, pageable).getContent();
     }
 
     @GetMapping("/categories")
