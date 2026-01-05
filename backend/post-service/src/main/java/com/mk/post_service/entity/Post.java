@@ -12,7 +12,8 @@ import java.util.Set;
 
 @Entity
 @Getter @Setter
-@Table(name = "POSTS")
+@Table(name = "posts", indexes = @Index(name = "idx_post_created_at", columnList = "createdAt"))
+// @Table(name = "posts")
 public class Post {
     @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;

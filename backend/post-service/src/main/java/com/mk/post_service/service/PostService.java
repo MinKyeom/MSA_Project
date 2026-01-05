@@ -112,9 +112,13 @@ public class PostService {
         return res;
     }
 
+    // public Page<PostResponse> getAllPosts(Pageable pageable) {
+    //     return mapPostPageToResponse(postRepository.findAll(pageable));
+    // }
     public Page<PostResponse> getAllPosts(Pageable pageable) {
-        return mapPostPageToResponse(postRepository.findAll(pageable));
+        return mapPostPageToResponse(postRepository.findAllWithDetails(pageable)); // 명칭 변경
     }
+
 
     public Page<PostResponse> getPostsByCategory(String categoryName, Pageable pageable) {
         return mapPostPageToResponse(postRepository.findByCategoryName(categoryName, pageable));
@@ -140,11 +144,14 @@ public class PostService {
     }
 
     private Page<PostResponse> mapPostPageToResponse(Page<Post> postPage) {
+        log.info("조회된 게시글 개수: {}", postPage.getContent().size());
         List<String> authorIds = postPage.stream()
                 .map(Post::getAuthorId)
                 .distinct()
                 .collect(Collectors.toList());
         Map<String, String> nicknameMap = getAuthorNicknamesMap(authorIds);
+        log.info("가져온 닉네임 맵: {}", nicknameMap);
+
         return postPage.map(post -> {
             PostResponse res = PostResponse.fromEntity(post);
             res.setAuthorNickname(nicknameMap.getOrDefault(post.getAuthorId(), "작성자 알 수 없음"));
@@ -160,6 +167,8 @@ public class PostService {
                     .bodyValue(authorIds)
                     .retrieve()
                     .bodyToMono(new ParameterizedTypeReference<Map<String, String>>() {})
+                    .timeout(java.time.Duration.ofSeconds(2)) // 2초 타임아웃 추가
+                    .onErrorReturn(Collections.emptyMap())    // 실패 시 빈 값 반환
                     .block();
         } catch (Exception e) {
             log.error("User Service 통신 실패: {}", e.getMessage());
