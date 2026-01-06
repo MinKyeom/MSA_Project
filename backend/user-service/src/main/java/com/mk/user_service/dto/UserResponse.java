@@ -9,8 +9,9 @@ import lombok.Builder;
 public record UserResponse (
     String id,
     String username,
-    String nickname, 
-    String error 
+    String nickname,
+    String email, // ⭐ 추가 
+    String error
 ) {
     /**
      * ⭐ 추가: User 엔티티를 UserResponse DTO로 변환하는 정적 팩토리 메서드
@@ -21,6 +22,7 @@ public record UserResponse (
                 .id(user.getId())
                 .username(user.getUsername())
                 .nickname(user.getNickname())
+                .email(user.getEmail()) // ⭐ 추가
                 // 에러 필드는 변환 시에는 null로 설정
                 .error(null) 
                 .build();

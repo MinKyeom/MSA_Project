@@ -34,5 +34,9 @@ public class User {
     @Enumerated(EnumType.STRING)
     private Role role;
 
+    // ⭐ 이메일 필드 추가 (아이디/비밀번호 찾기 시 활용)
+    @Column(nullable = false, unique = true)
+    private String email;
+
     public enum Role { ROLE_USER, ROLE_ADMIN }
 }

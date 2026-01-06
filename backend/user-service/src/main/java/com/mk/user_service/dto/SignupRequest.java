@@ -3,6 +3,7 @@ package com.mk.user_service.dto;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size; // ⭐ 추가
 import lombok.Builder;
+import jakarta.validation.constraints.Email; // ⭐ 추가 확인
 
 @Builder
 public record SignupRequest (
@@ -18,5 +19,10 @@ public record SignupRequest (
     
     // 빈 값/null 허용 안 함
     @NotBlank(message = "닉네임은 필수 입력 항목입니다.") 
-    String nickname 
+    String nickname,
+    
+    // ⭐ 이메일 추가 및 형식 검증
+    @NotBlank(message = "이메일은 필수 입력 항목입니다.")
+    @Email(message = "유효한 이메일 형식이 아닙니다.")
+    String email
 ) {}
