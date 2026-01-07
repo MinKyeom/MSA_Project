@@ -26,6 +26,57 @@
 
 ---
 
+# 🏗️ System Architecture
+
+프로젝트의 전체적인 마이크로서비스 구조 및 데이터 흐름도입니다.
+
+---
+
+## 🏛️ Architecture Diagram
+
+```mermaid
+graph TD
+    subgraph External [외부 접속]
+        User((사용자)) -->|HTTPS / minkowskim.com| Nginx[Nginx Reverse Proxy]
+    end
+
+    subgraph Frontend_Layer [프론트엔드]
+        Nginx --> NextJS[Next.js Client]
+    end
+
+    subgraph Service_Layer [마이크로서비스 - Spring Boot 중심]
+        Nginx -->|/api/auth| UserService[User Service <br/><b>Spring Boot</b>]
+        Nginx -->|/api/posts| PostService[Post Service <br/><b>Spring Boot</b>]
+        Nginx -->|/api/ai| AIService[AI Service <br/>FastAPI]
+
+        %% 비동기 통신 흐름
+        UserService -.->|Publish Event| Kafka[Kafka Message Broker]
+        Kafka -.->|Subscribe| MailService[Mail Service <br/><b>Spring Boot</b>]
+    end
+
+    subgraph Data_Storage [데이터 및 캐시]
+        UserService <--> Redis[(Redis Cache)]
+        UserService <--> DB_User[(PostgreSQL - User DB)]
+        PostService <--> DB_Post[(PostgreSQL - Post DB)]
+        AIService --- Groq[[Groq AI API]]
+    end
+
+    subgraph Management [모니터링]
+        KafkaUI[Kafka UI] --- Kafka
+    end
+
+    %% 스타일링
+    classDef spring fill:#6db33f,stroke:#2d4e1a,stroke-width:2px,color:#fff;
+    classDef fastapi fill:#05998b,stroke:#035a52,stroke-width:2px,color:#fff;
+    classDef infra fill:#f8f9fa,stroke:#333,stroke-dasharray: 5 5;
+    classDef database fill:#336791,stroke:#244a69,stroke-width:2px,color:#fff;
+
+    class UserService,PostService,MailService spring;
+    class AIService fastapi;
+    class Kafka,Redis,Nginx,KafkaUI infra;
+    class DB_User,DB_Post,Redis database;
+```
+
 ## 🔥 Key Features
 
 ### 1. 보안 강화 유저 시스템 (User Domain)
