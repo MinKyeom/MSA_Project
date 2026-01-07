@@ -21,6 +21,7 @@
 - **Frontend**: Next.js (SEO 최적화 및 테마 시스템)
 - **User Service**: Spring Boot (인증 및 보안)
 - **Post Service**: Spring Boot (게시글 관리)
+- **Mail Service**: Spring Boot (메일 관리)
 - **Chatbot Service**: FastAPI (AI 챗봇 엔진)
 - **Infrastructure**: AWS Lightsail, Docker, Nginx
 
@@ -105,10 +106,10 @@ graph TD
 
 ## 🛠 Tech Stack
 
-| 구분                    | 기술 스택                                            |
-| :---------------------- | :--------------------------------------------------- |
-| **Frontend**            | `Next.js`, `Tailwind CSS`, `Lucide React`            |
-| **Backend (Auth/Post)** | `Java`, `Spring Boot`, `Spring Security`, `JPA`      |
-| **Backend (AI)**        | `Python`, `FastAPI`, `OpenAI API/LangChain`          |
-| **Database/Cache**      | `H2/SQLite`, `Redis`                                 |
-| **DevOps**              | `Docker`, `Docker Compose`, `Nginx`, `AWS Lightsail` |
+| 구분                         | 기술 스택                                            |
+| :--------------------------- | :--------------------------------------------------- |
+| **Frontend**                 | `Next.js`, `Tailwind CSS`, `Lucide React`            |
+| **Backend (Auth/Post/Mail)** | `Java`, `Spring Boot`, `Spring Security`, `JPA`      |
+| **Backend (AI)**             | `Python`, `FastAPI`, `OpenAI API/LangChain`          |
+| **Database/Cache**           | `H2/SQLite/PostgreSQL`, `Redis`, `Kafka`             |
+| **DevOps**                   | `Docker`, `Docker Compose`, `Nginx`, `AWS Lightsail` |
