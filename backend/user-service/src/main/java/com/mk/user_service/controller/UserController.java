@@ -32,27 +32,6 @@ public class UserController {
     private final TokenProvider tokenProvider;
     private final AuthenticationManager authenticationManager;
 
-
-    /**
-     * ⭐ 이메일 인증번호 발송 API
-     */
-    @PostMapping("/send-verification")
-    public ResponseEntity<?> sendVerification(@RequestParam String email) {
-        userService.sendVerificationCode(email);
-        return ResponseEntity.ok().body(Map.of("message", "인증번호가 발송되었습니다."));
-    }
-
-    /**
-     * ⭐ 이메일 인증번호 확인 API
-     */
-    @PostMapping("/verify-code")
-    public ResponseEntity<?> verifyCode(@RequestParam String email, @RequestParam String code) {
-        if (userService.verifyCode(email, code)) {
-            return ResponseEntity.ok().body(Map.of("message", "인증에 성공했습니다."));
-        }
-        return ResponseEntity.badRequest().body(Map.of("message", "인증번호가 일치하지 않습니다."));
-    }
-
     /**
      * ⭐ 실시간 아이디 중복 체크 API 추가
      */
@@ -76,18 +55,11 @@ public class UserController {
                     .username(signupRequest.username())
                     .password(signupRequest.password())
                     .nickname(signupRequest.nickname())
-                    .email(signupRequest.email())
                     .build();
             User registeredUser = userService.create(user);
             return ResponseEntity.ok(UserResponse.fromEntity(registeredUser));
-        // } catch (DuplicateResourceException e) {
-        //     return ResponseEntity.badRequest().body(new UserResponse(null, null, null, e.getMessage()));
-        // }
         } catch (DuplicateResourceException e) {
-            UserResponse response = UserResponse.builder()
-                    .error(e.getMessage())
-                    .build(); // 나머지 필드는 자동으로 null 처리됨
-            return ResponseEntity.badRequest().body(response);
+            return ResponseEntity.badRequest().body(new UserResponse(null, null, null, e.getMessage()));
         }
     }
 
