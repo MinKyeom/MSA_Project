@@ -113,3 +113,52 @@ graph TD
 | **Backend (AI)**             | `Python`, `FastAPI`, `OpenAI API/LangChain`          |
 | **Database/Cache**           | `H2/SQLite/PostgreSQL`, `Redis`, `Kafka`             |
 | **DevOps**                   | `Docker`, `Docker Compose`, `Nginx`, `AWS Lightsail` |
+
+## 📑 API Specification
+
+본 프로젝트는 MSA 구조에 따라 3개의 주요 API 서버로 구성되어 있습니다.
+
+### 1. User Service (Spring Boot)
+
+- **Base URL**: `도메인/user`
+- **Authentication**: JWT 기반 `HttpOnly` Cookie (`authToken`)
+
+| 기능                 | 메서드 | 엔드포인트             | 파라미터 / Body        | 설명                       |
+| :------------------- | :----: | :--------------------- | :--------------------- | :------------------------- |
+| **로그인**           | `POST` | `/signin`              | `username`, `password` | 인증 후 JWT 쿠키 발급      |
+| **회원가입**         | `POST` | `/signup`              | `SignupRequest` DTO    | 신규 유저 생성             |
+| **로그아웃**         | `POST` | `/logout`              | -                      | `authToken` 쿠키 제거      |
+| **내 정보 조회**     | `GET`  | `/me`                  | `userId` (Query)       | 현재 로그인 유저 정보 반환 |
+| **ID 중복 체크**     | `GET`  | `/check-username`      | `username` (Query)     | 가입 가능 여부 확인        |
+| **닉네임 중복 체크** | `GET`  | `/check-nickname`      | `nickname` (Query)     | 닉네임 사용 가능 여부      |
+| **이메일 인증 발송** | `POST` | `/send-code`           | `email`                | 인증 코드 메일 발송        |
+| **코드 검증**        | `POST` | `/verify-code`         | `email`, `code`        | 발송된 코드 일치 확인      |
+| **벌크 닉네임 조회** | `POST` | `/api/users/nicknames` | `List<userIds>`        | ID 리스트로 닉네임 맵 반환 |
+
+### 2. Post Service (Spring Boot)
+
+- **Base URL**: `도메인/api/posts`
+
+| 기능                 |  메서드  | 엔드포인트           | 설명                                       |
+| :------------------- | :------: | :------------------- | :----------------------------------------- |
+| **전체 게시글 조회** |  `GET`   | `/`                  | 페이징 처리된 게시글 목록 (`page`, `size`) |
+| **카테고리별 조회**  |  `GET`   | `/category`          | 특정 카테고리 게시글 (`name` 파라미터)     |
+| **태그별 조회**      |  `GET`   | `/tag`               | 특정 태그 게시글 (`name` 파라미터)         |
+| **게시글 상세**      |  `GET`   | `/{id}`              | 게시글 상세 내용 조회                      |
+| **게시글 작성**      |  `POST`  | `/`                  | 새 포스트 생성 (로그인 필수)               |
+| **게시글 수정**      |  `PUT`   | `/{id}`              | 포스트 수정 (작성자 전용)                  |
+| **게시글 삭제**      | `DELETE` | `/{id}`              | 포스트 삭제 (작성자 전용)                  |
+| **카테고리 통계**    |  `GET`   | `/categories`        | 전체 카테고리 목록 및 게시글 수            |
+| **태그 통계**        |  `GET`   | `/tags`              | 전체 태그 목록 및 사용 횟수                |
+| **댓글 목록 조회**   |  `GET`   | `/{postId}/comments` | 특정 게시글의 전체 댓글 리스트             |
+| **댓글 작성**        |  `POST`  | `/{postId}/comments` | 새 댓글 작성 (로그인 필수)                 |
+| **댓글 수정**        |  `PUT`   | `/comments/{id}`     | 댓글 내용 수정                             |
+| **댓글 삭제**        | `DELETE` | `/comments/{id}`     | 댓글 삭제                                  |
+
+### 3. AI Chat Service (FastAPI)
+
+- **Base URL**: `도메인/chat`
+
+| 기능        | 메서드 | 엔드포인트 | 파라미터 / Body         | 설명                            |
+| :---------- | :----: | :--------- | :---------------------- | :------------------------------ |
+| **AI 채팅** | `POST` | `/chat`    | `session_id`, `message` | LLM 기반 대화 및 정보 저장 액션 |
