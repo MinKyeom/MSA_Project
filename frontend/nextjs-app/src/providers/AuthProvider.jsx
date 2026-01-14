@@ -1,7 +1,8 @@
 "use client";
 
-import React, { createContext, useContext, useState, useEffect } from 'react';
-import { getAuthUser, fetchMe } from '../services/api/auth';
+import React, { createContext, useContext, useState, useEffect } from "react";
+import { getAuthUser } from "../services/api/auth";
+import { fetchMe } from "../services/api/user";
 
 const AuthContext = createContext();
 
@@ -9,11 +10,11 @@ export const useAuth = () => useContext(AuthContext);
 
 export const AuthProvider = ({ children }) => {
   const [authState, setAuthState] = useState({
-    isAuthenticated: false, 
-    id: null, 
-    nickname: null 
+    isAuthenticated: false,
+    id: null,
+    nickname: null,
   });
-  const [isAuthInitialized, setIsAuthInitialized] = useState(false); 
+  const [isAuthInitialized, setIsAuthInitialized] = useState(false);
 
   useEffect(() => {
     const initializeAuth = async () => {
@@ -22,21 +23,21 @@ export const AuthProvider = ({ children }) => {
       if (localUser.isAuthenticated) {
         setAuthState(localUser);
       }
-      
+
       // 2. [핵심 수정] 서버에 실제 세션 유효성 확인 (Me API 호출)
       // 프라이빗 모드에서 로컬 스토리지가 비어있거나 쿠키만 있을 경우를 대비합니다.
       try {
-        const serverUser = await fetchMe(); 
-        
+        const serverUser = await fetchMe();
+
         if (serverUser && serverUser.id) {
           // 서버에 유효한 세션이 있는 경우 상태 업데이트 및 로컬 스토리지 동기화
           const updatedState = {
             isAuthenticated: true,
             id: serverUser.id,
-            nickname: serverUser.nickname
+            nickname: serverUser.nickname,
           };
           setAuthState(updatedState);
-          
+
           // 로컬 스토리지에도 최신 정보 저장
           localStorage.setItem("currentUserId", serverUser.id);
           localStorage.setItem("currentUserNickname", serverUser.nickname);
@@ -62,13 +63,13 @@ export const AuthProvider = ({ children }) => {
   };
 
   const manualLogout = () => {
-    if (typeof window !== 'undefined') {
-        localStorage.removeItem("currentUserId");
-        localStorage.removeItem("currentUserNickname");
+    if (typeof window !== "undefined") {
+      localStorage.removeItem("currentUserId");
+      localStorage.removeItem("currentUserNickname");
     }
     setAuthState({ isAuthenticated: false, id: null, nickname: null });
   };
-  
+
   const value = {
     ...authState,
     refreshAuth,
@@ -76,9 +77,5 @@ export const AuthProvider = ({ children }) => {
     manualLogout,
   };
 
-  return (
-    <AuthContext.Provider value={value}>
-      {children}
-    </AuthContext.Provider>
-  );
+  return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
 };

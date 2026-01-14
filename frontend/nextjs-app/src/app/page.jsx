@@ -1,4 +1,5 @@
 // app/page.jsx (Server Component)
+export const dynamic = 'force-dynamic';
 
 import { fetchPosts } from "../services/api/posts"; 
 import PostCard from "../components/Post/PostCard"; 
@@ -32,6 +33,8 @@ async function getRecentPosts() {
   // 페이지는 0 (첫 페이지), 사이즈는 6
   try {
     const data = await fetchPosts(0, 6);
+    console.log("--- API 응답 데이터 확인 ---");
+    console.log(data); // 여기서 Postman과 같은 결과가 찍히는지 확인하세요.
     return data.content || [];
   } catch (error) {
     console.error("홈 페이지에서 포스트를 가져오는 데 실패했습니다.", error);

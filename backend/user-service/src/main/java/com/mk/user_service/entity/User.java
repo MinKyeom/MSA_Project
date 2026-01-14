@@ -2,37 +2,24 @@ package com.mk.user_service.entity;
 
 import jakarta.persistence.*;
 import lombok.*;
-import org.hibernate.annotations.GenericGenerator;
 
-import java.util.UUID;
-
+// 비밀번호는 이제 auth-service에 저장
 @Entity
 @Getter @Setter
-// Lombok Builder, NoArgsConstructor, AllArgsConstructor 추가 (UserController 사용 방식에 맞춤)
-@Builder 
-@NoArgsConstructor 
+@Builder
+@NoArgsConstructor
 @AllArgsConstructor
-@Table(name = "USERS") // ⭐ 추가/수정: SQL 예약어 'USER' 충돌 방지를 위해 테이블 이름 명시
+@Table(name = "users")
 public class User {
-    // String ID 사용 (UserRepository에 맞춤)
-    @Id 
-    @GeneratedValue(generator = "uuid2")
-    @GenericGenerator(name = "uuid2", strategy = "uuid2")
-    private String id; 
-    
+    @Id
+    private String id; // Auth-Service에서 생성된 UUID를 할당받음
+
     @Column(nullable = false, unique = true)
-    private String username; 
-    
-    private String password;
-    
-    // ⭐ 닉네임 추가 및 UNIQUE 설정
-    // 글 작성 시 ID 대신 해당 닉네임으로 작성자를 구성하기위해 unique 설정
-    @Column(nullable = false, unique = true) 
-    private String nickname; 
+    private String username;
 
-    // 권한 설정 관리자,일반 유저 
-    @Enumerated(EnumType.STRING)
-    private Role role;
+    @Column(nullable = false, unique = true)
+    private String nickname;
 
-    public enum Role { ROLE_USER, ROLE_ADMIN }
+    @Column(nullable = false, unique = true)
+    private String email;
 }

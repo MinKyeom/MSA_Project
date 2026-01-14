@@ -1,115 +1,58 @@
 package com.mk.user_service.controller;
 
-import com.mk.user_service.dto.SigninRequest;
-import com.mk.user_service.entity.User;
-import com.mk.user_service.dto.SignupRequest;
 import com.mk.user_service.dto.UserResponse;
-import com.mk.user_service.exception.DuplicateResourceException;
-import com.mk.user_service.security.TokenProvider;
+import com.mk.user_service.entity.User;
+import com.mk.user_service.security.SecurityUtils;
 import com.mk.user_service.service.UserService;
-import jakarta.servlet.http.Cookie;
-import jakarta.servlet.http.HttpServletResponse;
-import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.authentication.AuthenticationManager;
-import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
-import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
 @RestController
 @RequestMapping("/user")
 @RequiredArgsConstructor
-@CrossOrigin(origins = {"http://localhost:3000", "http://127.0.0.1:3000", "http://localhost:5173"}, allowCredentials = "true") 
 public class UserController {
 
     private final UserService userService;
-    private final TokenProvider tokenProvider;
-    private final AuthenticationManager authenticationManager;
 
-    /**
-     * ⭐ 실시간 아이디 중복 체크 API 추가
-     */
+    // 추가 1.12
+    // 아이디 중복 확인
     @GetMapping("/check-username")
     public ResponseEntity<Boolean> checkUsername(@RequestParam String username) {
         return ResponseEntity.ok(userService.existsByUsername(username));
     }
 
-    /**
-     * ⭐ 실시간 닉네임 중복 체크 API 추가
+    /*
+    흐름 이해
+    1.SecurityUtils: "지금 로그인한 놈 ID가 뭐야?" → userId 획득
+
+    2.userService: "DB에서 이 ID 가진 유저 정보 다 가져와" → user (엔티티, 모든 정보 포함)
+
+    3.UserResponse.fromEntity(user): "자, 이 유저 정보 중에서 클라이언트한테 보여줄 이름이랑 이메일만 딱 골라서 예쁜 상자(DTO)에 담아줘."
+
+    4.ResponseEntity.ok(...): "완성된 상자를 클라이언트에게 보내!"
      */
+    // 현재 로그인 유저 정보 반환
+    @GetMapping("/me")
+    public ResponseEntity<UserResponse> getCurrentUser() {
+        // 토큰에서 추출된 ID를 사용하므로 클라이언트가 ID를 조작할 수 없음
+        String userId = SecurityUtils.getAuthenticatedUserId();
+        // 아이디 여부 찾기 검토
+        User user = userService.findUserById(userId);
+        return ResponseEntity.ok(UserResponse.fromEntity(user));
+    }
+
+    // 실시간 닉네임 중복 체크
     @GetMapping("/check-nickname")
     public ResponseEntity<Boolean> checkNickname(@RequestParam String nickname) {
         return ResponseEntity.ok(userService.existsByNickname(nickname));
     }
 
-    @PostMapping("/signup")
-    public ResponseEntity<?> registerUser(@Valid @RequestBody SignupRequest signupRequest) {
-        try {
-            User user = User.builder()
-                    .username(signupRequest.username())
-                    .password(signupRequest.password())
-                    .nickname(signupRequest.nickname())
-                    .build();
-            User registeredUser = userService.create(user);
-            return ResponseEntity.ok(UserResponse.fromEntity(registeredUser));
-        } catch (DuplicateResourceException e) {
-            return ResponseEntity.badRequest().body(new UserResponse(null, null, null, e.getMessage()));
-        }
-    }
-
-    @PostMapping("/signin")
-    public ResponseEntity<?> signin(@Valid @RequestBody SigninRequest signinRequest, HttpServletResponse response) {
-        Authentication authentication = authenticationManager.authenticate(
-                new UsernamePasswordAuthenticationToken(signinRequest.username(), signinRequest.password())
-        );
-        User user = userService.findUserByUsername(signinRequest.username());
-        String token = tokenProvider.create(user);
-        // setTokenCookie(response, token, 7 * 24 * 60 * 60);
-        setTokenCookie(response, token, 30 * 60);
-        return ResponseEntity.ok(UserResponse.fromEntity(user));
-    }
-
-    @PostMapping("/logout")
-    public ResponseEntity<?> logout(HttpServletResponse response) {
-        setTokenCookie(response, null, 0);
-        return ResponseEntity.ok().build();
-    }
-
-    @GetMapping("/me")
-    public ResponseEntity<UserResponse> getCurrentUser(@RequestParam String userId) {
-        try {
-            User user = userService.findUserById(userId);
-            return ResponseEntity.ok(UserResponse.fromEntity(user));
-        } catch (RuntimeException e) {
-            return ResponseEntity.notFound().build();
-        }
-    }
-
     @PostMapping("/api/users/nicknames")
     public ResponseEntity<Map<String, String>> getNicknamesByIds(@RequestBody List<String> userIds) {
-        if (userIds == null || userIds.isEmpty()) {
-            return ResponseEntity.ok(Collections.emptyMap());
-        }
-        Map<String, String> nicknamesMap = userService.getNicknamesByIds(userIds);
-        return ResponseEntity.ok(nicknamesMap);
-    }
-
-    // UserController.java 내 setTokenCookie 메서드 수정
-    private void setTokenCookie(HttpServletResponse response, String token, int maxAge) {
-        // SameSite=Lax를 SameSite=None으로 수정
-        String cookieValue = String.format(
-            "authToken=%s; Path=/; Domain=minkowskim.com; HttpOnly; Max-Age=%d; SameSite=None; Secure", 
-            token == null ? "" : token, 
-            maxAge
-        );
-        
-        // 명확하게 헤더를 추가합니다.
-        response.addHeader("Set-Cookie", cookieValue);
+        return ResponseEntity.ok(userService.getNicknamesByIds(userIds));
     }
 }
