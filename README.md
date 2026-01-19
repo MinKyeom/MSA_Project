@@ -155,51 +155,86 @@ graph TD
 | **Database/Cache**           | `H2/SQLite/PostgreSQL`, `Redis`, `Kafka`             |
 | **DevOps**                   | `Docker`, `Docker Compose`, `Nginx`, `AWS Lightsail` |
 
-## 📑 API Specification
+# 📚 Project API Specification
 
-본 프로젝트는 MSA 구조에 따라 3개의 주요 API 서버로 구성되어 있습니다.
+본 프로젝트는 MSA(Microservices Architecture) 구조로 설계되었으며, 모든 요청은 `https://minkowskim.com`을 베이스 URL로 사용합니다. 인증이 필요한 API는 `HttpOnly` 쿠키(`authToken`)를 통해 권한을 검증합니다.
 
-### 1. User Service (Spring Boot)
+---
 
-- **Base URL**: `도메인/user`
-- **Authentication**: JWT 기반 `HttpOnly` Cookie (`authToken`)
+## 🔐 1. Auth Service (인증 서비스)
 
-| 기능                 | 메서드 | 엔드포인트             | 파라미터 / Body        | 설명                       |
-| :------------------- | :----: | :--------------------- | :--------------------- | :------------------------- |
-| **로그인**           | `POST` | `/signin`              | `username`, `password` | 인증 후 JWT 쿠키 발급      |
-| **회원가입**         | `POST` | `/signup`              | `SignupRequest` DTO    | 신규 유저 생성             |
-| **로그아웃**         | `POST` | `/logout`              | -                      | `authToken` 쿠키 제거      |
-| **내 정보 조회**     | `GET`  | `/me`                  | `userId` (Query)       | 현재 로그인 유저 정보 반환 |
-| **ID 중복 체크**     | `GET`  | `/check-username`      | `username` (Query)     | 가입 가능 여부 확인        |
-| **닉네임 중복 체크** | `GET`  | `/check-nickname`      | `nickname` (Query)     | 닉네임 사용 가능 여부      |
-| **이메일 인증 발송** | `POST` | `/send-code`           | `email`                | 인증 코드 메일 발송        |
-| **코드 검증**        | `POST` | `/verify-code`         | `email`, `code`        | 발송된 코드 일치 확인      |
-| **벌크 닉네임 조회** | `POST` | `/api/users/nicknames` | `List<userIds>`        | ID 리스트로 닉네임 맵 반환 |
+사용자 계정 생성, 로그인 및 세션 관리를 담당합니다.
 
-### 2. Post Service (Spring Boot)
+| 기능             | 메서드 | 엔드포인트          | 설명                                 | 인증 |
+| :--------------- | :----: | :------------------ | :----------------------------------- | :--: |
+| 이메일 코드 발송 | `POST` | `/auth/send-code`   | 인증번호를 지정한 이메일로 발송      |  X   |
+| 코드 검증        | `POST` | `/auth/verify-code` | 이메일과 인증번호 대조 확인          |  X   |
+| 회원가입         | `POST` | `/auth/signup`      | 신규 계정 생성 및 토큰 발급          |  X   |
+| 로그인           | `POST` | `/auth/login`       | 로그인 처리 및 `authToken` 쿠키 설정 |  X   |
+| 로그아웃         | `POST` | `/auth/logout`      | `authToken` 쿠키 제거 및 세션 종료   |  O   |
 
-- **Base URL**: `도메인/api/posts`
+---
 
-| 기능                 |  메서드  | 엔드포인트           | 설명                                       |
-| :------------------- | :------: | :------------------- | :----------------------------------------- |
-| **전체 게시글 조회** |  `GET`   | `/`                  | 페이징 처리된 게시글 목록 (`page`, `size`) |
-| **카테고리별 조회**  |  `GET`   | `/category`          | 특정 카테고리 게시글 (`name` 파라미터)     |
-| **태그별 조회**      |  `GET`   | `/tag`               | 특정 태그 게시글 (`name` 파라미터)         |
-| **게시글 상세**      |  `GET`   | `/{id}`              | 게시글 상세 내용 조회                      |
-| **게시글 작성**      |  `POST`  | `/`                  | 새 포스트 생성 (로그인 필수)               |
-| **게시글 수정**      |  `PUT`   | `/{id}`              | 포스트 수정 (작성자 전용)                  |
-| **게시글 삭제**      | `DELETE` | `/{id}`              | 포스트 삭제 (작성자 전용)                  |
-| **카테고리 통계**    |  `GET`   | `/categories`        | 전체 카테고리 목록 및 게시글 수            |
-| **태그 통계**        |  `GET`   | `/tags`              | 전체 태그 목록 및 사용 횟수                |
-| **댓글 목록 조회**   |  `GET`   | `/{postId}/comments` | 특정 게시글의 전체 댓글 리스트             |
-| **댓글 작성**        |  `POST`  | `/{postId}/comments` | 새 댓글 작성 (로그인 필수)                 |
-| **댓글 수정**        |  `PUT`   | `/comments/{id}`     | 댓글 내용 수정                             |
-| **댓글 삭제**        | `DELETE` | `/comments/{id}`     | 댓글 삭제                                  |
+## 👤 2. User Service (사용자 서비스)
 
-### 3. AI Chat Service (FastAPI)
+사용자 프로필 관리 및 계정 정보 확인을 담당합니다.
 
-- **Base URL**: `도메인/chat`
+| 기능             | 메서드 | 엔드포인트                  | 설명                                  | 인증 |
+| :--------------- | :----: | :-------------------------- | :------------------------------------ | :--: |
+| 내 정보 조회     | `GET`  | `/user/me`                  | 현재 로그인한 사용자의 상세 정보 조회 |  O   |
+| 아이디 중복 확인 | `GET`  | `/user/check-username`      | 아이디(username) 중복 여부 확인       |  X   |
+| 닉네임 중복 확인 | `GET`  | `/user/check-nickname`      | 닉네임 중복 여부 확인                 |  X   |
+| 닉네임 일괄 조회 | `POST` | `/user/api/users/nicknames` | 여러 ID에 대한 닉네임 리스트 반환     |  O   |
 
-| 기능        | 메서드 | 엔드포인트 | 파라미터 / Body         | 설명                            |
-| :---------- | :----: | :--------- | :---------------------- | :------------------------------ |
-| **AI 채팅** | `POST` | `/chat`    | `session_id`, `message` | LLM 기반 대화 및 정보 저장 액션 |
+---
+
+## 📝 3. Post Service (게시글 및 분류)
+
+블로그 게시글의 CRUD와 카테고리/태그 정보를 관리합니다.
+
+| 기능             |  메서드  | 엔드포인트              | 설명                                     | 인증 |
+| :--------------- | :------: | :---------------------- | :--------------------------------------- | :--: |
+| 전체 게시글 조회 |  `GET`   | `/api/posts`            | 게시글 목록 페이징 조회 (`page`, `size`) |  X   |
+| 게시글 상세 조회 |  `GET`   | `/api/posts/{id}`       | 특정 ID의 게시글 상세 정보 조회          |  X   |
+| 카테고리별 조회  |  `GET`   | `/api/posts/category`   | 특정 카테고리 글 목록 (`?name=`)         |  X   |
+| 태그별 조회      |  `GET`   | `/api/posts/tag`        | 특정 태그 포함 글 목록 (`?name=`)        |  X   |
+| 게시글 작성      |  `POST`  | `/api/posts`            | 새로운 게시글 작성                       |  O   |
+| 게시글 수정      |  `PUT`   | `/api/posts/{id}`       | 게시글 수정 (작성자 확인)                |  O   |
+| 게시글 삭제      | `DELETE` | `/api/posts/{id}`       | 게시글 삭제 (작성자 확인)                |  O   |
+| 카테고리 목록    |  `GET`   | `/api/posts/categories` | 전체 카테고리와 각 게시글 수 조회        |  X   |
+| 태그 목록        |  `GET`   | `/api/posts/tags`       | 전체 태그와 각 게시글 수 조회            |  X   |
+
+---
+
+## 💬 4. Comment Service (댓글 서비스)
+
+게시글 내의 댓글 CRUD를 담당합니다.
+
+| 기능           |  메서드  | 엔드포인트                        | 설명                         | 인증 |
+| :------------- | :------: | :-------------------------------- | :--------------------------- | :--: |
+| 댓글 목록 조회 |  `GET`   | `/api/posts/{postId}/comments`    | 특정 게시글의 전체 댓글 조회 |  X   |
+| 댓글 작성      |  `POST`  | `/api/posts/{postId}/comments`    | 게시글에 새로운 댓글 작성    |  O   |
+| 댓글 수정      |  `PUT`   | `/api/posts/comments/{commentId}` | 댓글 내용 수정 (작성자 확인) |  O   |
+| 댓글 삭제      | `DELETE` | `/api/posts/comments/{commentId}` | 댓글 삭제 (작성자 확인)      |  O   |
+
+---
+
+## 🤖 5. Chat Service (AI 챗봇)
+
+LangChain 기반 AI 대화 및 관리자 정보 저장 기능을 제공합니다.
+
+| 기능        | 메서드 | 엔드포인트 | 설명                               | 비고              |
+| :---------- | :----: | :--------- | :--------------------------------- | :---------------- |
+| 챗봇 대화   | `POST` | `/chat`    | AI와 대화 및 정보 저장/조회 요청   | `session_id` 필수 |
+| 기록 초기화 | `POST` | `/clear`   | 세션 대화 기록 및 인증 상태 초기화 | `session_id` 필수 |
+
+---
+
+## 🛠 공통 기술 사항
+
+- **Authentication**: `Set-Cookie` 헤더를 통한 `authToken`(JWT) 기반 인증.
+- **CORS**: `withCredentials: true` 설정을 통해 쿠키를 포함한 크로스 도메인 요청 허용.
+- **Error Handling**:
+  - `401 Unauthorized`: 인증되지 않은 접근 시 로컬 스토리지 클리어 및 재로그인 유도.
+  - `400 Bad Request`: 유효하지 않은 입력 값 또는 인증번호 불일치.
+- **Client State**: 로그인 성공 시 `currentUserId`, `currentUserNickname`을 `localStorage`에 동기화하여 UI에서 활용.
