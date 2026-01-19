@@ -1,0 +1,103 @@
+/* src/components/Auth/Signup.css (전면 개편: 깔끔하고 모던한 인증 페이지) */
+
+/* ---------------------------------------------------------------- */
+/* --- 1. 전체 페이지 (로그인/회원가입) --- */
+/* ---------------------------------------------------------------- */
+.auth-page { 
+  width: 100vw;
+  /* Next.js layout.jsx에서 헤더를 처리하므로, min-height를 100vh로 설정합니다. */
+  min-height: 100vh; 
+  
+  /* 🌟 수정 1: Flexbox로 변경하여 안정적인 중앙 정렬 구현 */
+  display: flex;
+  justify-content: center; /* 수평 중앙 정렬 */
+  align-items: center; /* 수직 중앙 정렬 */
+  
+  margin: 0;
+  /* 🌟 수정 2: 상하 패딩 조정 */
+  padding: 40px 20px; 
+  
+  background: var(--color-background); 
+  font-family: var(--font-family-main);
+  transition: background 0.3s;
+}
+
+/* ---------------------------------------------------------------- */
+/* --- 2. 중앙 카드 --- */
+/* ---------------------------------------------------------------- */
+.auth-container { 
+  width: 100%;
+  max-width: 450px; 
+  padding: 3.5rem; /* 패딩 확대 */
+  border-radius: 16px;
+  background-color: var(--color-primary); 
+  box-shadow: 0 10px 30px var(--color-shadow-strong);
+  border: 1px solid var(--color-border);
+  transition: all 0.3s;
+}
+
+.auth-link {
+    text-align: center;
+    margin-top: 2rem;
+    color: var(--color-text-sub);
+    font-size: 0.95em;
+}
+
+.auth-link a {
+    font-weight: 600;
+    color: var(--color-accent);
+}
+
+/* ---------------------------------------------------------------- */
+/* --- 3. 제목 --- */
+/* ---------------------------------------------------------------- */
+/* 🌟 수정: 필기체 적용 (MinKowski와 통일성) */
+.auth-title { 
+  text-align: center;
+  font-family: var(--font-family-cursive); /* 필기체 적용 */
+  font-size: 3.5rem; /* 크게 */
+  font-weight: 400;
+  color: var(--color-logo); /* 로고 색상 변수 사용 */
+  margin-bottom: 3rem; /* 여백 확대 */
+  transition: color 0.3s;
+}
+
+/* ---------------------------------------------------------------- */
+/* --- 4. 폼 및 입력 필드 --- */
+/* ---------------------------------------------------------------- */
+.auth-form {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem; 
+}
+
+.form-group {
+    text-align: left;
+}
+
+.form-group label {
+  color: var(--color-text-main); 
+  margin-bottom: 0.5rem;
+  display: block;
+  font-weight: 600;
+  font-size: 1em;
+}
+
+.auth-form input[type="text"],
+.auth-form input[type="password"] {
+  width: 100%;
+  padding: 14px 18px;
+  border: 1px solid var(--color-border);
+  border-radius: 8px;
+  font-size: 1em;
+  background-color: var(--color-secondary);
+  color: var(--color-text-main);
+  transition: border-color 0.2s, box-shadow 0.2s;
+}
+
+.auth-form input[type="text"]:focus,
+.auth-form input[type="password"]:focus {
+  border-color: var(--color-accent);
+  box-shadow: 0 0 0 2px var(--color-accent);
+  outline: none;
+}

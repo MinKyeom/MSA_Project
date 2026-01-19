@@ -1,0 +1,148 @@
+/* src/styles/Header.css */
+
+.main-header {
+  background-color: var(--color-primary);
+  border-bottom: 1px solid var(--color-border);
+  padding: 10px 15px;
+  position: sticky;
+  top: 0;
+  z-index: 900;
+  box-shadow: 0 2px 5px var(--color-shadow);
+}
+
+.header-content-fluid {
+  width: 100%;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.header-left-group {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.hamburger-button-fixed {
+  background: none;
+  border: none;
+  font-size: 1.8rem;
+  color: var(--color-text-main);
+  cursor: pointer;
+  padding: 0;
+  display: flex;
+  align-items: center;
+}
+
+.logo-text-header {
+  /* font-family: var(--font-family-cursive); */
+  font-family: var(--font-family-cursive) !important;
+  font-size: 2rem;
+  font-weight: 400;
+  color: var(--color-logo);
+  text-decoration: none;
+  margin-left: 5px;
+}
+
+/* 필기체 타이틀 스타일 (Navigation, Categories, Tags용) */
+.cursive-title {
+  font-family: var(--font-family-cursive) !important;
+  font-size: 1.7rem !important;
+  font-weight: 400 !important;
+  color: var(--color-logo);
+  margin-top: 30px;
+  margin-bottom: 15px;
+  border-bottom: 1px solid var(--color-border);
+  padding-bottom: 5px;
+}
+
+/* 사이드바 내부 개별 영문 아이템용 필기체 스타일 */
+.cursive-item {
+  font-family: var(--font-family-cursive) !important;
+  font-size: 1.4rem !important;
+  font-weight: 400 !important;
+  color: var(--color-text-main);
+  padding: 5px 10px !important;
+}
+
+/* 테마 토글 버튼 배경 제거 */
+.header-left-group button,
+.header-left-group .theme-toggle-btn {
+  background: none !important;
+  border: none !important;
+  box-shadow: none !important;
+  padding: 5px !important;
+  cursor: pointer;
+  font-size: 1.4rem;
+}
+
+.header-auth-nav {
+  display: flex;
+  align-items: center;
+}
+
+.auth-user-info,
+.auth-links {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.user-nickname-display {
+  font-size: 0.85rem;
+  color: var(--color-text-sub);
+}
+
+/* --- 사이드바 및 오버레이 --- */
+.sidebar-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.4);
+  backdrop-filter: blur(2px);
+  z-index: 1000;
+  visibility: hidden;
+  opacity: 0;
+  transition: all 0.3s ease;
+}
+
+.sidebar-overlay.open {
+  visibility: visible;
+  opacity: 1;
+}
+
+.sidebar-menu {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 280px;
+  height: 100vh;
+  background-color: var(--color-primary);
+  z-index: 1001;
+  padding: 20px;
+  box-shadow: 5px 0 15px var(--color-shadow-strong);
+  transform: translateX(-100%);
+  transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  display: flex;
+  flex-direction: column;
+}
+
+.sidebar-menu.open {
+  transform: translateX(0);
+}
+
+.sidebar-close-btn {
+  background: none;
+  border: none;
+  font-size: 2rem;
+  color: var(--color-text-main);
+  cursor: pointer;
+}
+
+@media (max-width: 480px) {
+  .logo-text-header {
+    font-size: 1.5rem;
+  }
+}
