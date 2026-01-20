@@ -40,7 +40,8 @@
 본 프로젝트는 서비스 간 결합도를 낮추고 확장성을 높이기 위해 마이크로서비스 구조로 설계되었습니다.
 
 - **Frontend**: Next.js (SEO 최적화 및 테마 시스템)
-- **User Service**: Spring Boot (인증 및 보안)
+- **Auth Service**: Spring Boot (인증 및 보안)
+- **User Service**: Spring Boot (유저 관리)
 - **Post Service**: Spring Boot (게시글 관리)
 - **Mail Service**: Spring Boot (메일 관리)
 - **Chatbot Service**: FastAPI (AI 챗봇 엔진)

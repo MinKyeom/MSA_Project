@@ -1,0 +1,3 @@
+서비스파일 경로빌드 명령어
+User Service user-service/Dockerfile docker build -t [ID]/user-server:latest .
+Post Service post-service/Dockerfile docker build -t [ID]/post-server:latest .
