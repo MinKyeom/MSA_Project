@@ -33,7 +33,7 @@
 
 🔗 **라이브 데모**: [https://minkowskim.com/](https://minkowskim.com/)
 
-🔗 **개발 라이브 데모**: [https://dev.minkowskim.com/](https://minkowskim.com/)
+🔗 **개발 라이브 데모**: [https://dev.minkowskim.com/](https://dev.minkowskim.com/)
 
 > ##### 현재 개발 진행 중: Dev서버 구축 및 API Gateway 구축 26.1.22
 
