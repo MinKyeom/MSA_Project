@@ -1,5 +1,9 @@
 # 🚀 MSA 기반 풀스택 커뮤니티 & AI 플랫폼
 
+<p align="center">
+  <img src="블로그 실행 영상_.gif" width="100%" alt="서비스 데모 영상">
+</p>
+
 ### 📱 Frontend
 
 ![Next.js](https://img.shields.io/badge/Next.js-000000?style=for-the-badge&logo=nextdotjs&logoColor=white)
