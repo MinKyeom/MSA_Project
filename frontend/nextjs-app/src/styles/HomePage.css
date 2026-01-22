@@ -2,68 +2,87 @@
 
 /* --- 메인 컨테이너 --- */
 .homepage-container {
-    max-width: 1100px;
-    margin: 0 auto;
-    padding: 0; 
-    text-align: left;
+  max-width: 1100px;
+  margin: 0 auto;
+  padding: 0;
+  text-align: left;
 }
 
 /* ---------------------------------------------------------------- */
 /* --- 1. 히어로 섹션 (감성적인 큰 타이포그래피) --- */
 /* ---------------------------------------------------------------- */
 .hero-section {
-    padding: 120px 40px; 
-    margin-bottom: 60px;
-    background-color: var(--color-primary); 
-    /* 🌟 디자인 개선: 그림자 강조 및 부드러운 테두리 */
-    border-radius: 16px; /* 더 둥글게 */
-    box-shadow: 0 15px 35px var(--color-shadow-strong); /* 더 강한 그림자 */
-    border: 1px solid var(--color-border);
-    transition: all 0.3s;
-    text-align: center; 
+  padding: 120px 40px;
+  margin-bottom: 60px;
+  background-color: var(--color-primary);
+  /* 🌟 디자인 개선: 그림자 강조 및 부드러운 테두리 */
+  border-radius: 16px; /* 더 둥글게 */
+  box-shadow: 0 15px 35px var(--color-shadow-strong); /* 더 강한 그림자 */
+  border: 1px solid var(--color-border);
+  transition: all 0.3s;
+  text-align: center;
 }
 
 /* 🌟 수정: 블로그 이름에 필기체 폰트 적용 (MinKowski) */
 .hero-title {
-    /*font-family: var(--font-family-cursive); 필기체 폰트 적용 */
-    font-family: var(--font-family-cursive) !important;
-    font-size: 5rem; /* 더 크게 */
-    font-weight: 400; /* 필기체에 맞게 */
-    color: var(--color-logo); /* 로고 색상 변수 사용 */
-    margin-bottom: 25px;
-    line-height: 1.1;
-    transition: color 0.3s;
+  /*font-family: var(--font-family-cursive); 필기체 폰트 적용 */
+  font-family: var(--font-family-cursive) !important;
+  font-size: 5rem; /* 더 크게 */
+  font-weight: 400; /* 필기체에 맞게 */
+  color: var(--color-logo); /* 로고 색상 변수 사용 */
+  margin-bottom: 25px;
+  line-height: 1.1;
+  transition: color 0.3s;
 }
 
 .hero-subtitle {
-    font-size: 1.3em; /* 한국어 가독성을 위해 살짝 줄임 */
-    font-weight: 300; 
-    color: var(--color-text-sub);
-    line-height: 1.8; /* 줄 간격 확대 */
-    margin-bottom: 30px; 
+  font-size: 1.3em; /* 한국어 가독성을 위해 살짝 줄임 */
+  font-weight: 300;
+  color: var(--color-text-sub);
+  line-height: 1.8; /* 줄 간격 확대 */
+  margin-bottom: 30px;
 }
 
 /* ---------------------------------------------------------------- */
 /* --- 2. 최신 포스트 섹션 --- */
 /* ---------------------------------------------------------------- */
 
-.latest-posts-section .section-title, .category-section .section-title {
+/* .latest-posts-section .section-title, .category-section .section-title {
     font-size: 1.8em;
     font-weight: 700;
     color: var(--color-text-main);
     margin-bottom: 30px;
     padding-bottom: 10px;
     border-bottom: 2px solid var(--color-border);
+} */
+
+.latest-posts-section .section-title,
+.category-section .section-title {
+  /* 🌟 폰트만 필기체로 변경 (MinKowskiM과 동일) */
+  font-family: var(--font-family-cursive) !important;
+
+  /* 🌟 글자 크기는 요청하신 대로 기존과 동일하게 유지 */
+  font-size: 1.8em;
+
+  /* 🌟 필기체 스타일에 맞춘 두께 및 기본 설정 */
+  font-weight: 400;
+  color: var(--color-text-main);
+  margin-bottom: 30px;
+  padding-bottom: 10px;
+  border-bottom: 2px solid var(--color-border);
 }
 
 .latest-posts-section {
-    margin-bottom: 60px;
+  margin-bottom: 60px;
 }
 
 .post-list {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); /* 반응형 300px 이상 */
-    gap: 30px;
+  display: grid;
+  grid-template-columns: repeat(
+    auto-fit,
+    minmax(300px, 1fr)
+  ); /* 반응형 300px 이상 */
+  gap: 30px;
 }
 
 /* ---------------------------------------------------------------- */
@@ -71,80 +90,80 @@
 /* ---------------------------------------------------------------- */
 
 .post-card {
-    display: flex;
-    flex-direction: column;
-    padding: 30px;
-    background-color: var(--color-primary); 
-    border: 1px solid var(--color-border);
-    border-radius: 12px;
-    box-shadow: 0 4px 10px var(--color-shadow);
-    transition: all 0.3s;
+  display: flex;
+  flex-direction: column;
+  padding: 30px;
+  background-color: var(--color-primary);
+  border: 1px solid var(--color-border);
+  border-radius: 12px;
+  box-shadow: 0 4px 10px var(--color-shadow);
+  transition: all 0.3s;
 }
 
 .post-card:hover {
-    box-shadow: 0 10px 20px var(--color-shadow-strong);
-    transform: translateY(-5px);
-    border-color: var(--color-accent);
-    text-decoration: none;
+  box-shadow: 0 10px 20px var(--color-shadow-strong);
+  transform: translateY(-5px);
+  border-color: var(--color-accent);
+  text-decoration: none;
 }
 
 .post-card h3 {
-    font-size: 1.4em; 
-    font-weight: 700;
-    color: var(--color-text-main);
-    margin-bottom: 10px;
-    /* 텍스트 줄 제한 */
-    overflow: hidden;
-    text-overflow: ellipsis;
-    display: -webkit-box;
-    -webkit-line-clamp: 2; 
-    -webkit-box-orient: vertical;
+  font-size: 1.4em;
+  font-weight: 700;
+  color: var(--color-text-main);
+  margin-bottom: 10px;
+  /* 텍스트 줄 제한 */
+  overflow: hidden;
+  text-overflow: ellipsis;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
 }
 
 .post-card p {
-    color: var(--color-text-sub);
-    font-size: 1em;
-    line-height: 1.6;
-    margin-bottom: 20px;
-    /* 텍스트 줄 제한 */
-    overflow: hidden;
-    text-overflow: ellipsis;
-    display: -webkit-box;
-    -webkit-line-clamp: 3; 
-    -webkit-box-orient: vertical;
+  color: var(--color-text-sub);
+  font-size: 1em;
+  line-height: 1.6;
+  margin-bottom: 20px;
+  /* 텍스트 줄 제한 */
+  overflow: hidden;
+  text-overflow: ellipsis;
+  display: -webkit-box;
+  -webkit-line-clamp: 3;
+  -webkit-box-orient: vertical;
 }
 
 .post-meta {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    font-size: 0.9em;
-    color: var(--color-text-sub);
-    border-top: 1px solid var(--color-border);
-    padding-top: 15px;
-    margin-top: auto; 
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 0.9em;
+  color: var(--color-text-sub);
+  border-top: 1px solid var(--color-border);
+  padding-top: 15px;
+  margin-top: auto;
 }
 
 /* --- 4. 카테고리 링크 섹션 (깔끔하게) --- */
 .category-section {
-    margin-top: 60px;
-    padding: 40px 0;
+  margin-top: 60px;
+  padding: 40px 0;
 }
 
 .category-links {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 15px;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 15px;
 }
 
 @media (max-width: 600px) {
-    .hero-section {
-        padding: 80px 20px; 
-    }
-    .hero-title {
-        font-size: 3.5rem; 
-    }
-    .post-list {
-        grid-template-columns: 1fr;
-    }
+  .hero-section {
+    padding: 80px 20px;
+  }
+  .hero-title {
+    font-size: 3.5rem;
+  }
+  .post-list {
+    grid-template-columns: 1fr;
+  }
 }

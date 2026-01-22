@@ -1,15 +1,15 @@
 // app/page.jsx (Server Component)
-export const dynamic = 'force-dynamic';
+export const dynamic = "force-dynamic";
 
-import { fetchPosts } from "../services/api/posts"; 
-import PostCard from "../components/Post/PostCard"; 
-import "../styles/globals.css"; 
-import "../styles/HomePage.css"; 
-import Link from "next/link"; 
+import { fetchPosts } from "../services/api/posts";
+import PostCard from "../components/Post/PostCard";
+import "../styles/globals.css";
+import "../styles/HomePage.css";
+import Link from "next/link";
 
 // 🌟 수정: 한국어 우선 SEO 메타데이터 개선
 export const metadata = {
-  title: "홈", // layout.jsx의 템플릿에 따라 '홈 | MinKowskiM'로 표시됨
+  title: "MinKowskiM", // layout.jsx의 템플릿에 따라 '홈 | MinKowskiM'로 표시됨
   description:
     "MinKowskiM에 오신 것을 환영합니다! 최신 개발 트렌드와 기술 스택에 대한 깊이 있는 글들을 만나보세요.",
   keywords: ["최신 트렌드", "기술 스택", "IT", "개발 블로그", "홈"],
@@ -51,10 +51,12 @@ export default async function HomePage() {
       <section className="hero-section">
         <h1 className="hero-title">MinKowskiM</h1>
         {/* 🌟 UI 텍스트 한국어 우선 */}
-        <p className="hero-subtitle">
-          A personal log across space and time.
-        </p>
-        <Link href="/post" className="btn-primary" style={{ marginTop: '20px' }}>
+        <p className="hero-subtitle">A personal log across space and time.</p>
+        <Link
+          href="/post"
+          className="btn-primary"
+          style={{ marginTop: "20px" }}
+        >
           모든 포스트 보기 &rarr;
         </Link>
       </section>
@@ -62,7 +64,8 @@ export default async function HomePage() {
       {/* 2. 최신 포스트 섹션 */}
       <section className="latest-posts-section">
         {/* 🌟 UI 텍스트 한국어 우선 */}
-        <h2 className="section-title">✨ 최신 포스트</h2>
+        <h2 className="section-title">Posts</h2>
+        {/* <h2 className="section-title cursive-title">Recent Post</h2> */}
 
         {recentPosts.length > 0 ? (
           <div className="post-list">
@@ -79,11 +82,12 @@ export default async function HomePage() {
       {/* 3. 카테고리/태그 섹션 (예시: 사이드바와 연동되어야 함) */}
       <section className="category-section">
         {/* 🌟 UI 텍스트 한국어 우선 */}
-        <h2 className="section-title">📚 주요 카테고리</h2>
+        <h2 className="section-title">Categories</h2>
+        {/* <h2 className="section-title cursive-title">Main Category</h2> */}
         <div className="category-links">
           {/* 주석: 실제 데이터 기반으로 변경 필요 */}
           {/* 🌟 UI 텍스트 한국어 우선 */}
-          <Link href="/post?category=frontend" className="category-link">
+          {/* <Link href="/post?category=frontend" className="category-link">
             프론트엔드
           </Link>
           <Link href="/post?category=backend" className="category-link">
@@ -94,7 +98,7 @@ export default async function HomePage() {
           </Link>
           <Link href="/post?category=talk" className="category-link">
             잡담
-          </Link>
+          </Link> */}
         </div>
       </section>
     </div>
