@@ -15,7 +15,7 @@ init_db()
 app = FastAPI()
 
 # CORS 설정
-origins = ["https://minkowskim.com", "https://www.minkowskim.com", "http://localhost:3000", "http://localhost:8000"]
+origins = ["https://dev.minkowskim.com","https://minkowskim.com", "https://www.minkowskim.com", "http://localhost:3000", "http://localhost:8000"]
 app.add_middleware(CORSMiddleware, allow_origins=origins, allow_credentials=True, allow_methods=["*"], allow_headers=["*"])
 
 # 환경 변수 및 설정

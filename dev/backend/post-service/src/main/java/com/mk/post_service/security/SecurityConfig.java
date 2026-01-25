@@ -68,6 +68,7 @@ public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
     public CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration configuration = new CorsConfiguration();
         configuration.setAllowedOrigins(List.of(
+            "https://dev.minkowskim.com",
             "https://minkowskim.com",
             "https://www.minkowskim.com",
             "http://127.0.0.1:5173", 
