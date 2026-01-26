@@ -1,7 +1,7 @@
 import axios from "axios";
 
 const POSTS_BASE_URL =
-  process.env.NEXT_PUBLIC_POST_API_URL || "https://minkowskim.com";
+  process.env.NEXT_PUBLIC_POST_API_URL || "https://dev.minkowskim.com";
 const POSTS_API_URL = `${POSTS_BASE_URL}/api/posts`;
 
 // 모든 요청에 HttpOnly 쿠키를 포함하는 전용 인스턴스

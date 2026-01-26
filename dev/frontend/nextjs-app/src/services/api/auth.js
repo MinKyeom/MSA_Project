@@ -3,7 +3,7 @@ import axios from "axios";
 
 // MSA 환경에서는 서비스별 포트가 다를 수 있으므로 환경변수 분리 권장
 const AUTH_BASE_URL =
-  process.env.NEXT_PUBLIC_AUTH_API_URL || "https://minkowskim.com";
+  process.env.NEXT_PUBLIC_AUTH_API_URL || "https://dev.minkowskim.com";
 
 const authAxios = axios.create({
   baseURL: AUTH_BASE_URL,

@@ -4,7 +4,7 @@ import axios from "axios";
 
 // ⭐ 수정: Post Server URL을 환경 변수에서 가져오도록 변경
 const POSTS_BASE_URL =
-  process.env.NEXT_PUBLIC_POST_API_URL || "https://minkowskim.com";
+  process.env.NEXT_PUBLIC_POST_API_URL || "https://dev.minkowskim.com";
 const COMMENTS_BASE_API_URL = `${POSTS_BASE_URL}/api/posts`;
 
 // 인증이 필요한 요청을 위해 HttpOnly 쿠키를 자동으로 전송하는 Axios 인스턴스

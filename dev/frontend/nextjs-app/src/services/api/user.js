@@ -2,7 +2,7 @@
 import axios from "axios";
 
 const USER_BASE_URL =
-  process.env.NEXT_PUBLIC_USER_API_URL || "https://minkowskim.com";
+  process.env.NEXT_PUBLIC_USER_API_URL || "https://dev.minkowskim.com";
 
 const userAxios = axios.create({
   baseURL: USER_BASE_URL,

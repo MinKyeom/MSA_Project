@@ -1,6 +1,7 @@
 import axios from "axios";
 
-const POSTS_BASE_URL = process.env.NEXT_PUBLIC_POST_API_URL || "https://minkowskim.com"; 
+const POSTS_BASE_URL =
+  process.env.NEXT_PUBLIC_POST_API_URL || "https://dev.minkowskim.com";
 const POSTS_API_URL = `${POSTS_BASE_URL}/api/posts`;
 
 /**
@@ -11,7 +12,7 @@ export const fetchCategoriesList = async () => {
   try {
     const response = await axios.get(`${POSTS_API_URL}/categories`);
     // 응답 데이터가 null이거나 undefined일 경우 빈 배열 반환
-    return response.data || []; 
+    return response.data || [];
   } catch (error) {
     console.error("Error fetching categories list:", error);
     // 에러 발생 시 상위로 던지지 않고 빈 배열을 반환하여 사이드바 로딩 유지
