@@ -66,66 +66,59 @@
 ## 🏛️ Architecture Diagram
 
 ```mermaid
-graph TD
-    %% Frontend
-    subgraph Client_Layer [Client Layer]
-        Frontend["🌐 Frontend (Next.js)"]
+graph TB
+    subgraph Client_Layer ["🌐 Client Access"]
+        User["User (minkowskim.com)"]
+        DevUser["Developer (dev.minkowskim.com)"]
     end
 
-    %% API Services
-    subgraph Service_Layer [Service Layer]
-        AuthSvc["🔐 Auth Service (Spring Boot)"]
-        UserSvc["👤 User Service (Spring Boot)"]
-        PostSvc["📝 Post Service (Spring Boot)"]
-        MailSvc["📧 Mail Service (Spring Boot)"]
-        AISvc["🤖 AI Service (FastAPI)"]
+    subgraph Proxy_Layer ["🛡️ Reverse Proxy (Nginx)"]
+        Nginx["Nginx (SSL/TLS)"]
     end
 
-    %% Infrastructure
-    subgraph Infra_Layer [Infrastructure & Message Broker]
-        Redis[("🧠 Redis")]
-        Kafka[("⚡ Kafka (msa-kafka)")]
-        Zookeeper["🐒 Zookeeper"]
-        KafkaUI["📊 Kafka UI"]
+    %% 운영 환경
+    subgraph Prod_Cluster ["🚀 Production Environment (minkowskim.com)"]
+        direction TB
+        subgraph Prod_Apps ["Services"]
+            FE_P["msa-frontend (3000)"]
+            Auth_P["msa-auth (8084)"]
+            User_P["msa-user (8081)"]
+        end
+        subgraph Prod_Infra ["Dedicated Infra (Prod)"]
+            Redis_P[("msa-redis (6379)")]
+            Kafka_P[["msa-kafka (9092)"]]
+            DB_P[("Prod DBs (Auth/User/Post)")]
+        end
     end
 
-    %% Databases
-    subgraph DB_Layer [Storage Layer]
-        DB_Auth[("🐘 PostgreSQL (Auth DB)")]
-        DB_User[("🐘 PostgreSQL (User DB)")]
-        DB_Post[("🐘 PostgreSQL (Post DB)")]
+    %% 개발 환경
+    subgraph Dev_Cluster ["🛠️ Development Environment (dev.minkowskim.com)"]
+        direction TB
+        Gateway["API Gateway (9085)"]
+        subgraph Dev_Apps ["Services"]
+            FE_D["msa-frontend-dev (4000)"]
+            Auth_D["msa-auth-dev"]
+            User_D["msa-user-dev"]
+        end
+        subgraph Dev_Infra ["Dedicated Infra (Dev)"]
+            Redis_D[("msa-redis-dev (7379)")]
+            Kafka_D[["msa-kafka-dev (8092)"]]
+            DB_D[("Dev DBs (6432~6434)")]
+        end
     end
 
-    %% Connections
-    Frontend --> AuthSvc
-    Frontend --> UserSvc
-    Frontend --> PostSvc
-    Frontend --> AISvc
+    %% Routing
+    User --> Nginx
+    DevUser --> Nginx
 
-    AuthSvc --> DB_Auth
-    AuthSvc --> Redis
-    AuthSvc --> Kafka
+    %% Prod Connections
+    Nginx -- "Direct Routing" --> Prod_Apps
+    Prod_Apps --> Prod_Infra
 
-    UserSvc --> DB_User
-    UserSvc --> Redis
-    UserSvc --> Kafka
-
-    PostSvc --> DB_Post
-    PostSvc --> Redis
-    PostSvc --> UserSvc
-
-    AISvc --> Redis
-
-    MailSvc --> Kafka
-
-    Kafka <--> Zookeeper
-    KafkaUI -.-> Kafka
-
-    %% Styling
-    style Frontend fill:#f9f,stroke:#333,stroke-width:2px
-    style Kafka fill:#232f3e,color:#fff
-    style Redis fill:#d82c20,color:#fff
-    style DB_Layer fill:#f5f5f5
+    %% Dev Connections
+    Nginx -- "Gateway Routing" --> FE_D & Gateway
+    Gateway --> Dev_Apps
+    Dev_Apps --> Dev_Infra
 ```
 
 ## 🔥 Key Features
