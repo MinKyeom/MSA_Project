@@ -76,49 +76,84 @@ graph TB
         Nginx["Nginx (SSL/TLS)"]
     end
 
-    %% 운영 환경
-    subgraph Prod_Cluster ["🚀 Production Environment (minkowskim.com)"]
+    %% 운영 환경 (Production Cluster)
+    subgraph Prod_Cluster ["🚀 Production (minkowskim.com)"]
         direction TB
         subgraph Prod_Apps ["Services"]
             FE_P["msa-frontend (3000)"]
             Auth_P["msa-auth (8084)"]
             User_P["msa-user (8081)"]
+            Post_P["msa-post (8082)"]
+            AI_P["msa-ai (8000)"]
+            Mail_P["msa-mail (8083)"]
         end
-        subgraph Prod_Infra ["Dedicated Infra (Prod)"]
+        subgraph Prod_Infra ["Infrastructure"]
+            direction LR
+            DB_AP[("db-auth (5434)")]
+            DB_UP[("db-user (5432)")]
+            DB_PP[("db-post (5433)")]
             Redis_P[("msa-redis (6379)")]
             Kafka_P[["msa-kafka (9092)"]]
-            DB_P[("Prod DBs (Auth/User/Post)")]
         end
     end
 
-    %% 개발 환경
-    subgraph Dev_Cluster ["🛠️ Development Environment (dev.minkowskim.com)"]
+    %% 개발 환경 (Development Cluster)
+    subgraph Dev_Cluster ["🛠️ Development (dev.minkowskim.com)"]
         direction TB
         Gateway["API Gateway (9085)"]
         subgraph Dev_Apps ["Services"]
             FE_D["msa-frontend-dev (4000)"]
             Auth_D["msa-auth-dev"]
             User_D["msa-user-dev"]
+            Post_D["msa-post-dev"]
+            AI_D["msa-ai-dev"]
+            Mail_D["msa-mail-dev (9083)"]
         end
-        subgraph Dev_Infra ["Dedicated Infra (Dev)"]
-            Redis_D[("msa-redis-dev (7379)")]
+        subgraph Dev_Infra ["Infrastructure"]
+            direction LR
+            DB_AD[("db-auth-dev (6434)")]
+            DB_UD[("db-user-dev (6432)")]
+            DB_PD[("db-post-dev (6433)")]
+            Redis_D[("redis-dev (7379)")]
             Kafka_D[["msa-kafka-dev (8092)"]]
-            DB_D[("Dev DBs (6432~6434)")]
         end
     end
 
-    %% Routing
+    %% --- Traffic Flows ---
     User --> Nginx
     DevUser --> Nginx
 
-    %% Prod Connections
-    Nginx -- "Direct Routing" --> Prod_Apps
-    Prod_Apps --> Prod_Infra
+    %% 운영 라우팅 (Direct)
+    Nginx -- "Direct: /" --> FE_P
+    Nginx -- "Direct: /auth/" --> Auth_P
+    Nginx -- "Direct: /user/" --> User_P
+    Nginx -- "Direct: /api/posts/" --> Post_P
+    Nginx -- "Direct: /chat/" --> AI_P
 
-    %% Dev Connections
-    Nginx -- "Gateway Routing" --> FE_D & Gateway
-    Gateway --> Dev_Apps
-    Dev_Apps --> Dev_Infra
+    %% 개발 라우팅 (via Gateway)
+    Nginx -- "Direct: /" --> FE_D
+    Nginx -- "Routing: /auth, /user, /api, /chat" --> Gateway
+    Gateway -- "Path: /auth/**" --> Auth_D
+    Gateway -- "Path: /user/**" --> User_D
+    Gateway -- "Path: /api/posts/**" --> Post_D
+    Gateway -- "Path: /chat/**" --> AI_D
+
+    %% --- Internal Connections ---
+    %% Prod
+    Auth_P --> DB_AP & Redis_P & Kafka_P
+    User_P --> DB_UP & Redis_P & Kafka_P
+    Post_P --> DB_PP & Redis_P
+    Post_P -. "Internal API" .-> User_P
+    AI_P --> Redis_P
+    Mail_P -- "Consume" --> Kafka_P
+
+    %% Dev
+    Auth_D --> DB_AD & Redis_D & Kafka_D
+    User_D --> DB_UD & Redis_D & Kafka_D
+    Post_D --> DB_PD & Redis_D
+    Post_D -. "Internal API" .-> User_D
+    AI_D --> Redis_D
+    Mail_D -- "Consume" --> Kafka_D
 ```
 
 ## 🔥 Key Features
