@@ -1,0 +1,59 @@
+server:
+  port: 8085
+
+spring:
+  application:
+    name: api-gateway
+  cloud:
+    default-filters:
+      - RemoveResponseHeader=Location
+      - DedupeResponseHeader=Access-Control-Allow-Origin Access-Control-Allow-Credentials
+    gateway:
+      filter:
+        remove-hop-by-hop:
+          headers:
+            - connection
+            - keep-alive
+            - proxy-authenticate
+            - proxy-authorization
+            - te
+            - trailer
+            - transfer-encoding
+            - upgrade
+
+      globalcors:
+        cors-configurations:
+          "[/**]":
+            allowedOrigins: ${CORS_ALLOWED_ORIGINS}
+            allowedMethods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"]
+            allowedHeaders: "*"
+            allowCredentials: true
+
+      routes:
+        - id: user-service
+          uri: ${USER_SERVICE_URL}
+          predicates:
+            - Path=/user/**
+          filters:
+            - PreserveHostHeader
+
+        - id: auth-service
+          uri: ${AUTH_SERVICE_URL}
+          predicates:
+            - Path=/auth/**
+          filters:
+            - PreserveHostHeader
+
+        - id: post-service
+          uri: ${POST_SERVICE_URL}
+          predicates:
+            - Path=/api/posts/**
+          filters:
+            - PreserveHostHeader
+
+        - id: fastapi-ai
+          uri: ${FASTAPI_AI_URL}
+          predicates:
+            - Path=/chat/**
+          filters:
+            - PreserveHostHeader
