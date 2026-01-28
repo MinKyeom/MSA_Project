@@ -76,8 +76,8 @@ graph TB
         Nginx["Nginx (SSL/TLS)"]
     end
 
-    %% 운영 환경 (Production Cluster)
-    subgraph Prod_Cluster ["🚀 Production (minkowskim.com)"]
+    %% 운영 환경 (Production)
+    subgraph Prod_Cluster ["🚀 Production Cluster"]
         direction TB
         subgraph Prod_Apps ["Services"]
             FE_P["msa-frontend (3000)"]
@@ -88,7 +88,6 @@ graph TB
             Mail_P["msa-mail (8083)"]
         end
         subgraph Prod_Infra ["Infrastructure"]
-            direction LR
             DB_AP[("db-auth (5434)")]
             DB_UP[("db-user (5432)")]
             DB_PP[("db-post (5433)")]
@@ -97,8 +96,8 @@ graph TB
         end
     end
 
-    %% 개발 환경 (Development Cluster)
-    subgraph Dev_Cluster ["🛠️ Development (dev.minkowskim.com)"]
+    %% 개발 환경 (Development)
+    subgraph Dev_Cluster ["🛠️ Development Cluster"]
         direction TB
         Gateway["API Gateway (9085)"]
         subgraph Dev_Apps ["Services"]
@@ -110,7 +109,6 @@ graph TB
             Mail_D["msa-mail-dev (9083)"]
         end
         subgraph Dev_Infra ["Infrastructure"]
-            direction LR
             DB_AD[("db-auth-dev (6434)")]
             DB_UD[("db-user-dev (6432)")]
             DB_PD[("db-post-dev (6433)")]
@@ -123,36 +121,30 @@ graph TB
     User --> Nginx
     DevUser --> Nginx
 
-    %% 운영 라우팅 (Direct)
+    %% 운영 라우팅
     Nginx -- "Direct: /" --> FE_P
     Nginx -- "Direct: /auth/" --> Auth_P
     Nginx -- "Direct: /user/" --> User_P
     Nginx -- "Direct: /api/posts/" --> Post_P
     Nginx -- "Direct: /chat/" --> AI_P
 
-    %% 개발 라우팅 (via Gateway)
+    %% 개발 라우팅
     Nginx -- "Direct: /" --> FE_D
-    Nginx -- "Routing: /auth, /user, /api, /chat" --> Gateway
-    Gateway -- "Path: /auth/**" --> Auth_D
-    Gateway -- "Path: /user/**" --> User_D
-    Gateway -- "Path: /api/posts/**" --> Post_D
-    Gateway -- "Path: /chat/**" --> AI_D
+    Nginx -- "Path: /auth, /user, /api, /chat" --> Gateway
+    Gateway -- "Forward" --> Auth_D
+    Gateway -- "Forward" --> User_D
+    Gateway -- "Forward" --> Post_D
+    Gateway -- "Forward" --> AI_D
 
     %% --- Internal Connections ---
-    %% Prod
     Auth_P --> DB_AP & Redis_P & Kafka_P
     User_P --> DB_UP & Redis_P & Kafka_P
     Post_P --> DB_PP & Redis_P
-    Post_P -. "Internal API" .-> User_P
-    AI_P --> Redis_P
     Mail_P -- "Consume" --> Kafka_P
 
-    %% Dev
     Auth_D --> DB_AD & Redis_D & Kafka_D
     User_D --> DB_UD & Redis_D & Kafka_D
     Post_D --> DB_PD & Redis_D
-    Post_D -. "Internal API" .-> User_D
-    AI_D --> Redis_D
     Mail_D -- "Consume" --> Kafka_D
 ```
 
