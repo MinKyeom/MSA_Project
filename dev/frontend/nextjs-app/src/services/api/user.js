@@ -17,6 +17,14 @@ export const fetchMe = async () => {
     const response = await userAxios.get("/user/me");
     return response.data; // UserResponse
   } catch (error) {
+    // 🌟 수정 포인트:
+    // 로그인이 안 된 상태(401)일 때는 에러 알림을 띄우지 않고
+    // 조용히 null을 반환하여 '비로그인 방문자'로 취급하게 합니다.
+    if (error.response && error.response.status === 401) {
+      console.warn("방문자 상태: 로그인 정보가 없습니다.");
+      return null;
+    }
+
     console.error("내 정보 불러오기 실패:", error);
     return null;
   }
