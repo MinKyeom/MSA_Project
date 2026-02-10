@@ -6,6 +6,7 @@ import com.mk.post_service.dto.CategoryResponse;
 import com.mk.post_service.dto.TagResponse;
 import com.mk.post_service.service.PostService;
 import com.mk.post_service.security.SecurityUtils;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -23,13 +24,13 @@ public class PostController {
     private final PostService postService;
 
     @PostMapping
-    public PostResponse createPost(@RequestBody PostRequest request) {
+    public PostResponse createPost(@Valid @RequestBody PostRequest request) {
         String authenticatedUserId = SecurityUtils.getAuthenticatedUserId();
         return postService.createPost(request, authenticatedUserId);
     }
 
     @PutMapping("/{id}")
-    public PostResponse updatePost(@PathVariable Long id, @RequestBody PostRequest request) {
+    public PostResponse updatePost(@PathVariable Long id, @Valid @RequestBody PostRequest request) {
         String authenticatedUserId = SecurityUtils.getAuthenticatedUserId();
         return postService.updatePost(id, request, authenticatedUserId);
     }
@@ -50,9 +51,7 @@ public class PostController {
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "10") int size
     ) {
-        // Pageable pageable = PageRequest.of(page, size);
         Pageable pageable = PageRequest.of(page, size, Sort.by("id").descending());
-        // return postService.getAllPosts(pageable);
         return postService.getAllPosts(pageable);
     }
 
