@@ -13,8 +13,6 @@ import org.springframework.security.authentication.UsernamePasswordAuthenticatio
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.Map;
-
 @RestController
 @RequestMapping("/auth")
 @RequiredArgsConstructor
@@ -24,30 +22,30 @@ public class AuthController {
     private final AuthenticationManager authenticationManager;
 
     @PostMapping("/send-code")
-    public ResponseEntity<?> sendCode(@RequestBody Map<String, String> request) {
-        authService.sendVerificationCode(request.get("email"));
+    public ResponseEntity<?> sendCode(@Valid @RequestBody EmailRequest request) {
+        authService.sendVerificationCode(request.getEmail());
         return ResponseEntity.ok().build();
     }
 
     @PostMapping("/verify-code")
-    public ResponseEntity<?> verifyCode(@RequestBody Map<String, String> request) {
-        boolean isValid = authService.verifyCode(request.get("email"), request.get("code"));
+    public ResponseEntity<?> verifyCode(@Valid @RequestBody VerifyCodeRequest request) {
+        boolean isValid = authService.verifyCode(request.getEmail(), request.getCode());
         return isValid ? ResponseEntity.ok().build() : ResponseEntity.badRequest().body("인증번호가 일치하지 않습니다.");
     }
 
     @PostMapping("/signup")
-    public ResponseEntity<?> signup(@RequestBody @Valid SignupRequest request) {
+    public ResponseEntity<?> signup(@Valid @RequestBody SignupRequest request) {
         AuthUser user = authService.signup(request);
         String token = tokenProvider.create(user);
         return ResponseEntity.ok(new SignupResponse(user.getId(), user.getUsername(), token));
     }
 
     @PostMapping("/login")
-    public ResponseEntity<?> login(@RequestBody @Valid SigninRequest request, HttpServletResponse response) {
+    public ResponseEntity<?> login(@Valid @RequestBody SigninRequest request, HttpServletResponse response) {
         Authentication authentication = authenticationManager.authenticate(
                 new UsernamePasswordAuthenticationToken(request.username(), request.password())
         );
-        // AuthUser user = (AuthUser) authentication.getPrincipal();
+        
         String username;
         if (authentication.getPrincipal() instanceof org.springframework.security.core.userdetails.UserDetails userDetails) {
             username = userDetails.getUsername();
@@ -55,7 +53,6 @@ public class AuthController {
             username = authentication.getPrincipal().toString();
         }
 
-        // 3. 추출한 username으로 우리 DB에서 진짜 AuthUser 엔티티를 조회 request.username()으로 조회로 수정 1.15
         AuthUser user = authService.getByUsername(request.username());     
         
         String token = tokenProvider.create(user);
