@@ -72,15 +72,15 @@ export default function SignupForm() {
     setLoading(true);
     try {
       await sendVerificationCode(email);
-      showToast("인증번호가 발송되었습니다.", "success");
+      showToast({ message: "인증번호가 발송되었습니다.", type: "success" });
       setIsEmailSent(true);
       setEmailError("");
     } catch (error) {
       // 403 에러 발생 시 사용자에게 알림
-      showToast(
-        "서버 접근 권한이 없습니다(403). 관리자에게 문의하세요.",
-        "error"
-      );
+      showToast({
+        message: "서버 접근 권한이 없습니다(403). 관리자에게 문의하세요.",
+        type: "error"
+      });
       setEmailError("인증 요청 실패 (Security 설정 확인 필요)");
     } finally {
       setLoading(false);
@@ -92,13 +92,13 @@ export default function SignupForm() {
     try {
       const success = await verifyCode(email, verificationCode);
       if (success) {
-        showToast("인증되었습니다.", "success");
+        showToast({ message: "인증되었습니다.", type: "success" });
         setIsVerified(true);
       } else {
-        showToast("인증번호가 일치하지 않습니다.", "error");
+        showToast({ message: "인증번호가 일치하지 않습니다.", type: "error" });
       }
     } catch (error) {
-      showToast("인증 확인 중 오류 발생", "error");
+      showToast({ message: "인증 확인 중 오류 발생", type: "error" });
     } finally {
       setLoading(false);
     }
@@ -107,23 +107,23 @@ export default function SignupForm() {
   const handleSignup = async (e) => {
     e.preventDefault();
     if (password !== confirmPassword) {
-      showToast("비밀번호가 일치하지 않습니다.", "error");
+      showToast({ message: "비밀번호가 일치하지 않습니다.", type: "error" });
       return;
     }
     if (!isVerified) {
-      showToast("이메일 인증을 완료해주세요.", "error");
+      showToast({ message: "이메일 인증을 완료해주세요.", type: "error" });
       return;
     }
     setLoading(true);
     try {
       await registerAuth({ username, password, nickname, email });
-      showToast("가입을 환영합니다!", "success");
+      showToast({ message: "가입을 환영합니다!", type: "success" });
       router.push("/signin");
     } catch (error) {
-      showToast(
-        "가입 실패: " + (error.response?.data?.message || "오류 발생"),
-        "error"
-      );
+      showToast({
+        message: "가입 실패: " + (error.response?.data?.message || "오류 발생"),
+        type: "error"
+      });
     } finally {
       setLoading(false);
     }
@@ -142,12 +142,7 @@ export default function SignupForm() {
           placeholder="3자 이상"
         />
         {usernameError && (
-          <span
-            className="error-text"
-            style={{ color: "red", fontSize: "12px" }}
-          >
-            {usernameError}
-          </span>
+          <span className="error-text">{usernameError}</span>
         )}
       </div>
 
@@ -161,20 +156,15 @@ export default function SignupForm() {
           required
         />
         {nicknameError && (
-          <span
-            className="error-text"
-            style={{ color: "red", fontSize: "12px" }}
-          >
-            {nicknameError}
-          </span>
+          <span className="error-text">{nicknameError}</span>
         )}
       </div>
 
-      {/* 이메일 & 인증요청 버튼 (디자인 깨짐 방지를 위해 flex 구조 개선) */}
+      {/* 이메일 & 인증요청 버튼 */}
       <div className="form-group">
         <label>이메일 주소</label>
-        <div style={{ display: "flex", gap: "10px", alignItems: "flex-start" }}>
-          <div style={{ flex: 1 }}>
+        <div className="email-verification-container">
+          <div className="email-input-wrapper">
             <input
               type="email"
               value={email}
@@ -189,36 +179,20 @@ export default function SignupForm() {
             onClick={handleSendCode}
             disabled={loading || isVerified}
             className="verify-btn"
-            style={{
-              padding: "0 15px",
-              height: "45px",
-              whiteSpace: "nowrap",
-              borderRadius: "4px",
-              cursor: "pointer",
-              backgroundColor: "#eee",
-            }}
           >
             {isEmailSent ? "재발송" : "인증요청"}
           </button>
         </div>
         {emailError && (
-          <span style={{ color: "red", fontSize: "12px" }}>{emailError}</span>
+          <span className="error-text">{emailError}</span>
         )}
       </div>
 
       {/* 인증번호 입력란 - 이메일 발송 성공 시에만 노출 */}
       {isEmailSent && !isVerified && (
-        <div
-          className="form-group"
-          style={{
-            marginTop: "-10px",
-            padding: "15px",
-            backgroundColor: "#f8f9fa",
-            borderRadius: "8px",
-          }}
-        >
+        <div className="form-group verification-code-section">
           <label>인증번호 6자리</label>
-          <div style={{ display: "flex", gap: "10px" }}>
+          <div className="verification-input-container">
             <input
               type="text"
               value={verificationCode}
@@ -230,12 +204,7 @@ export default function SignupForm() {
               type="button"
               onClick={handleVerifyCode}
               className="confirm-btn"
-              style={{
-                padding: "0 20px",
-                backgroundColor: "#007bff",
-                color: "white",
-                borderRadius: "4px",
-              }}
+              disabled={loading}
             >
               확인
             </button>
@@ -268,9 +237,8 @@ export default function SignupForm() {
         type="submit"
         className="auth-button"
         disabled={
-          loading || !!usernameError || !!nicknameError || !isVerified || !email // 이메일 값이 비어있는지 추가 확인
+          loading || !!usernameError || !!nicknameError || !isVerified || !email
         }
-        style={{ marginTop: "20px" }}
       >
         {loading ? "처리 중..." : "회원가입 완료"}
       </button>

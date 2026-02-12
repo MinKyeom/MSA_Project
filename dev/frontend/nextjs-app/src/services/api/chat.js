@@ -18,6 +18,9 @@ export const sendChatMessage = async (session_id, message) => {
     const response = await axios.post(CHAT_API_URL, {
       session_id, // FastAPI에서 세션/기억 관리에 사용
       message,
+    }, {
+      timeout: 30000, // 챗봇 응답은 30초 타임아웃 (AI 처리 시간 고려)
+      withCredentials: true, // ⭐ CORS 일관성 (쿠키 전송)
     });
     // FastAPI app.py에서 {response: "..."} 형태로 응답
     return response.data.response;

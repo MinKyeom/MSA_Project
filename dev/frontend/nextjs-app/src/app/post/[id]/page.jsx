@@ -6,6 +6,7 @@ import Comments from "../../../components/Comments/Comments";
 import MarkdownRenderer from "../../../components/MarkdownRenderer";
 import PostActions from "./PostActions";
 import "../../../styles/globals.css";
+import "../../../styles/PostDetail.css";
 import { notFound } from "next/navigation";
 
 // 날짜 포맷팅 헬퍼 함수
@@ -71,42 +72,20 @@ export default async function PostDetailPage({ params }) {
   const postAuthorId = post.authorId;
 
   return (
-    <div
-      className="post-detail-container"
-      style={{ maxWidth: "800px", margin: "0 auto", padding: "40px 0" }}
-    >
+    <div className="post-detail-container">
       <article>
         {/* 1. 포스트 제목 및 메타 정보 */}
-        <h1
-          style={{
-            fontSize: "3rem",
-            fontWeight: 900,
-            marginBottom: "15px",
-            lineHeight: 1.2,
-            color: "var(--color-text-main)",
-          }}
-        >
-          {/* 🌟 UI 텍스트 한국어 우선: 제목 없음 */}
+        <h1 className="post-detail-title">
           {post.title || "제목 없음"}
         </h1>
-        <div
-          style={{
-            display: "flex",
-            justifyContent: "space-between",
-            alignItems: "center",
-            marginBottom: "30px",
-            borderBottom: "1px solid var(--color-border)",
-            paddingBottom: "15px",
-          }}
-        >
-          <span style={{ color: "var(--color-text-sub)" }}>
-            {/* 🌟 UI 텍스트 한국어 우선: 작성자 알 수 없음 */}
-            작성자:{" "}
-            <span style={{ fontWeight: 600, color: "var(--color-accent)" }}>
+        <div className="post-detail-meta">
+          <span className="post-author-info">
+            작성자:
+            <span className="post-author-name">
               {post.authorNickname || "작성자 알 수 없음"}
             </span>
           </span>
-          <span style={{ color: "var(--color-text-sub)", fontSize: "0.9em" }}>
+          <span className="post-created-date">
             작성일: {formatDate(post.createdAt)}
           </span>
         </div>
@@ -115,53 +94,28 @@ export default async function PostDetailPage({ params }) {
         <PostActions postId={postId} postAuthorId={postAuthorId} />
 
         {/* 3. 포스트 내용 (Markdown 렌더링) */}
-        <div style={{ marginTop: "40px", paddingBottom: "40px" }}>
+        <div className="post-detail-content">
           <MarkdownRenderer content={post.content || ""} />
         </div>
 
         {/* 4. 카테고리 및 태그 */}
-        <div
-          style={{
-            borderTop: "1px solid var(--color-border)",
-            paddingTop: "20px",
-          }}
-        >
-          <p
-            style={{
-              margin: "0",
-              color: "var(--color-text-sub)",
-              fontWeight: 600,
-            }}
-          >
-            {/* 🌟 UI 텍스트 한국어 우선: 카테고리 */}# 카테고리:{" "}
-            <span
-              className="tag-badge"
-              style={{
-                backgroundColor: "var(--color-secondary)",
-                color: "var(--color-accent)",
-              }}
-            >
-              {/* 🌟 UI 텍스트 한국어 우선: 미분류 */}
+        <div className="post-detail-taxonomy">
+          <p className="post-taxonomy-item">
+            <span className="post-taxonomy-label"># 카테고리:</span>
+            <span className="post-category-badge">
               {post.categoryName || "미분류"}
             </span>
           </p>
-          <p
-            style={{
-              margin: "10px 0 0 0",
-              color: "var(--color-text-sub)",
-              fontWeight: 600,
-            }}
-          >
-            {/* 🌟 UI 텍스트 한국어 우선: 태그 */}# 태그:{" "}
+          <p className="post-taxonomy-item">
+            <span className="post-taxonomy-label"># 태그:</span>
             {post.tagNames?.length > 0 ? (
               post.tagNames.map((tagName) => (
-                <span key={tagName} className="tag-badge">
+                <span key={tagName} className="post-tag-badge">
                   {tagName}
                 </span>
               ))
             ) : (
-              /* 🌟 UI 텍스트 한국어 우선: 태그 없음 */
-              <span>태그 없음</span>
+              <span className="post-no-tags">태그 없음</span>
             )}
           </p>
         </div>

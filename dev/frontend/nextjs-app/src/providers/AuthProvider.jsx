@@ -42,12 +42,18 @@ export const AuthProvider = ({ children }) => {
           localStorage.setItem("currentUserId", serverUser.id);
           localStorage.setItem("currentUserNickname", serverUser.nickname);
         } else {
-          // 서버 세션이 없거나 유효하지 않은 경우
+          // 🌟 수정: 서버 세션이 없는 경우 (로그인하지 않은 방문자)
+          // 조용히 로그아웃 상태로 설정 (알림 없이, 팝업 없이)
+          // 이는 정상적인 초기 방문자 상태이므로 에러가 아닙니다
           manualLogout();
         }
       } catch (error) {
-        console.error("인증 확인 과정에서 오류 발생:", error);
-        // 에러 발생 시(예: 401, 403) 안전하게 로그아웃 처리
+        // 🌟 수정: 네트워크 오류 등의 예외적인 상황에도 조용히 처리
+        // 페이지 로드 시마다 알림을 표시하지 않습니다
+        // 디버깅 목적으로만 콘솔에 기록
+        if (process.env.NODE_ENV === 'development') {
+          console.debug("인증 확인 과정에서 예외 발생:", error);
+        }
         manualLogout();
       } finally {
         // 모든 인증 확인 절차가 완료됨

@@ -1,10 +1,11 @@
 // app/post/page.jsx (Server Component)
 
 import Link from "next/link";
-import { cookies } from "next/headers"; // ⭐ 서버 컴포넌트에서만 사용 가능
+import { cookies } from "next/headers"; 
 import { fetchPosts } from "../../services/api/posts"; 
 import PostCard from "../../components/Post/PostCard"; 
-import "../../styles/globals.css"; 
+import "../../styles/globals.css";
+import "../../styles/PostList.css";
 import { notFound } from "next/navigation"; 
 
 // 🌟 SEO 메타데이터
@@ -46,7 +47,7 @@ export default async function PostListPage({ searchParams }) {
 
   if (!postPageData) {
     return (
-      <div className="container" style={{ paddingTop: "100px", textAlign: "center" }}>
+      <div className="error-container">
         <h2>데이터를 불러오는 중 오류가 발생했습니다.</h2>
         <p>잠시 후 다시 시도해주세요.</p>
       </div>
@@ -69,67 +70,49 @@ export default async function PostListPage({ searchParams }) {
   };
 
   return (
-    <div className="container post-list-page" style={{ paddingTop: "40px", paddingBottom: "80px" }}>
-      <header className="list-header" style={{ marginBottom: "40px" }}>
-        <h1 style={{ fontSize: "2.5rem", marginBottom: "10px" }}>
+    <div className="post-list-page">
+      <header className="list-header">
+        <h1>
           {category ? `#${category}` : tag ? `tag: ${tag}` : "All Posts"}
         </h1>
-        <p style={{ color: "var(--color-text-sub)" }}>
+        <p>
           {category ? `"${category}" 카테고리의 글들입니다.` : tag ? `"${tag}" 태그가 포함된 글들입니다.` : "최신 기술 아티클을 만나보세요."}
         </p>
       </header>
 
       {posts.length > 0 ? (
-        <div className="post-grid" style={{ 
-          display: "grid", 
-          gridTemplateColumns: "repeat(auto-fill, minmax(300px, 1fr))", 
-          gap: "30px" 
-        }}>
+        <div className="post-grid">
           {posts.map((post) => (
             <PostCard key={post.id} post={post} />
           ))}
         </div>
       ) : (
-        <div style={{ textAlign: "center", padding: "100px 0" }}>
-          <p style={{ fontSize: "1.2rem", color: "var(--color-text-sub)" }}>
+        <div className="empty-state">
+          <p className="empty-state-message">
             해당 조건의 포스트가 없습니다.
           </p>
-          <Link href="/post" style={{ color: "var(--color-accent)", textDecoration: "underline" }}>
+          <Link href="/post" className="empty-state-link">
             전체 목록으로 돌아가기
           </Link>
         </div>
       )}
 
       {pageInfo.totalPages > 1 && (
-        <div className="pagination-controls" style={{ 
-          display: "flex", 
-          justifyContent: "center", 
-          gap: "20px", 
-          marginTop: "40px",
-          alignItems: "center"
-        }}>
+        <div className="pagination-controls">
           <Link
             href={getPageLink(currentPage - 1)}
-            className="btn-secondary"
-            style={{
-              pointerEvents: currentPage === 0 ? "none" : "auto",
-              opacity: currentPage === 0 ? 0.5 : 1,
-            }}
+            className={`btn-secondary pagination-btn ${currentPage === 0 ? 'disabled' : ''}`}
           >
             이전
           </Link>
           
-          <span style={{ fontWeight: "bold" }}>
+          <span className="pagination-info">
             {pageInfo.page + 1} / {pageInfo.totalPages}
           </span>
 
           <Link
             href={getPageLink(currentPage + 1)}
-            className="btn-secondary"
-            style={{
-              pointerEvents: currentPage === pageInfo.totalPages - 1 ? "none" : "auto",
-              opacity: currentPage === pageInfo.totalPages - 1 ? 0.5 : 1,
-            }}
+            className={`btn-secondary pagination-btn ${currentPage === pageInfo.totalPages - 1 ? 'disabled' : ''}`}
           >
             다음
           </Link>

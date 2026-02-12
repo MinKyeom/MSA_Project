@@ -8,6 +8,7 @@ const POSTS_API_URL = `${POSTS_BASE_URL}/api/posts`;
 const authAxios = axios.create({
   baseURL: POSTS_BASE_URL,
   withCredentials: true,
+  timeout: 10000, // 10초 타임아웃
 });
 
 /**

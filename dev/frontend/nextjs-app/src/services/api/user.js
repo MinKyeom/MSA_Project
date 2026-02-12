@@ -1,12 +1,14 @@
 // src/services/api/userService.js
 import axios from "axios";
 
+// ⭐ 수정: NEXT_PUBLIC_API_URL 사용 (Gateway를 통한 통합 접근)
 const USER_BASE_URL =
-  process.env.NEXT_PUBLIC_USER_API_URL || "https://dev.minkowskim.com";
+  process.env.NEXT_PUBLIC_API_URL || "https://dev.minkowskim.com";
 
 const userAxios = axios.create({
   baseURL: USER_BASE_URL,
   withCredentials: true,
+  timeout: 10000, // 10초 타임아웃
 });
 
 /**

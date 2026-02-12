@@ -6,7 +6,7 @@ import { loginUser } from "../../services/api/auth";
 import { useRouter } from "next/navigation";
 import { useAuth } from "../../providers/AuthProvider";
 import { useToast } from "../../hooks/useToast"; 
-import "../../../src/components/Auth/Signup.css"; 
+import "./Signup.css"; 
 
 export default function SignInForm() {
   const [username, setUsername] = useState("");
@@ -69,11 +69,9 @@ export default function SignInForm() {
       
       <button 
         type="submit" 
-        className="btn-primary"
+        className="auth-button"
         disabled={loading}
-        style={{ marginTop: '1rem' }}
       >
-        {/* 🌟 UI 텍스트 한국어 우선: 로그인 / 로그인 중... */}
         {loading ? "로그인 중..." : "로그인"}
       </button>
     </form>

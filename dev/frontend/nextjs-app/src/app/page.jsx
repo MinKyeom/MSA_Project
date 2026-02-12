@@ -1,15 +1,15 @@
 // app/page.jsx (Server Component)
-export const dynamic = 'force-dynamic';
+export const dynamic = "force-dynamic";
 
-import { fetchPosts } from "../services/api/posts"; 
-import PostCard from "../components/Post/PostCard"; 
-import "../styles/globals.css"; 
-import "../styles/HomePage.css"; 
-import Link from "next/link"; 
+import { fetchPosts } from "../services/api/posts";
+import PostCard from "../components/Post/PostCard";
+import "../styles/globals.css";
+import "../styles/HomePage.css";
+import Link from "next/link";
 
 // 🌟 수정: 한국어 우선 SEO 메타데이터 개선
 export const metadata = {
-  title: "홈", // layout.jsx의 템플릿에 따라 '홈 | MinKowskiM'로 표시됨
+  title: "MinKowskiM", // layout.jsx의 템플릿에 따라 '홈 | MinKowskiM'로 표시됨
   description:
     "MinKowskiM에 오신 것을 환영합니다! 최신 개발 트렌드와 기술 스택에 대한 깊이 있는 글들을 만나보세요.",
   keywords: ["최신 트렌드", "기술 스택", "IT", "개발 블로그", "홈"],
@@ -51,10 +51,12 @@ export default async function HomePage() {
       <section className="hero-section">
         <h1 className="hero-title">MinKowskiM</h1>
         {/* 🌟 UI 텍스트 한국어 우선 */}
-        <p className="hero-subtitle">
-          A personal log across space and time.
-        </p>
-        <Link href="/post" className="btn-primary" style={{ marginTop: '20px' }}>
+        <p className="hero-subtitle">A personal log across space and time.</p>
+        <Link
+          href="/post"
+          className="btn-primary"
+          style={{ marginTop: "20px" }}
+        >
           모든 포스트 보기 &rarr;
         </Link>
       </section>

@@ -11,6 +11,7 @@ const COMMENTS_BASE_API_URL = `${POSTS_BASE_URL}/api/posts`;
 const authAxios = axios.create({
   baseURL: POSTS_BASE_URL,
   withCredentials: true, // HTTP-only 쿠키 전송 활성화
+  timeout: 10000, // 10초 타임아웃
 });
 
 // --- 댓글 조회 (인증 불필요) ---
@@ -22,7 +23,8 @@ const authAxios = axios.create({
 export const fetchCommentsByPostId = async (postId) => {
   try {
     // 컨트롤러의 경로: /api/posts/{postId}/comments
-    const response = await axios.get(
+    // ⭐ 수정: authAxios 사용으로 CORS 일관성 확보 (withCredentials)
+    const response = await authAxios.get(
       `${COMMENTS_BASE_API_URL}/${postId}/comments`
     );
     return response.data; // List<CommentResponse>

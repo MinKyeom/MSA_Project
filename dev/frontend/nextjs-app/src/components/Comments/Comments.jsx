@@ -129,7 +129,7 @@ const CommentItem = ({ comment, currentUserId, onDelete, onUpdate }) => {
       </div>
       
       {isEditing ? (
-        <div style={{ display: 'flex', flexDirection: 'column', gap: '10px', marginTop: '10px' }}>
+        <div className="comment-edit-container">
           <textarea
             value={editContent}
             onChange={(e) => setEditContent(e.target.value)}
@@ -137,14 +137,13 @@ const CommentItem = ({ comment, currentUserId, onDelete, onUpdate }) => {
             disabled={loading}
             className="post-form-textarea"
           />
-          <div style={{ display: 'flex', gap: '10px', justifyContent: 'flex-end' }}>
+          <div className="comment-edit-actions">
             <button 
                 type="button" 
                 className="btn-secondary-small" 
                 onClick={() => { setEditContent(comment.content); setIsEditing(false); }}
                 disabled={loading}
             >
-                {/* 🌟 UI 텍스트 한국어 우선: 취소 */}
                 취소
             </button>
             <button 
@@ -153,7 +152,6 @@ const CommentItem = ({ comment, currentUserId, onDelete, onUpdate }) => {
                 onClick={handleUpdate}
                 disabled={loading}
             >
-                {/* 🌟 UI 텍스트 한국어 우선: 저장 / 저장 중... */}
                 {loading ? "저장 중..." : "저장"}
             </button>
           </div>
@@ -164,23 +162,19 @@ const CommentItem = ({ comment, currentUserId, onDelete, onUpdate }) => {
 
       {/* 댓글 수정/삭제 버튼 (작성자에게만 표시) */}
       {isAuthor && !isEditing && (
-        <div className="comment-actions" style={{ textAlign: 'right', marginTop: '10px' }}>
+        <div className="comment-actions">
           <button 
             type="button" 
-            className="btn-link-primary" 
+            className="btn-link-primary comment-edit-btn" 
             onClick={() => setIsEditing(true)}
-            style={{ marginRight: '10px' }}
           >
-            {/* 🌟 UI 텍스트 한국어 우선: 수정 */}
             수정
           </button>
           <button 
             type="button" 
-            className="btn-link-primary" 
+            className="btn-link-primary comment-delete-btn" 
             onClick={handleDelete}
-            style={{ color: '#E53935' }}
           >
-            {/* 🌟 UI 텍스트 한국어 우선: 삭제 */}
             삭제
           </button>
         </div>
@@ -261,8 +255,7 @@ export default function Comments({ postId }) {
       {/* 댓글 목록 */}
       <div className="comments-list">
         {loading ? (
-          // 🌟 UI 텍스트 한국어 우선: 댓글을 불러오는 중입니다...
-          <p className="loading-message" style={{ textAlign: 'center', padding: '30px 0' }}>
+          <p className="loading-message">
             댓글을 불러오는 중입니다...
           </p>
         ) : comments.length > 0 ? (

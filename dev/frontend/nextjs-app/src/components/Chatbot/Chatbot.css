@@ -185,5 +185,157 @@
 
 .chatbot-float-btn:hover {
     transform: scale(1.05);
-    background-color: var(--color-accent-hover);
+    background-color: #455a64;
+}
+
+.chatbot-float-btn:active {
+    transform: scale(0.95);
+}
+
+/* ---------------------------------------------------------------- */
+/* 6. 환영 메시지 스타일 개선 */
+/* ---------------------------------------------------------------- */
+.message-bubble.welcome {
+    text-align: center;
+    padding: 20px;
+    background-color: var(--color-secondary);
+    color: var(--color-text-main);
+    border-radius: 12px;
+    line-height: 1.8;
+    font-size: 0.95em;
+    box-shadow: 0 2px 8px var(--color-shadow);
+}
+
+/* ---------------------------------------------------------------- */
+/* 7. 반응형 디자인 */
+/* ---------------------------------------------------------------- */
+@media (max-width: 768px) {
+    .chatbot-container {
+        right: 15px;
+        bottom: 80px;
+        width: 320px;
+        height: 450px;
+    }
+
+    .chatbot-float-btn {
+        right: 20px;
+        bottom: 20px;
+        width: 55px;
+        height: 55px;
+        font-size: 1.3em;
+    }
+
+    .chatbot-header {
+        padding: 12px;
+    }
+
+    .chatbot-header h3 {
+        font-size: 1em;
+    }
+
+    .chatbot-messages {
+        padding: 12px;
+        gap: 8px;
+    }
+
+    .message-bubble {
+        padding: 9px 13px;
+        font-size: 0.9rem;
+        max-width: 90%;
+    }
+
+    .chatbot-input-form {
+        padding: 8px;
+    }
+
+    .chatbot-input-form input {
+        padding: 8px;
+        font-size: 0.9em;
+    }
+
+    .chatbot-input-form button {
+        min-width: 60px;
+        font-size: 0.9em;
+    }
+}
+
+@media (max-width: 480px) {
+    .chatbot-container {
+        right: 10px;
+        left: 10px;
+        bottom: 70px;
+        width: auto;
+        height: 400px;
+        max-width: calc(100vw - 20px);
+    }
+
+    .chatbot-float-btn {
+        right: 15px;
+        bottom: 15px;
+        width: 50px;
+        height: 50px;
+        font-size: 1.2em;
+    }
+
+    .chatbot-header {
+        padding: 10px;
+    }
+
+    .chatbot-header h3 {
+        font-size: 0.95em;
+    }
+
+    .chatbot-header button {
+        font-size: 1.3em;
+    }
+
+    .chatbot-messages {
+        padding: 10px;
+    }
+
+    .message-bubble {
+        padding: 8px 12px;
+        font-size: 0.85rem;
+        max-width: 92%;
+    }
+
+    .message-bubble.welcome {
+        padding: 15px;
+        font-size: 0.85em;
+    }
+
+    .chatbot-input-form {
+        padding: 8px;
+    }
+
+    .chatbot-input-form input {
+        padding: 8px;
+        font-size: 0.85em;
+    }
+
+    .chatbot-input-form button {
+        min-width: 55px;
+        padding: 8px 12px;
+        font-size: 0.85em;
+    }
+}
+
+/* ---------------------------------------------------------------- */
+/* 8. 스크롤바 스타일 개선 */
+/* ---------------------------------------------------------------- */
+.chatbot-messages::-webkit-scrollbar {
+    width: 6px;
+}
+
+.chatbot-messages::-webkit-scrollbar-track {
+    background: var(--color-secondary);
+}
+
+.chatbot-messages::-webkit-scrollbar-thumb {
+    background: var(--color-accent);
+    border-radius: 3px;
+}
+
+.chatbot-messages::-webkit-scrollbar-thumb:hover {
+    background: #455a64;
 }

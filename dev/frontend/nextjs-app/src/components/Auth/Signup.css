@@ -1,25 +1,35 @@
 /* src/components/Auth/Signup.css (전면 개편: 깔끔하고 모던한 인증 페이지) */
 
 /* ---------------------------------------------------------------- */
+/* --- 0. 부모 컨테이너 오버라이드 (auth 페이지 전용) --- */
+/* ---------------------------------------------------------------- */
+/* auth-page가 포함된 경우 main-content-container의 max-width 제한을 해제하여
+   뷰포트 기준 정중앙 정렬을 구현합니다. */
+.main-content-container:has(.auth-page) {
+  max-width: 100%;
+  padding: 0;
+}
+
+/* ---------------------------------------------------------------- */
 /* --- 1. 전체 페이지 (로그인/회원가입) --- */
 /* ---------------------------------------------------------------- */
 .auth-page { 
-  width: 100vw;
-  /* Next.js layout.jsx에서 헤더를 처리하므로, min-height를 100vh로 설정합니다. */
-  min-height: 100vh; 
+  width: 100%;
+  /* Header가 있으므로 calc()로 Header 높이를 뺀 나머지 영역을 전체 높이로 설정 */
+  min-height: calc(100vh - 70px); /* Header 높이 약 70px 고려 */
   
-  /* 🌟 수정 1: Flexbox로 변경하여 안정적인 중앙 정렬 구현 */
+  /* Flexbox로 정확한 뷰포트 중앙 정렬 구현 */
   display: flex;
   justify-content: center; /* 수평 중앙 정렬 */
   align-items: center; /* 수직 중앙 정렬 */
   
   margin: 0;
-  /* 🌟 수정 2: 상하 패딩 조정 */
   padding: 40px 20px; 
   
   background: var(--color-background); 
   font-family: var(--font-family-main);
   transition: background 0.3s;
+  box-sizing: border-box;
 }
 
 /* ---------------------------------------------------------------- */
@@ -100,4 +110,223 @@
   border-color: var(--color-accent);
   box-shadow: 0 0 0 2px var(--color-accent);
   outline: none;
+}
+
+/* ---------------------------------------------------------------- */
+/* --- 5. 회원가입 폼 (SignUpForm) 전용 스타일 --- */
+/* ---------------------------------------------------------------- */
+.signup-form {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+.signup-form input[type="text"],
+.signup-form input[type="email"],
+.signup-form input[type="password"] {
+  width: 100%;
+  padding: 14px 18px;
+  border: 1px solid var(--color-border);
+  border-radius: 8px;
+  font-size: 1em;
+  background-color: var(--color-secondary);
+  color: var(--color-text-main);
+  transition: border-color 0.2s, box-shadow 0.2s;
+}
+
+.signup-form input[type="text"]:focus,
+.signup-form input[type="email"]:focus,
+.signup-form input[type="password"]:focus {
+  border-color: var(--color-accent);
+  box-shadow: 0 0 0 2px var(--color-accent);
+  outline: none;
+}
+
+.signup-form input:disabled {
+  background-color: var(--color-border);
+  cursor: not-allowed;
+  opacity: 0.6;
+}
+
+/* 에러 텍스트 */
+.error-text {
+  color: #e53e3e;
+  font-size: 0.85em;
+  margin-top: 0.5rem;
+  display: block;
+}
+
+/* 이메일 인증 컨테이너 */
+.email-verification-container {
+  display: flex;
+  gap: 10px;
+  align-items: flex-start;
+}
+
+.email-verification-container .email-input-wrapper {
+  flex: 1;
+}
+
+/* 인증 요청 버튼 */
+.verify-btn {
+  padding: 0 20px;
+  height: 48px;
+  white-space: nowrap;
+  border-radius: 8px;
+  cursor: pointer;
+  background-color: var(--color-secondary);
+  color: var(--color-text-main);
+  border: 1px solid var(--color-border);
+  font-weight: 600;
+  font-size: 0.95em;
+  transition: all 0.2s ease-in-out;
+}
+
+.verify-btn:hover:not(:disabled) {
+  background-color: var(--color-accent);
+  color: white;
+  border-color: var(--color-accent);
+}
+
+.verify-btn:disabled {
+  cursor: not-allowed;
+  opacity: 0.5;
+}
+
+/* 인증번호 입력 섹션 */
+.verification-code-section {
+  margin-top: -10px;
+  padding: 20px;
+  background-color: var(--color-secondary);
+  border-radius: 12px;
+  border: 1px dashed var(--color-accent);
+}
+
+.verification-code-section label {
+  color: var(--color-text-main);
+  font-weight: 600;
+  font-size: 0.95em;
+}
+
+.verification-input-container {
+  display: flex;
+  gap: 10px;
+  margin-top: 0.5rem;
+}
+
+.verification-input-container input {
+  flex: 1;
+}
+
+/* 확인 버튼 */
+.confirm-btn {
+  padding: 0 24px;
+  height: 48px;
+  background-color: var(--color-accent);
+  color: white;
+  border: none;
+  border-radius: 8px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease-in-out;
+  white-space: nowrap;
+}
+
+.confirm-btn:hover:not(:disabled) {
+  background-color: #455a64;
+  box-shadow: 0 4px 10px var(--color-shadow-strong);
+}
+
+.confirm-btn:disabled {
+  cursor: not-allowed;
+  opacity: 0.5;
+}
+
+/* ---------------------------------------------------------------- */
+/* --- 6. 버튼 스타일 통일 --- */
+/* ---------------------------------------------------------------- */
+.auth-button {
+  width: 100%;
+  padding: 14px 20px;
+  border: none;
+  border-radius: 8px;
+  font-size: 1.05em;
+  font-weight: 600;
+  background-color: var(--color-accent);
+  color: white;
+  cursor: pointer;
+  transition: all 0.2s ease-in-out;
+  margin-top: 1.5rem;
+}
+
+.auth-button:hover:not(:disabled) {
+  background-color: #455a64;
+  box-shadow: 0 4px 10px var(--color-shadow-strong);
+  transform: translateY(-2px);
+}
+
+.auth-button:disabled {
+  background-color: var(--color-border);
+  color: var(--color-text-sub);
+  cursor: not-allowed;
+  opacity: 0.6;
+}
+
+/* ---------------------------------------------------------------- */
+/* --- 7. 반응형 디자인 --- */
+/* ---------------------------------------------------------------- */
+@media (max-width: 768px) {
+  .auth-page {
+    padding: 20px 15px;
+  }
+
+  .auth-container {
+    max-width: 100%;
+    padding: 2.5rem 2rem;
+  }
+
+  .auth-title {
+    font-size: 2.8rem;
+    margin-bottom: 2rem;
+  }
+
+  .email-verification-container {
+    flex-direction: column;
+    gap: 10px;
+  }
+
+  .verify-btn {
+    width: 100%;
+    height: 48px;
+  }
+}
+
+@media (max-width: 480px) {
+  .auth-container {
+    padding: 2rem 1.5rem;
+    border-radius: 12px;
+  }
+
+  .auth-title {
+    font-size: 2.5rem;
+  }
+
+  .form-group label {
+    font-size: 0.95em;
+  }
+
+  .auth-form input[type="text"],
+  .auth-form input[type="password"],
+  .signup-form input {
+    padding: 12px 15px;
+    font-size: 0.95em;
+  }
+
+  .verification-input-container {
+    flex-direction: column;
+  }
+
+  .confirm-btn {
+    width: 100%;
+  }
 }

@@ -1,13 +1,13 @@
-// src/services/api/authService.js
+// src/services/api/auth.js
 import axios from "axios";
 
 // MSA 환경에서는 서비스별 포트가 다를 수 있으므로 환경변수 분리 권장
-const AUTH_BASE_URL =
-  process.env.NEXT_PUBLIC_AUTH_API_URL || "https://dev.minkowskim.com";
+const AUTH_BASE_URL = process.env.NEXT_PUBLIC_API_URL || "https://dev.minkowskim.com";
 
 const authAxios = axios.create({
   baseURL: AUTH_BASE_URL,
   withCredentials: true,
+  timeout: 10000, // 10초 타임아웃
 });
 
 // 공통 에러 처리 인터셉터
@@ -85,7 +85,6 @@ export const sendVerificationCode = async (email) => {
 export const verifyCode = async (email, code) => {
   const response = await authAxios.post("/auth/verify-code", { email, code });
   return response.status === 200;
-  // return response.data; // 성공 시 200 OK
 };
 
 /**

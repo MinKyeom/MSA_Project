@@ -4,13 +4,19 @@ const POSTS_BASE_URL =
   process.env.NEXT_PUBLIC_POST_API_URL || "https://dev.minkowskim.com";
 const POSTS_API_URL = `${POSTS_BASE_URL}/api/posts`;
 
+// ⭐ 수정: CORS 일관성을 위해 withCredentials 포함 인스턴스 사용
+const publicAxios = axios.create({
+  withCredentials: true,
+  timeout: 10000,
+});
+
 /**
  * 카테고리 전체 목록 조회
  * @returns {Promise<Array>} CategoryResponse 객체 배열
  */
 export const fetchCategoriesList = async () => {
   try {
-    const response = await axios.get(`${POSTS_API_URL}/categories`);
+    const response = await publicAxios.get(`${POSTS_API_URL}/categories`);
     // 응답 데이터가 null이거나 undefined일 경우 빈 배열 반환
     return response.data || [];
   } catch (error) {
@@ -26,7 +32,7 @@ export const fetchCategoriesList = async () => {
  */
 export const fetchTagsList = async () => {
   try {
-    const response = await axios.get(`${POSTS_API_URL}/tags`);
+    const response = await publicAxios.get(`${POSTS_API_URL}/tags`);
     return response.data || [];
   } catch (error) {
     console.error("Error fetching tags list:", error);
