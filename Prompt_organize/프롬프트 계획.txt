@@ -1,0 +1,39 @@
+[Cursor 입력용 프롬프트 텍스트]
+
+역할: 너는 AWS Lightsail(4GB RAM/2vCPU) 환경의 제약을 극복하고, 실리콘밸리 스타트업 수준의 디자인과 탄탄한 운영 체계를 갖춘 MSA 블로그를 구축하는 시니어 풀스택 개발자이자 DevOps 전문가야.
+
+[미션: 현업 운영 수준의 벡터 검색 기반 MSA 플랫폼 고도화]
+
+인프라 및 보안 (안정성)
+
+Gateway 중심 보안: 모든 내부 서비스의 외부 포트를 닫고 api-gateway를 통해서만 접근 가능하도록 수정해. 모든 하드코딩된 비밀번호와 JWT_SECRET은 .env로 추출해줘.
+
+정석적 인증/인가: Gateway에서 JWT 유효성을 검증하고, 서비스 간 요청 흐름 추적을 위해 Trace ID 체계를 도입해.
+
+데이터 엔진 및 벡터 검색 (기능성)
+
+Vector Search: db-post를 ankane/pgvector로 교체해. Search-Service(FastAPI)를 추가하고, Kafka 비동기 파이프라인을 통해 게시글 실시간 임베딩(all-MiniLM-L6-v2) 및 저장/검색 시스템을 구축해.
+
+실시간 지표: Redis를 활용해 조회수를 집계하고, '최신성+조회수' 기반 인기글 알고리즘을 메인 페이지에 적용해. Redis에서 먼저 카운팅하고 배치로 DB에 저장하는 방식을 제안해줘.
+
+초경량 모니터링 스택 (Fluent Bit + Loki + Grafana)
+
+수집(Fluent Bit): Promtail보다 가벼운 Fluent Bit을 사용해 각 컨테이너 로그를 수집해. Java 멀티라인(StackTrace) 로그 파싱 및 서비스명 레이블 태깅 설정을 포함해줘.
+
+저장/시각화(Loki & Grafana): 레이블 인덱싱을 사용하고 로그 보존 기간은 7일로 제한해. Grafana는 Loki 데이터 소스를 자동 프로비저닝하도록 설정해.
+
+UI/UX 및 디자인 (세련미)
+
+디자인 컨셉: Tailwind CSS + Shadcn UI 기반. Toss 또는 Vercel 스타일의 미니멀한 다크/화이트 모드를 구현해.
+
+핵심 UX: 좌우 분할형 'Live Preview 마크다운 에디터'를 구축하고, Framer Motion으로 부드러운 페이지 전환 효과를 넣어. SEO를 위해 Next.js SSR을 적용해줘.
+
+리소스 제약 사항
+
+4GB RAM 환경을 고려하여 모든 컨테이너에 엄격한 mem_limit을 설정해 (예: Java 700MB, Python 512MB 등 전체 합이 4GB를 넘지 않도록 조정).
+
+[실행 지침 - Cursor 사용량 절약을 위해 반드시 준수!]
+
+브리핑 단계: 코드를 바로 생성하지 말고, 위 요구사항이 모두 반영된 [1. 최종 아키텍처 구조도], [2. 서비스별 메모리 배분 계획표], [3. 수정/신규 파일 목록]을 먼저 텍스트로 브리핑해줘.
+
+코드 생성 단계: 내가 브리핑을 승인하면, [Fluent Bit + Loki + Grafana 설정 파일 세트]와 [docker-compose.yml]을 가장 먼저 생성해줘. 모든 주석은 현업 실무자가 이해할 수 있게 한글로 상세히 달아줘.
