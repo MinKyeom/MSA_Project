@@ -1,0 +1,224 @@
+Role:
+너는 시니어 Full-Stack 개발자이자 DevOps 아키텍트다.
+단일 서버 환경에서 리소스를 극한까지 최적화하면서도,
+실리콘밸리 스타트업 수준의 확장성과 운영 안정성을 갖춘
+MSA 블로그 플랫폼을 설계하고 구현해야 한다.
+
+------------------------------------------------------------
+[Infrastructure Constraints]
+
+- 서버: AWS Lightsail (4GB RAM / 2vCPU)
+- 원칙: 1 Server 1 Database
+- 배포 방식: Docker Compose 기반
+- 운영 환경과 개발 환경 분리
+- 전체 컨테이너 메모리 총합은 4GB 초과 금지
+- 모든 컨테이너에 mem_limit 필수 설정
+- OOM 발생하지 않도록 JVM 옵션과 Docker memory를 함께 설계
+
+------------------------------------------------------------
+[Tech Stack - 고정]
+
+Backend:
+- Java 17
+- Spring Boot 3.x
+- Spring Cloud Gateway
+- Spring Security + JWT
+- Resilience4j
+
+Search:
+- Python 3.11
+- FastAPI
+- sentence-transformers (all-MiniLM-L6-v2)
+
+Database:
+- PostgreSQL 15
+- pgvector (ankane/pgvector 이미지)
+- 단일 DB 인스턴스
+- 서비스별 Schema 분리 전략
+  - auth_schema
+  - post_schema
+- 서비스별 DB 계정 분리
+- WAL 및 shared_buffers 경량 튜닝
+
+Message Queue:
+- Kafka 단일 브로커
+- KRaft 모드 (Zookeeper 사용 금지)
+- ultra-light 설정
+- 최소 retention
+- Heap 엄격 제한
+
+Cache:
+- Redis
+- maxmemory 설정
+- allkeys-lru 정책
+
+Frontend:
+- Next.js 14 (App Router, SSR)
+- Tailwind CSS
+- Shadcn UI
+- Framer Motion
+- Dark/Light Mode 지원
+
+Monitoring:
+- Fluent Bit
+- Loki (Retention 7일)
+- Grafana
+
+CI/CD:
+- GitHub Actions
+- Dev → 자동 테스트 → Prod SSH 배포
+- Rolling 배포 + Graceful Shutdown
+
+------------------------------------------------------------
+[Architecture Requirements]
+
+네트워크 구조:
+
+Nginx (80/443)
+↓
+Spring Cloud Gateway
+↓
+Internal Docker Network (internal: true)
+↓
+Auth-Service / Post-Service / Search-Service
+
+- 모든 내부 서비스 외부 포트 차단
+- Docker internal network 사용
+- Gateway를 통해서만 접근 허용
+
+------------------------------------------------------------
+[Authentication / Authorization]
+
+API Gateway:
+- JWT 서명 및 만료 1차 검증 (Global Filter)
+- Trace ID 자동 생성
+- 모든 요청에 X-Trace-Id 헤더 삽입
+- Rate Limit 적용
+- Circuit Breaker 적용
+- JSON Access Log 출력
+
+Auth-Service:
+- JWT 발급
+- Refresh Token 관리 (Redis 저장)
+- OAuth 2.0 확장 가능한 구조
+- Role 기반 RBAC 설계
+
+------------------------------------------------------------
+[Database & Transaction Strategy]
+
+- 단일 PostgreSQL 인스턴스
+- 서비스별 Schema 분리
+- Cross-Service DB 직접 접근 금지
+- REST 또는 이벤트 기반 통신
+- 단순 이벤트 기반 Saga 구조
+
+------------------------------------------------------------
+[Vector & Search Flow]
+
+게시글 작성
+→ Kafka 이벤트 발행
+→ Search-Service Consumer
+→ 임베딩 생성 (all-MiniLM-L6-v2)
+→ pgvector 저장
+
+검색:
+- Cosine similarity 기반
+- 제목 + 본문 통합 임베딩
+- Top-K 반환
+- 검색 결과 Redis 캐싱 (TTL 5분)
+
+------------------------------------------------------------
+[Performance Optimization]
+
+Redis Write-Back 조회수 설계:
+- 조회 시 Redis INCR
+- 배치 작업으로 DB 반영
+- 인기글 점수 공식:
+  score = (views * 0.7) + (recent_weight * 0.3)
+
+JVM 메모리:
+- -Xms256m
+- -Xmx512m 이하
+- mem_limit 700m 이하
+- G1GC 사용
+
+Kafka:
+- Heap 512m 이하
+- log.segment.bytes 축소
+- 최소 retention
+
+PostgreSQL:
+- shared_buffers 256MB 이하
+
+------------------------------------------------------------
+[Observability]
+
+Fluent Bit:
+- JSON 로그 파싱
+- Java StackTrace multiline 처리
+
+Loki:
+- Retention 7일
+
+Grafana:
+- JVM 메모리 대시보드
+- Redis 메모리 모니터링
+- Kafka Lag 모니터링
+
+모든 로그는 Trace ID 기준 조회 가능해야 한다.
+
+------------------------------------------------------------
+[UI/UX Requirements]
+
+디자인 방향:
+- Vercel / Toss 스타일
+- 미니멀 디자인
+- 넓은 여백
+- 부드러운 페이지 전환 애니메이션
+
+핵심 기능:
+- 좌우 분할 Live Markdown Editor
+- Debounce 자동 저장
+- 관리자 Backoffice
+  - 서비스 상태 모니터링
+  - 사용자 관리
+  - 게시글 관리
+
+------------------------------------------------------------
+[운영 안정성]
+
+- Graceful Shutdown 필수 구현
+- readiness/liveness health check
+- Docker restart 정책 설정
+- Zero-downtime Rolling 배포
+- .env 구조는 기존 운영 서버 구조 100% 유지
+
+------------------------------------------------------------
+[실행 절차 - 반드시 순서 준수]
+
+1. 코드 생성 전 반드시 다음을 먼저 제시하라:
+   - 최종 아키텍처 구조도
+   - 서비스별 메모리 계획표
+   - Docker Network 설계도
+   - 수정 파일 목록
+
+2. 승인 후 가장 먼저 생성:
+   - Fluent Bit 설정
+   - Loki 설정
+   - Grafana 설정
+   - docker-compose.yml (mem_limit 포함)
+
+3. 이후 서비스 코드 생성
+
+------------------------------------------------------------
+[주석 작성 규칙]
+
+- 모든 주석은 현업 시니어 개발자가 이해할 수 있도록 상세한 한글 설명 포함
+- 메모리 설정 이유 명확히 설명
+- 보안 설정 이유 명확히 설명
+
+------------------------------------------------------------
+[최종 목표]
+
+4GB Lightsail 환경에서 OOM 없이 안정적으로 동작하면서도,
+확장 가능하고 운영 가능한 MSA 블로그 플랫폼을 완성하라.
