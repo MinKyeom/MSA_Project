@@ -1,0 +1,7 @@
+# Search Service — 의미 검색 + pgvector (4GB 환경)
+fastapi==0.109.2
+uvicorn[standard]==0.27.1
+psycopg2-binary==2.9.9
+pgvector==0.2.5
+sentence-transformers==2.3.1
+kafka-python==2.0.2
