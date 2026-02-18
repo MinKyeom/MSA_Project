@@ -51,7 +51,7 @@ export default function WritePage() {
   useEffect(() => {
     if (isAuthInitialized && !isAuthenticated) {
       showToast({ message: "로그인이 필요한 서비스입니다.", type: "error" });
-      router.push("/login");
+      router.push("/signin");
     }
   }, [isAuthInitialized, isAuthenticated, router, showToast]);
 
@@ -232,30 +232,18 @@ export default function WritePage() {
             ></div>
           </div>
 
-          {/* 하단 버튼 부 */}
-          <div style={{ display: "flex", justifyContent: "flex-end", gap: "15px", marginTop: "10px" }}>
+          {/* 하단 버튼 영역 — 일관된 정렬 */}
+          <div className="form-actions" style={{ display: "flex", justifyContent: "flex-end", alignItems: "center", gap: "12px", marginTop: "24px", paddingTop: "16px", borderTop: "1px solid var(--color-border)" }}>
             <Link
               href={isEdit ? `/post/${editId}` : "/post"}
               className="btn-secondary"
-              style={{
-                padding: "12px 25px",
-                borderRadius: "6px",
-                textDecoration: "none",
-                display: "inline-block",
-                textAlign: "center"
-              }}
+              style={{ textDecoration: "none", display: "inline-flex", alignItems: "center" }}
             >
               취소
             </Link>
             <button
               type="submit"
               className="btn-primary"
-              style={{
-                padding: "12px 40px",
-                borderRadius: "6px",
-                cursor: "pointer",
-                fontWeight: "bold"
-              }}
               disabled={submitLoading || !title || !content}
             >
               {submitLoading ? "저장 중..." : isEdit ? "수정 완료" : "작성 완료"}

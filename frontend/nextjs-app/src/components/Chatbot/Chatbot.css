@@ -42,6 +42,41 @@
     font-weight: 600;
 }
 
+/* ---------------------------------------------------------------- */
+/* 2-1. 헤더 타이틀 (MinKowskiM 필기체 + 아이콘) */
+/* ---------------------------------------------------------------- */
+.chatbot-title {
+    margin: 0;
+    display: flex;
+    align-items: baseline;
+    gap: 8px;
+    line-height: 1;
+}
+
+.chatbot-title-icon {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 22px;
+    height: 22px;
+    border-radius: 999px;
+    background: rgba(255, 255, 255, 0.18);
+    font-size: 0.95rem;
+}
+
+.chatbot-title-mark {
+    font-family: var(--font-family-cursive);
+    font-weight: 500;
+    font-size: 1.35rem;
+    letter-spacing: 0.01em;
+}
+
+.chatbot-title-sub {
+    font-size: 0.9rem;
+    font-weight: 600;
+    opacity: 0.92;
+}
+
 .chatbot-header button {
     background: none;
     border: none;
@@ -76,8 +111,37 @@
     text-align: center;
     padding: 20px 10px;
     color: var(--color-text-sub);
-    font-style: italic;
+    font-style: normal;
     line-height: 1.6;
+    border: 1px dashed var(--color-border);
+    border-radius: 12px;
+    background: color-mix(in srgb, var(--color-secondary) 65%, transparent);
+}
+
+.chatbot-welcome-title {
+    color: var(--color-text-main);
+    font-weight: 600;
+    margin-bottom: 10px;
+}
+
+.chatbot-welcome-body {
+    font-size: 0.95rem;
+}
+
+.chatbot-welcome-badge {
+    display: inline-block;
+    padding: 2px 10px;
+    border-radius: 999px;
+    font-size: 0.8rem;
+    font-weight: 700;
+    background: color-mix(in srgb, var(--color-accent) 20%, transparent);
+    color: var(--color-text-main);
+    border: 1px solid var(--color-border);
+}
+
+.chatbot-welcome-badge.ghost {
+    background: color-mix(in srgb, var(--color-secondary) 85%, transparent);
+    color: var(--color-text-sub);
 }
 
 .message-bubble {
@@ -186,4 +250,18 @@
 .chatbot-float-btn:hover {
     transform: scale(1.05);
     background-color: var(--color-accent-hover);
+}
+
+/* MinKowskiM 이니셜 — 필기체 형태로 세련된 M */
+.chatbot-float-initial {
+    font-family: var(--font-caveat, var(--font-family-cursive)), "Brush Script MT", cursive;
+    font-size: 2.1rem;
+    font-weight: 500;
+    font-style: normal;
+    letter-spacing: 0.02em;
+    line-height: 1;
+    color: white;
+    text-shadow: 0 1px 2px rgba(0, 0, 0, 0.15);
+    display: inline-block;
+    transform: translateY(-1px);
 }

@@ -19,14 +19,13 @@ const ChatbotWrapper = () => {
       {/* 챗봇 팝업 */}
       {isChatOpen && <Chatbot setIsChatOpen={setIsChatOpen} />}
 
-      {/* 챗봇 플로팅 버튼 */}
+      {/* 챗봇 플로팅 버튼 — MinKowskiM 이니셜 M */}
       <button
         className="chatbot-float-btn btn-primary"
         onClick={toggleChat}
-        // 🌟 UI 텍스트 한국어 우선: 챗봇 닫기/열기
-        aria-label={isChatOpen ? "챗봇 닫기" : "챗봇 열기"} 
+        aria-label={isChatOpen ? "챗봇 닫기" : "챗봇 열기"}
       >
-        {isChatOpen ? "×" : "🤖"}
+        {isChatOpen ? "×" : <span className="chatbot-float-initial">M</span>}
       </button>
     </>
   );

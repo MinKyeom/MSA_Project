@@ -3,6 +3,7 @@ export const dynamic = "force-dynamic";
 
 import { fetchPosts } from "../services/api/posts";
 import PostCard from "../components/Post/PostCard";
+import SearchBar from "../components/Search/SearchBar";
 import "../styles/globals.css";
 import "../styles/HomePage.css";
 import Link from "next/link";
@@ -52,11 +53,10 @@ export default async function HomePage() {
         <h1 className="hero-title">MinKowskiM</h1>
         {/* 🌟 UI 텍스트 한국어 우선 */}
         <p className="hero-subtitle">A personal log across space and time.</p>
-        <Link
-          href="/post"
-          className="btn-primary"
-          style={{ marginTop: "20px" }}
-        >
+        <div className="hero-search-wrap">
+          <SearchBar variant="hero" />
+        </div>
+        <Link href="/post" className="btn-primary">
           모든 포스트 보기 &rarr;
         </Link>
       </section>

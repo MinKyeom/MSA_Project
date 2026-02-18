@@ -5,6 +5,7 @@ import { fetchPostById } from "../../../services/api/posts";
 import Comments from "../../../components/Comments/Comments";
 import MarkdownRenderer from "../../../components/MarkdownRenderer";
 import PostActions from "./PostActions";
+import RelatedPosts from "../../../components/Post/RelatedPosts";
 import "../../../styles/globals.css";
 import { notFound } from "next/navigation";
 
@@ -166,7 +167,10 @@ export default async function PostDetailPage({ params }) {
           </p>
         </div>
 
-        {/* 5. 댓글 섹션 (Client Component) */}
+        {/* 5. 연관 포스트 (벡터 검색 기반, Client Component) */}
+        <RelatedPosts postId={post.id} />
+
+        {/* 6. 댓글 섹션 (Client Component) */}
         <Comments postId={postId} />
       </article>
     </div>

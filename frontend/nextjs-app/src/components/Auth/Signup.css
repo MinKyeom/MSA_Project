@@ -4,20 +4,15 @@
 /* --- 1. 전체 페이지 (로그인/회원가입) --- */
 /* ---------------------------------------------------------------- */
 .auth-page { 
-  width: 100vw;
-  /* Next.js layout.jsx에서 헤더를 처리하므로, min-height를 100vh로 설정합니다. */
-  min-height: 100vh; 
-  
-  /* 🌟 수정 1: Flexbox로 변경하여 안정적인 중앙 정렬 구현 */
+  width: 100%;
+  /* 헤더·푸터 제외한 본문 영역에서 정확히 중앙 정렬 */
+  min-height: calc(100vh - 180px);
   display: flex;
-  justify-content: center; /* 수평 중앙 정렬 */
-  align-items: center; /* 수직 중앙 정렬 */
-  
-  margin: 0;
-  /* 🌟 수정 2: 상하 패딩 조정 */
-  padding: 40px 20px; 
-  
-  background: var(--color-background); 
+  justify-content: center;
+  align-items: center;
+  margin: 0 auto;
+  padding: 40px 20px;
+  background: var(--color-background);
   font-family: var(--font-family-main);
   transition: background 0.3s;
 }
@@ -84,7 +79,10 @@
 }
 
 .auth-form input[type="text"],
-.auth-form input[type="password"] {
+.auth-form input[type="password"],
+.auth-container input[type="text"],
+.auth-container input[type="password"],
+.auth-container input[type="email"] {
   width: 100%;
   padding: 14px 18px;
   border: 1px solid var(--color-border);
@@ -96,8 +94,112 @@
 }
 
 .auth-form input[type="text"]:focus,
-.auth-form input[type="password"]:focus {
+.auth-form input[type="password"]:focus,
+.auth-container input:focus {
   border-color: var(--color-accent);
   box-shadow: 0 0 0 2px var(--color-accent);
   outline: none;
+}
+
+/* OAuth 소셜 로그인 */
+.auth-form-wrapper {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.oauth-divider {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  margin: 1rem 0 0.5rem;
+  color: var(--color-text-sub);
+  font-size: 0.9em;
+}
+
+.oauth-divider::before,
+.oauth-divider::after {
+  content: "";
+  flex: 1;
+  height: 1px;
+  background: var(--color-border);
+}
+
+.oauth-buttons {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+  margin-top: 0.5rem;
+}
+
+.oauth-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  padding: 12px 16px;
+  border-radius: 8px;
+  font-size: 0.95em;
+  font-weight: 600;
+  text-decoration: none;
+  border: 1px solid var(--color-border);
+  transition: background 0.2s, color 0.2s;
+}
+
+.oauth-btn:hover {
+  opacity: 0.9;
+}
+
+.oauth-google {
+  background: #fff;
+  color: #333;
+  border-color: #dadce0;
+}
+
+.oauth-google:hover {
+  background: #f8f9fa;
+}
+
+.oauth-kakao {
+  background: #fee500;
+  color: #191919;
+  border-color: #fee500;
+}
+
+.oauth-kakao:hover {
+  background: #fada0a;
+}
+
+.oauth-icon {
+  font-weight: 700;
+  font-size: 1.1em;
+}
+
+/* 회원가입 제출 버튼 — 로그인과 동일한 풀 너비·일관성 */
+.auth-button {
+  width: 100%;
+  padding: 12px 20px;
+  border-radius: 8px;
+  font-weight: 600;
+  border: none;
+  cursor: pointer;
+  background-color: var(--color-accent);
+  color: white;
+  transition: all 0.2s ease-in-out;
+}
+.auth-button:hover:not(:disabled) {
+  background-color: #455a64;
+}
+.auth-button:disabled {
+  opacity: 0.7;
+  cursor: not-allowed;
+}
+
+.verify-btn {
+  background-color: var(--color-secondary) !important;
+  color: var(--color-text-main);
+  border: 1px solid var(--color-border);
+}
+.verify-btn:hover:not(:disabled) {
+  background-color: var(--color-border) !important;
 }

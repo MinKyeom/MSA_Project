@@ -72,16 +72,22 @@ export default function SignupForm() {
     setLoading(true);
     try {
       await sendVerificationCode(email);
-      showToast("인증번호가 발송되었습니다.", "success");
+      showToast({ message: "인증번호가 발송되었습니다.", type: "success" });
       setIsEmailSent(true);
       setEmailError("");
     } catch (error) {
-      // 403 에러 발생 시 사용자에게 알림
-      showToast(
-        "서버 접근 권한이 없습니다(403). 관리자에게 문의하세요.",
-        "error"
-      );
-      setEmailError("인증 요청 실패 (Security 설정 확인 필요)");
+      const status = error.response?.status;
+      const msg = error.response?.data?.message || error.message;
+      if (status === 502 || status === 503) {
+        showToast({ message: "메일 서비스를 일시적으로 사용할 수 없습니다. 잠시 후 다시 시도해주세요.", type: "error" });
+        setEmailError("메일 발송 서비스 일시 중단");
+      } else if (status === 403) {
+        showToast({ message: "서버 접근 권한이 없습니다(403). 관리자에게 문의하세요.", type: "error" });
+        setEmailError("인증 요청 실패 (Security 설정 확인 필요)");
+      } else {
+        showToast({ message: msg || "인증번호 발송에 실패했습니다.", type: "error" });
+        setEmailError(msg || "인증 요청 실패");
+      }
     } finally {
       setLoading(false);
     }
@@ -92,13 +98,13 @@ export default function SignupForm() {
     try {
       const success = await verifyCode(email, verificationCode);
       if (success) {
-        showToast("인증되었습니다.", "success");
+        showToast({ message: "인증되었습니다.", type: "success" });
         setIsVerified(true);
       } else {
-        showToast("인증번호가 일치하지 않습니다.", "error");
+        showToast({ message: "인증번호가 일치하지 않습니다.", type: "error" });
       }
     } catch (error) {
-      showToast("인증 확인 중 오류 발생", "error");
+      showToast({ message: "인증 확인 중 오류 발생", type: "error" });
     } finally {
       setLoading(false);
     }
@@ -107,23 +113,23 @@ export default function SignupForm() {
   const handleSignup = async (e) => {
     e.preventDefault();
     if (password !== confirmPassword) {
-      showToast("비밀번호가 일치하지 않습니다.", "error");
+      showToast({ message: "비밀번호가 일치하지 않습니다.", type: "error" });
       return;
     }
     if (!isVerified) {
-      showToast("이메일 인증을 완료해주세요.", "error");
+      showToast({ message: "이메일 인증을 완료해주세요.", type: "error" });
       return;
     }
     setLoading(true);
     try {
       await registerAuth({ username, password, nickname, email });
-      showToast("가입을 환영합니다!", "success");
+      showToast({ message: "가입을 환영합니다!", type: "success" });
       router.push("/signin");
     } catch (error) {
-      showToast(
-        "가입 실패: " + (error.response?.data?.message || "오류 발생"),
-        "error"
-      );
+      showToast({
+        message: "가입 실패: " + (error.response?.data?.message || "오류 발생"),
+        type: "error",
+      });
     } finally {
       setLoading(false);
     }
@@ -188,15 +194,8 @@ export default function SignupForm() {
             type="button"
             onClick={handleSendCode}
             disabled={loading || isVerified}
-            className="verify-btn"
-            style={{
-              padding: "0 15px",
-              height: "45px",
-              whiteSpace: "nowrap",
-              borderRadius: "4px",
-              cursor: "pointer",
-              backgroundColor: "#eee",
-            }}
+            className="btn-secondary-small verify-btn"
+            style={{ whiteSpace: "nowrap", minHeight: "45px" }}
           >
             {isEmailSent ? "재발송" : "인증요청"}
           </button>
