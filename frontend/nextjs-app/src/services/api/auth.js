@@ -1,7 +1,6 @@
-// src/services/api/authService.js
+// src/services/api/auth.js
 import axios from "axios";
 
-// MSA 환경에서는 서비스별 포트가 다를 수 있으므로 환경변수 분리 권장
 const AUTH_BASE_URL =
   process.env.NEXT_PUBLIC_AUTH_API_URL || "https://minkowskim.com";
 
@@ -10,16 +9,37 @@ const authAxios = axios.create({
   withCredentials: true,
 });
 
-// 공통 에러 처리 인터셉터
+// 401 시 로그아웃 콜백 (AuthProvider에서 세션 무효화용)
+let onUnauthorized = () => {};
+export const setOnUnauthorized = (fn) => {
+  onUnauthorized = fn;
+};
+
 authAxios.interceptors.response.use(
   (response) => response,
-  (error) => {
-    if (
-      error.response &&
-      (error.response.status === 401 || error.response.status === 403)
-    ) {
-      localStorage.removeItem("currentUserId");
-      localStorage.removeItem("currentUserNickname");
+  async (error) => {
+    if (error.response?.status === 401 || error.response?.status === 403) {
+      const originalRequest = error.config;
+      if (!originalRequest._retry && error.response?.status === 401) {
+        originalRequest._retry = true;
+        try {
+          await authAxios.post("/auth/refresh");
+          return authAxios(originalRequest);
+        } catch (refreshError) {
+          // 리프레시 실패 시 로그아웃 처리
+          onUnauthorized();
+          if (typeof window !== "undefined") {
+            localStorage.removeItem("currentUserId");
+            localStorage.removeItem("currentUserNickname");
+          }
+        }
+      } else {
+        onUnauthorized();
+        if (typeof window !== "undefined") {
+          localStorage.removeItem("currentUserId");
+          localStorage.removeItem("currentUserNickname");
+        }
+      }
     }
     return Promise.reject(error);
   }
@@ -55,21 +75,36 @@ export const getAuthUser = () => {
  */
 export const loginUser = async ({ username, password }) => {
   const response = await authAxios.post("/auth/login", { username, password });
-  const { id, nickname } = response.data;
-  if (id && nickname) {
+  const { id, username: name } = response.data;
+  if (id) {
     localStorage.setItem("currentUserId", id);
-    localStorage.setItem("currentUserNickname", nickname);
+    localStorage.setItem("currentUserNickname", response.data.nickname ?? name ?? "");
   }
   return response.data;
 };
 
 /**
- * 2. 로그아웃
+ * 로그아웃 (서버 Redis 리프레시 토큰 삭제 + 쿠키 제거)
  */
 export const logoutUser = async () => {
-  await authAxios.post("/auth/logout");
-  localStorage.removeItem("currentUserId");
-  localStorage.removeItem("currentUserNickname");
+  try {
+    await authAxios.post("/auth/logout");
+  } finally {
+    localStorage.removeItem("currentUserId");
+    localStorage.removeItem("currentUserNickname");
+  }
+};
+
+/** 세션 연장 — 액세스 토큰 갱신(30분 연장). 만료 직전 호출 권장 */
+export const extendSession = async () => {
+  const res = await authAxios.post("/auth/extend");
+  return res.data;
+};
+
+/** 리프레시 토큰으로 새 액세스 토큰 발급 */
+export const refreshSession = async () => {
+  const res = await authAxios.post("/auth/refresh");
+  return res.data;
 };
 
 /**

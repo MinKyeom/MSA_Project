@@ -11,6 +11,7 @@ import {
   fetchCategoriesList,
   fetchTagsList,
 } from "../../services/api/categories-tags";
+import SearchBar from "../Search/SearchBar";
 
 export default function Sidebar({ isSidebarOpen, closeSidebar }) {
   const { isAuthenticated, nickname, refreshAuth } = useAuth();
@@ -76,6 +77,9 @@ export default function Sidebar({ isSidebarOpen, closeSidebar }) {
         </div>
 
         <div className="sidebar-content" style={{ flex: 1, overflowY: "auto" }}>
+          <div className="sidebar-search-section" style={{ marginBottom: "20px" }}>
+            <SearchBar variant="sidebar" onNavigate={closeSidebar} />
+          </div>
           <div className="sidebar-auth-section" style={{ marginBottom: "25px" }}>
             {isAuthenticated ? (
               <div className="sidebar-nav-list">

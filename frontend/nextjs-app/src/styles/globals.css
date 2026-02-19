@@ -25,6 +25,8 @@
   --color-border: rgba(0, 0, 0, 0.1); /* 테두리 (라이트) */
   --color-shadow: rgba(0, 0, 0, 0.05); /* 얕은 그림자 (라이트) */
   --color-shadow-strong: rgba(0, 0, 0, 0.15); /* 강한 그림자 (라이트) */
+  --color-success: #2e7d32;
+  --color-error: #c62828;
 }
 
 /* ---------------------------------------------------------------- */
@@ -45,6 +47,8 @@ body.dark-mode {
   --color-border: rgba(255, 255, 255, 0.1); /* 테두리 (다크) */
   --color-shadow: rgba(0, 0, 0, 0.3); /* 얕은 그림자 (다크) */
   --color-shadow-strong: rgba(0, 0, 0, 0.6); /* 강한 그림자 (다크) */
+  --color-success: #66bb6a;
+  --color-error: #ef5350;
 }
 
 /* ---------------------------------------------------------------- */
@@ -101,6 +105,13 @@ a:hover {
   width: 100%;
   margin: 0 auto;
   padding: 20px;
+}
+
+/* 로그인/회원가입 페이지일 때 본문 영역을 flex로 만들어 카드 중앙 정렬 */
+.main-content-container:has(.auth-page) {
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
 /* ---------------------------------------------------------------- */

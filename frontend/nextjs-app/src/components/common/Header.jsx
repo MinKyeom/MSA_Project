@@ -10,9 +10,10 @@ import HeaderThemeToggle from "./HeaderThemeToggle";
 import "../../styles/Header.css";
 
 export default function Header() {
-  const { isAuthenticated, nickname, refreshAuth } = useAuth();
+  const { isAuthenticated, nickname, refreshAuth, extendSessionManually } = useAuth();
   const { showToast } = useToast();
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
+  const [extending, setExtending] = useState(false);
 
   const handleLogout = async () => {
     try {
@@ -23,6 +24,18 @@ export default function Header() {
       showToast({ message: "오류가 발생했습니다.", type: "error" });
       console.error(error);
       refreshAuth();
+    }
+  };
+
+  const handleExtendSession = async () => {
+    setExtending(true);
+    try {
+      const ok = await extendSessionManually();
+      if (ok) showToast({ message: "세션이 30분 연장되었습니다.", type: "success" });
+    } catch (e) {
+      showToast({ message: "세션 연장에 실패했습니다.", type: "error" });
+    } finally {
+      setExtending(false);
     }
   };
 
@@ -54,7 +67,17 @@ export default function Header() {
           <nav className="header-auth-nav">
             {isAuthenticated ? (
               <div className="auth-user-info">
-                <span className="user-nickname-display">{nickname}님</span>
+                <span className="user-nickname-display">{nickname || "회원"}님</span>
+                <button
+                  type="button"
+                  onClick={handleExtendSession}
+                  disabled={extending}
+                  className="btn-primary-small"
+                  title="세션 30분 연장"
+                  style={{ marginRight: "6px" }}
+                >
+                  {extending ? "연장 중…" : "세션 연장"}
+                </button>
                 <button onClick={handleLogout} className="btn-primary-small">
                   로그아웃
                 </button>
