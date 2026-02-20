@@ -1,0 +1,188 @@
+/* Search bar — hero / sidebar 공통 */
+.search-bar {
+  display: flex;
+  align-items: center;
+  gap: 0;
+  background: var(--color-primary);
+  border: 1px solid var(--color-border);
+  border-radius: 999px;
+  overflow: hidden;
+  box-shadow: 0 2px 8px var(--color-shadow);
+  transition: box-shadow 0.2s, border-color 0.2s;
+}
+
+.search-bar:focus-within {
+  border-color: var(--color-accent);
+  box-shadow: 0 0 0 2px rgba(84, 110, 122, 0.2);
+}
+
+.search-bar__input {
+  flex: 1;
+  min-width: 0;
+  padding: 0 1rem;
+  border: none;
+  background: transparent;
+  color: var(--color-text-main);
+  font-size: 1rem;
+  font-family: inherit;
+}
+
+.search-bar__input::placeholder {
+  color: var(--color-text-sub);
+}
+
+.search-bar__input:focus {
+  outline: none;
+}
+
+.search-bar__btn {
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 48px;
+  height: 48px;
+  border: none;
+  background: var(--color-accent);
+  color: #fff;
+  cursor: pointer;
+  transition: background-color 0.2s, opacity 0.2s;
+}
+
+.search-bar__btn:hover {
+  opacity: 0.9;
+}
+
+.search-bar__btn:focus-visible {
+  outline: 2px solid var(--color-accent);
+  outline-offset: 2px;
+}
+
+.search-bar__icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.search-bar__icon svg {
+  width: 1.15rem;
+  height: 1.15rem;
+  color: inherit;
+}
+
+/* Hero: 넓고 눈에 띄게 */
+.search-bar--hero {
+  max-width: 520px;
+  margin: 0 auto;
+}
+
+.search-bar--hero .search-bar__input {
+  height: 52px;
+  padding-left: 1.25rem;
+  font-size: 1.05rem;
+}
+
+.search-bar--hero .search-bar__btn {
+  width: 52px;
+  height: 52px;
+}
+
+/* Sidebar: 컴팩트 */
+.search-bar--sidebar {
+  max-width: 100%;
+}
+
+.search-bar--sidebar .search-bar__input {
+  height: 40px;
+  padding-left: 0.875rem;
+  font-size: 0.95rem;
+}
+
+.search-bar--sidebar .search-bar__btn {
+  width: 40px;
+  height: 40px;
+}
+
+.search-bar--sidebar .search-bar__icon {
+  font-size: 1rem;
+}
+
+/* Search page */
+.search-page {
+  max-width: 720px;
+  margin: 0 auto;
+  padding: 2rem 1rem 4rem;
+}
+
+.search-page__bar {
+  margin-bottom: 2rem;
+}
+
+.search-page__title {
+  font-family: var(--font-family-cursive), cursive;
+  font-size: 1.75rem;
+  font-weight: 400;
+  color: var(--color-text-main);
+  margin-bottom: 1.5rem;
+}
+
+.search-page__loading,
+.search-page__empty,
+.search-page__error {
+  color: var(--color-text-sub);
+  margin: 1rem 0;
+}
+
+.search-page__error {
+  color: #c62828;
+}
+
+/* Result list */
+.search-results-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.search-results-list li {
+  margin-bottom: 1rem;
+}
+
+.search-result-card {
+  display: block;
+  padding: 1.25rem;
+  background: var(--color-primary);
+  border: 1px solid var(--color-border);
+  border-radius: 12px;
+  color: var(--color-text-main);
+  text-decoration: none;
+  transition: border-color 0.2s, box-shadow 0.2s;
+}
+
+.search-result-card:hover {
+  border-color: var(--color-accent);
+  box-shadow: 0 4px 12px var(--color-shadow);
+}
+
+.search-result-card__title {
+  font-size: 1.1rem;
+  font-weight: 600;
+  margin: 0 0 0.5rem;
+  color: var(--color-text-main);
+}
+
+.search-result-card__snippet {
+  font-size: 0.9rem;
+  color: var(--color-text-sub);
+  margin: 0 0 0.5rem;
+  line-height: 1.5;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+.search-result-card__score {
+  font-size: 0.8rem;
+  color: var(--color-accent);
+}
