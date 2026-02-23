@@ -18,7 +18,8 @@ public class PostResponse {
     private LocalDateTime createdAt;
     
     private String categoryName; 
-    private List<String> tagNames; 
+    private List<String> tagNames;
+    private Long viewCount;
 
     public static PostResponse fromEntity(Post post) {
         PostResponse dto = new PostResponse();
@@ -39,6 +40,7 @@ public class PostResponse {
         dto.setTagNames(post.getTags().stream()
                                     .map(tag -> tag.getName())
                                     .collect(Collectors.toList()));
+        dto.setViewCount(post.getViewCount() != null ? post.getViewCount() : 0L);
         return dto;
     }
 }

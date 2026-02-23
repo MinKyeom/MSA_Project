@@ -23,10 +23,18 @@ GROQ_API_KEY = os.getenv("GROQ_API_KEY")
 ADMIN_PASSWORD = os.getenv("ADMIN_PASSWORD", "1234") # 기본값 1234
 
 try:
-    llm = ChatGroq(model="llama-3.3-70b-versatile", groq_api_key=GROQ_API_KEY, temperature=0.2)
+    llm = ChatGroq(model="llama-3.3-70b-versatile", groq_api_key=GROQ_API_KEY, temperature=0.2) if GROQ_API_KEY else None
 except Exception as e:
     print(f"LLM 로드 에러: {e}")
     llm = None
+
+
+@app.get("/chat/health")
+@app.get("/health")
+async def health():
+    """Gateway/로드밸런서 헬스체크용. LLM 설정 여부만 반환."""
+    return {"status": "ok", "llm_configured": llm is not None}
+
 
 @app.post("/chat")
 async def chat_endpoint(payload: ChatPayload):
@@ -58,6 +66,9 @@ async def chat_endpoint(payload: ChatPayload):
         return {"response": response_text}
 
     # 2. 일반 대화 및 정보 조회 처리
+    if not llm:
+        return {"response": "챗봇 엔진(GROQ API)이 설정되지 않았습니다. GROQ_API_KEY를 확인해 주세요."}
+
     history_list = get_chat_history(session_id)
     history_text = "\n".join(history_list) if history_list else "이전 대화 없음"
     context_text = retrieve_context(msg) # DB 정보 우선 참조
@@ -102,5 +113,12 @@ async def chat_endpoint(payload: ChatPayload):
 
 @app.post("/clear")
 async def clear_chat(payload: ChatPayload):
+    clear_session(payload.session_id)
+    return {"message": "기록이 초기화되었습니다."}
+
+
+# Gateway가 /chat/** 를 그대로 전달하므로 /chat/clear 요청도 처리 (동일 동작)
+@app.post("/chat/clear")
+async def clear_chat_under_chat(payload: ChatPayload):
     clear_session(payload.session_id)
     return {"message": "기록이 초기화되었습니다."}

@@ -7,7 +7,7 @@ import lombok.Builder; // ⭐ 추가
 import lombok.NoArgsConstructor; // ⭐ 추가
 import lombok.AllArgsConstructor; // ⭐ 추가
 import lombok.AccessLevel; // ⭐ 추가
-import java.time.LocalDateTime;
+import java.time.Instant;
 
 @Entity
 @Getter @Setter
@@ -23,7 +23,8 @@ public class Comment {
     @Column(nullable = false, columnDefinition = "TEXT") //PostgreSQL 수정
     private String content;
 
-    private LocalDateTime createdAt = LocalDateTime.now();
+    @Column(name = "created_at", columnDefinition = "TIMESTAMPTZ")
+    private Instant createdAt = Instant.now();
     
     // 관계 1: Post (게시글) 유지
     @ManyToOne(fetch = FetchType.LAZY)

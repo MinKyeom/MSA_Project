@@ -9,6 +9,8 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
 
+import java.util.List;
+
 @Repository
 public interface PostRepository extends JpaRepository<Post, Long> {
     
@@ -35,5 +37,9 @@ public interface PostRepository extends JpaRepository<Post, Long> {
     long countByCategory(Category category);
     
     // 서비스의 getAllTagsWithCount 내 countByTags와 일치하도록 수정
-    long countByTags(Tag tag); 
+    long countByTags(Tag tag);
+
+    /** 조회수 기준 인기글 상위 N개 (메인 페이지 인기글) */
+    @Query("SELECT p FROM Post p ORDER BY p.viewCount DESC")
+    List<Post> findTopByViewCount(Pageable pageable);
 }

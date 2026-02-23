@@ -40,6 +40,11 @@ public class PostController {
         postService.deletePost(id, authenticatedUserId);
     }
 
+    @GetMapping("/popular")
+    public List<PostResponse> getPopularPosts(@RequestParam(defaultValue = "3") int limit) {
+        return postService.getTopPopularPosts(Math.min(limit, 10));
+    }
+
     @GetMapping("/{id}")
     public PostResponse getPost(@PathVariable Long id) {
         return postService.getPostById(id);

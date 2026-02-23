@@ -35,6 +35,9 @@ public class Post {
 
     private LocalDateTime createdAt = LocalDateTime.now();
 
+    @Column(name = "view_count", nullable = false)
+    private Long viewCount = 0L;
+
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "category_id")
     private Category category; 

@@ -5,7 +5,7 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.Setter;
 
-import java.time.LocalDateTime;
+import java.time.Instant;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -16,7 +16,7 @@ public class CommentResponse {
     private String content;
     private String authorNickname;
     private String authorId; 
-    private LocalDateTime createdAt;
+    private Instant createdAt;
 
     // 기존 메서드 (유지)
     public static CommentResponse fromEntity(Comment comment) {
