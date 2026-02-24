@@ -3,9 +3,10 @@ import os
 import threading
 from fastapi import FastAPI, Query
 from fastapi.middleware.cors import CORSMiddleware
+from pydantic import BaseModel
 
 from app.config import KAFKA_BOOTSTRAP_SERVERS
-from app.db import init_db, upsert_embedding, search_similar
+from app.db import init_db, upsert_embedding, search_similar, delete_embedding
 from app.embedding import embed, get_model
 
 app = FastAPI(title="Search Service", version="0.1.0")
@@ -35,6 +36,36 @@ def startup():
 @app.get("/health")
 def health():
     return {"status": "UP"}
+
+
+class IndexPostBody(BaseModel):
+    postId: int | None = None
+    post_id: int | None = None
+    title: str = ""
+    content: str = ""
+
+
+@app.post("/api/search/index")
+def index_post(body: IndexPostBody):
+    """포스트 작성/수정 직후 검색 인덱스 동기 반영 (Kafka 지연 보완)."""
+    post_id = body.postId or body.post_id
+    if not post_id:
+        from fastapi.responses import JSONResponse
+        return JSONResponse(status_code=400, content={"error": "postId required"})
+    title = body.title or ""
+    content = (body.content or "")[:5000]
+    text = f"{title} {content}".strip()
+    vector = embed(text)
+    snippet = (content or "")[:500]
+    upsert_embedding(int(post_id), title, snippet, vector)
+    return {"ok": True, "postId": int(post_id)}
+
+
+@app.delete("/api/search/index/{post_id:int}")
+def remove_index(post_id: int):
+    """포스트 삭제 시 검색 인덱스에서 제거."""
+    delete_embedding(post_id)
+    return {"ok": True, "postId": post_id}
 
 
 @app.get("/api/search")

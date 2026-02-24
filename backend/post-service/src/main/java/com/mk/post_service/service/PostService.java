@@ -191,6 +191,20 @@ public class PostService {
         return mapPostPageToResponse(postRepository.findByTagsName(tagName, pageable));
     }
 
+    /** 키워드(SQL) 검색 — 하이브리드 검색용. 제목·본문 LIKE 검색 결과를 snippet 형태로 반환. */
+    public List<com.mk.post_service.dto.PostSearchResultDto> searchByKeyword(String q, int limit) {
+        if (q == null || q.trim().isEmpty()) return Collections.emptyList();
+        Pageable pageable = org.springframework.data.domain.PageRequest.of(0, Math.min(limit, 50));
+        Page<Post> page = postRepository.searchByKeyword(q.trim(), pageable);
+        return page.getContent().stream()
+                .map(p -> {
+                    String content = p.getContent() != null ? p.getContent() : "";
+                    String snippet = content.length() > 200 ? content.substring(0, 200) + "..." : content;
+                    return new com.mk.post_service.dto.PostSearchResultDto(p.getId(), p.getTitle(), snippet);
+                })
+                .collect(Collectors.toList());
+    }
+
     public List<CategoryResponse> getAllCategoriesWithCount() {
         return categoryRepository.findAll().stream()
                 .map(category -> CategoryResponse.fromEntity(category, postRepository.countByCategory(category)))

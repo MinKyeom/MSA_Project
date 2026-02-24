@@ -146,6 +146,25 @@ public class AuthController {
         return ResponseEntity.ok().build();
     }
 
+    /** 현재 로그인 사용자 정보 (id, username, role) — 프론트 권한 표시용 */
+    @GetMapping("/me")
+    public ResponseEntity<?> getMe(HttpServletRequest request) {
+        String accessToken = getCookieValue(request, COOKIE_AUTH_TOKEN);
+        if (accessToken == null) {
+            return ResponseEntity.status(401).body(Map.of("error", "Not authenticated"));
+        }
+        String userId = tokenProvider.validateAndGetUserId(accessToken);
+        if (userId == null) {
+            return ResponseEntity.status(401).body(Map.of("error", "Invalid or expired token"));
+        }
+        AuthUser user = authService.getById(userId);
+        return ResponseEntity.ok(Map.of(
+            "id", user.getId(),
+            "username", user.getUsername(),
+            "role", user.getRole() != null ? user.getRole().name() : "ROLE_USER"
+        ));
+    }
+
     /** 리프레시 토큰으로 새 액세스 토큰 발급(세션 연장 가능) */
     @PostMapping("/refresh")
     public ResponseEntity<?> refresh(HttpServletRequest request, HttpServletResponse response) {

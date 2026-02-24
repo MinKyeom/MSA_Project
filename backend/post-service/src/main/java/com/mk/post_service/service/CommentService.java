@@ -10,6 +10,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.reactive.function.client.WebClient;
 
+import java.time.Instant;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -37,6 +38,7 @@ public class CommentService {
                 .content(request.getContent())
                 .authorId(authenticatedUserId)
                 .post(post)
+                .createdAt(Instant.now())
                 .build();
         
         Comment savedComment = commentRepository.save(comment);

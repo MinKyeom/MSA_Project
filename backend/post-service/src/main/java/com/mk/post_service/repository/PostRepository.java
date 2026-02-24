@@ -7,6 +7,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
@@ -42,4 +43,8 @@ public interface PostRepository extends JpaRepository<Post, Long> {
     /** 조회수 기준 인기글 상위 N개 (메인 페이지 인기글) */
     @Query("SELECT p FROM Post p ORDER BY p.viewCount DESC")
     List<Post> findTopByViewCount(Pageable pageable);
+
+    /** 키워드 검색 (제목·본문 SQL LIKE) — 하이브리드 검색용 */
+    @Query("SELECT p FROM Post p WHERE LOWER(p.title) LIKE LOWER(CONCAT('%', :q, '%')) OR LOWER(p.content) LIKE LOWER(CONCAT('%', :q, '%'))")
+    Page<Post> searchByKeyword(@Param("q") String q, Pageable pageable);
 }

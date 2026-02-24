@@ -2,6 +2,7 @@ package com.mk.post_service.controller;
 
 import com.mk.post_service.dto.PostRequest;
 import com.mk.post_service.dto.PostResponse;
+import com.mk.post_service.dto.PostSearchResultDto;
 import com.mk.post_service.dto.CategoryResponse;
 import com.mk.post_service.dto.TagResponse;
 import com.mk.post_service.service.PostService;
@@ -25,6 +26,10 @@ public class PostController {
     @PostMapping
     public PostResponse createPost(@RequestBody PostRequest request) {
         String authenticatedUserId = SecurityUtils.getAuthenticatedUserId();
+        String role = SecurityUtils.getAuthenticatedUserRole();
+        if (role == null || !"ROLE_ADMIN".equals(role)) {
+            throw new org.springframework.security.access.AccessDeniedException("포스트 작성 권한은 관리자만 있습니다.");
+        }
         return postService.createPost(request, authenticatedUserId);
     }
 
@@ -43,6 +48,25 @@ public class PostController {
     @GetMapping("/popular")
     public List<PostResponse> getPopularPosts(@RequestParam(defaultValue = "3") int limit) {
         return postService.getTopPopularPosts(Math.min(limit, 10));
+    }
+
+    /** 키워드(SQL) 검색 — 하이브리드 검색용. 제목·본문 LIKE 검색. */
+    @GetMapping("/search")
+    public java.util.Map<String, Object> searchByKeyword(
+            @RequestParam String q,
+            @RequestParam(defaultValue = "20") int limit) {
+        java.util.List<PostSearchResultDto> results = postService.searchByKeyword(q, limit);
+        return java.util.Map.of(
+            "query", q,
+            "results", results.stream()
+                .map(dto -> java.util.Map.of(
+                    "postId", dto.getPostId(),
+                    "title", dto.getTitle() != null ? dto.getTitle() : "",
+                    "snippet", dto.getSnippet() != null ? dto.getSnippet() : "",
+                    "score", 1.0
+                ))
+                .collect(java.util.stream.Collectors.toList())
+        );
     }
 
     @GetMapping("/{id}")

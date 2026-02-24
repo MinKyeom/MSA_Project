@@ -23,8 +23,15 @@ public class Comment {
     @Column(nullable = false, columnDefinition = "TEXT") //PostgreSQL 수정
     private String content;
 
-    @Column(name = "created_at", columnDefinition = "TIMESTAMPTZ")
+    @Column(name = "created_at", nullable = false, columnDefinition = "TIMESTAMPTZ")
     private Instant createdAt = Instant.now();
+
+    @PrePersist
+    protected void onPersist() {
+        if (this.createdAt == null) {
+            this.createdAt = Instant.now();
+        }
+    }
     
     // 관계 1: Post (게시글) 유지
     @ManyToOne(fetch = FetchType.LAZY)
