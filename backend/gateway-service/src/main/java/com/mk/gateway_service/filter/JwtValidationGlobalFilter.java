@@ -45,6 +45,7 @@ public class JwtValidationGlobalFilter implements GlobalFilter, Ordered {
         Pattern.compile("^/api/posts/categories$"),
         Pattern.compile("^/api/posts/tags$"),
         Pattern.compile("^/api/posts/\\d+/comments$"), // GET 댓글 목록
+        Pattern.compile("^/api/posts/search.*"),       // GET 검색 (키워드)
         Pattern.compile("^/api/search.*"),
         Pattern.compile("^/chat.*"),
         Pattern.compile("^/actuator/.*")
