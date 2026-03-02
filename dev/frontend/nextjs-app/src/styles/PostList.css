@@ -1,0 +1,203 @@
+/* src/styles/PostList.css (게시글 목록 페이지 전용 스타일) */
+
+/* ---------------------------------------------------------------- */
+/* --- 1. 전체 컨테이너 --- */
+/* ---------------------------------------------------------------- */
+.post-list-page {
+  padding: 40px 20px 80px;
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+/* ---------------------------------------------------------------- */
+/* --- 2. 헤더 영역 --- */
+/* ---------------------------------------------------------------- */
+.list-header {
+  margin-bottom: 50px;
+  text-align: center;
+}
+
+.list-header h1 {
+  font-size: 2.8rem;
+  font-weight: 800;
+  margin-bottom: 15px;
+  color: var(--color-text-main);
+}
+
+.list-header p {
+  color: var(--color-text-sub);
+  font-size: 1.1rem;
+  line-height: 1.6;
+}
+
+/* ---------------------------------------------------------------- */
+/* --- 3. 포스트 그리드 --- */
+/* ---------------------------------------------------------------- */
+.post-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+  gap: 35px;
+  margin-bottom: 50px;
+}
+
+/* ---------------------------------------------------------------- */
+/* --- 4. 빈 상태 메시지 --- */
+/* ---------------------------------------------------------------- */
+.empty-state {
+  text-align: center;
+  padding: 100px 20px;
+}
+
+.empty-state-message {
+  font-size: 1.3rem;
+  color: var(--color-text-sub);
+  margin-bottom: 20px;
+}
+
+.empty-state-link {
+  color: var(--color-accent);
+  text-decoration: underline;
+  font-weight: 600;
+  transition: color 0.2s ease-in-out;
+}
+
+.empty-state-link:hover {
+  color: #455a64;
+}
+
+/* ---------------------------------------------------------------- */
+/* --- 5. 페이지네이션 --- */
+/* ---------------------------------------------------------------- */
+.pagination-controls {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 25px;
+  margin-top: 50px;
+  padding: 20px 0;
+}
+
+.pagination-info {
+  font-weight: 700;
+  color: var(--color-text-main);
+  font-size: 1.05rem;
+}
+
+.pagination-btn {
+  min-width: 100px;
+  padding: 12px 24px;
+  text-align: center;
+  transition: all 0.2s ease-in-out;
+}
+
+.pagination-btn.disabled {
+  pointer-events: none;
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+
+/* ---------------------------------------------------------------- */
+/* --- 6. 에러 상태 --- */
+/* ---------------------------------------------------------------- */
+.error-container {
+  padding: 100px 20px;
+  text-align: center;
+}
+
+.error-container h2 {
+  color: var(--color-text-main);
+  font-size: 2rem;
+  margin-bottom: 15px;
+}
+
+.error-container p {
+  color: var(--color-text-sub);
+  font-size: 1.1rem;
+}
+
+/* ---------------------------------------------------------------- */
+/* --- 7. 반응형 디자인 --- */
+/* ---------------------------------------------------------------- */
+@media (max-width: 768px) {
+  .post-list-page {
+    padding: 30px 15px 60px;
+  }
+
+  .list-header {
+    margin-bottom: 40px;
+  }
+
+  .list-header h1 {
+    font-size: 2rem;
+    margin-bottom: 12px;
+  }
+
+  .list-header p {
+    font-size: 1rem;
+  }
+
+  .post-grid {
+    grid-template-columns: 1fr;
+    gap: 25px;
+    margin-bottom: 40px;
+  }
+
+  .pagination-controls {
+    gap: 15px;
+    margin-top: 40px;
+    flex-wrap: wrap;
+  }
+
+  .pagination-btn {
+    min-width: 80px;
+    padding: 10px 20px;
+    font-size: 0.95rem;
+  }
+
+  .pagination-info {
+    font-size: 1rem;
+  }
+
+  .empty-state {
+    padding: 60px 15px;
+  }
+
+  .empty-state-message {
+    font-size: 1.1rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .post-list-page {
+    padding: 20px 10px 50px;
+  }
+
+  .list-header h1 {
+    font-size: 1.6rem;
+  }
+
+  .list-header p {
+    font-size: 0.95rem;
+  }
+
+  .post-grid {
+    gap: 20px;
+  }
+
+  .pagination-controls {
+    gap: 10px;
+  }
+
+  .pagination-btn {
+    min-width: 70px;
+    padding: 10px 18px;
+    font-size: 0.9rem;
+  }
+
+  .pagination-info {
+    font-size: 0.95rem;
+    width: 100%;
+    text-align: center;
+    order: -1;
+  }
+}

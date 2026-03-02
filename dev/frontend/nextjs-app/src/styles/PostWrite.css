@@ -1,0 +1,275 @@
+/* src/styles/PostWrite.css (게시글 작성/수정 페이지 전용 스타일) */
+
+/* ---------------------------------------------------------------- */
+/* --- 1. 전체 컨테이너 --- */
+/* ---------------------------------------------------------------- */
+.post-write-container {
+  padding: 40px 20px;
+  max-width: 1400px;
+  margin: 0 auto;
+}
+
+.post-write-header {
+  margin-bottom: 40px;
+  padding-bottom: 20px;
+  border-bottom: 2px solid var(--color-border);
+}
+
+.post-write-header h1 {
+  color: var(--color-text-main);
+  font-size: 2.5rem;
+  font-weight: 700;
+  margin: 0;
+}
+
+/* ---------------------------------------------------------------- */
+/* --- 2. 폼 스타일 --- */
+/* ---------------------------------------------------------------- */
+.post-write-form {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+}
+
+/* 제목 입력 */
+.post-title-input {
+  width: 100%;
+  padding: 18px 20px;
+  font-size: 1.3rem;
+  font-weight: 600;
+  border-radius: 12px;
+  border: 2px solid var(--color-border);
+  background-color: var(--color-primary);
+  color: var(--color-text-main);
+  transition: all 0.2s ease-in-out;
+}
+
+.post-title-input:focus {
+  border-color: var(--color-accent);
+  box-shadow: 0 0 0 3px rgba(84, 110, 122, 0.1);
+  outline: none;
+}
+
+.post-title-input::placeholder {
+  color: var(--color-text-sub);
+  font-weight: 400;
+}
+
+/* ---------------------------------------------------------------- */
+/* --- 3. 카테고리 및 태그 입력 --- */
+/* ---------------------------------------------------------------- */
+.post-meta-inputs {
+  display: flex;
+  gap: 20px;
+}
+
+.post-category-input,
+.post-tags-input {
+  padding: 14px 18px;
+  border-radius: 10px;
+  border: 1px solid var(--color-border);
+  background-color: var(--color-primary);
+  color: var(--color-text-main);
+  font-size: 1rem;
+  transition: all 0.2s ease-in-out;
+}
+
+.post-category-input {
+  flex: 1;
+}
+
+.post-tags-input {
+  flex: 2;
+}
+
+.post-category-input:focus,
+.post-tags-input:focus {
+  border-color: var(--color-accent);
+  box-shadow: 0 0 0 2px rgba(84, 110, 122, 0.1);
+  outline: none;
+}
+
+.post-category-input::placeholder,
+.post-tags-input::placeholder {
+  color: var(--color-text-sub);
+}
+
+/* ---------------------------------------------------------------- */
+/* --- 4. 에디터 및 미리보기 영역 --- */
+/* ---------------------------------------------------------------- */
+.post-editor-container {
+  display: flex;
+  gap: 24px;
+  min-height: 650px;
+}
+
+.post-editor-textarea {
+  flex: 1;
+  padding: 24px;
+  border-radius: 12px;
+  border: 2px solid var(--color-border);
+  background-color: var(--color-primary);
+  color: var(--color-text-main);
+  resize: none;
+  font-size: 1.05rem;
+  line-height: 1.8;
+  font-family: 'Consolas', 'Monaco', 'Courier New', monospace;
+  transition: all 0.2s ease-in-out;
+}
+
+.post-editor-textarea:focus {
+  border-color: var(--color-accent);
+  box-shadow: 0 0 0 3px rgba(84, 110, 122, 0.1);
+  outline: none;
+}
+
+.post-editor-textarea::placeholder {
+  color: var(--color-text-sub);
+  font-family: var(--font-family-main);
+}
+
+.post-preview-area {
+  flex: 1;
+  padding: 24px;
+  border: 2px solid var(--color-border);
+  border-radius: 12px;
+  background-color: var(--color-secondary);
+  overflow-y: auto;
+  color: var(--color-text-main);
+}
+
+/* 미리보기 영역 내 마크다운 스타일 */
+.post-preview-area.markdown-body {
+  background-color: var(--color-secondary);
+}
+
+/* ---------------------------------------------------------------- */
+/* --- 5. 하단 버튼 영역 --- */
+/* ---------------------------------------------------------------- */
+.post-write-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 15px;
+  margin-top: 20px;
+  padding-top: 20px;
+  border-top: 1px solid var(--color-border);
+}
+
+.post-cancel-btn {
+  padding: 14px 28px;
+  border-radius: 8px;
+  text-decoration: none;
+  display: inline-block;
+  text-align: center;
+  font-weight: 600;
+  transition: all 0.2s ease-in-out;
+}
+
+.post-submit-btn {
+  padding: 14px 48px;
+  border-radius: 8px;
+  cursor: pointer;
+  font-weight: 700;
+  font-size: 1.05rem;
+  transition: all 0.2s ease-in-out;
+}
+
+.post-submit-btn:disabled {
+  cursor: not-allowed;
+  opacity: 0.5;
+}
+
+.post-submit-btn:not(:disabled):hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 15px var(--color-shadow-strong);
+}
+
+/* ---------------------------------------------------------------- */
+/* --- 6. 로딩 상태 --- */
+/* ---------------------------------------------------------------- */
+.post-write-loading {
+  padding: 100px 20px;
+  text-align: center;
+}
+
+.post-write-loading p {
+  color: var(--color-text-main);
+  font-size: 1.2rem;
+  font-weight: 500;
+}
+
+/* ---------------------------------------------------------------- */
+/* --- 7. 반응형 디자인 --- */
+/* ---------------------------------------------------------------- */
+@media (max-width: 1024px) {
+  .post-editor-container {
+    flex-direction: column;
+    min-height: auto;
+  }
+
+  .post-editor-textarea,
+  .post-preview-area {
+    min-height: 450px;
+  }
+}
+
+@media (max-width: 768px) {
+  .post-write-container {
+    padding: 30px 15px;
+  }
+
+  .post-write-header h1 {
+    font-size: 2rem;
+  }
+
+  .post-title-input {
+    font-size: 1.1rem;
+    padding: 15px 18px;
+  }
+
+  .post-meta-inputs {
+    flex-direction: column;
+    gap: 15px;
+  }
+
+  .post-editor-textarea,
+  .post-preview-area {
+    padding: 18px;
+    min-height: 400px;
+    font-size: 1rem;
+  }
+
+  .post-write-actions {
+    flex-direction: column-reverse;
+  }
+
+  .post-cancel-btn,
+  .post-submit-btn {
+    width: 100%;
+    padding: 14px 20px;
+  }
+}
+
+@media (max-width: 480px) {
+  .post-write-header h1 {
+    font-size: 1.6rem;
+  }
+
+  .post-title-input {
+    font-size: 1rem;
+    padding: 12px 15px;
+  }
+
+  .post-category-input,
+  .post-tags-input {
+    font-size: 0.95rem;
+    padding: 12px 15px;
+  }
+
+  .post-editor-textarea,
+  .post-preview-area {
+    padding: 15px;
+    min-height: 350px;
+    font-size: 0.95rem;
+  }
+}
