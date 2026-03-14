@@ -2,18 +2,14 @@
 // Next.js Signin Page (Server Component Wrapper)
 
 import Link from "next/link";
-import SignInForm from "../../../components/Auth/SignInForm"; 
-import '../../../components/Auth/Signup.css'; 
+import SignInForm from "../../../components/Auth/SignInForm";
 
 // 🌟 수정: 한국어 우선 SEO 메타데이터 정의
 export const metadata = {
-  // 🌟 UI 텍스트 한국어 우선: 로그인
-  title: "로그인", 
-  // 🌟 UI 텍스트 한국어 우선: MinKowskiM 블로그에 로그인하여 글 작성 및 다양한 기능을 사용하세요.
-  description: "MinKowskiM 블로그에 로그인하여 글 작성 및 다양한 기능을 사용하세요.",
+  title: "Log in",
+  description: "Log in to MinKowskiM to write posts and use all features.",
   alternates: {
-    canonical:
-      "https://your-blog-url.com/signin",
+    canonical: "https://minkowskim.com/signin",
   },
 };
 
@@ -21,15 +17,17 @@ export default function SignInPage() {
   return (
     <div className="auth-page">
       <div className="auth-container">
-        {/* 🌟 UI 텍스트 한국어 우선: 로그인 */}
-        <h1 className="auth-title">로그인</h1>
+        <h1 className="auth-title">Log in</h1>
 
         <SignInForm />
 
         <div className="auth-link">
-          {/* 🌟 UI 텍스트 한국어 우선: 계정이 없으신가요? 회원가입 */}
-          계정이 없으신가요? {" "}
-          <Link href="/signup">회원가입</Link>
+          Don&apos;t have an account? <Link href="/signup">Sign up</Link>
+        </div>
+        <div className="auth-link" style={{ marginTop: "0.5rem" }}>
+          <Link href="/find-username">Find username</Link>
+          {" · "}
+          <Link href="/find-password">Find password</Link>
         </div>
       </div>
     </div>
