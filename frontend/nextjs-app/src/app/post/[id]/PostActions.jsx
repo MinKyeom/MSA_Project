@@ -17,16 +17,16 @@ export default function PostActions({ postId, postAuthorId }) {
     currentUserId.toString().trim() === postAuthorId.toString().trim();
 
   const handleDelete = async () => {
-    if (!window.confirm("정말로 이 포스트를 삭제하시겠습니까?")) return;
+    if (!window.confirm("Are you sure you want to delete this post?")) return;
 
     try {
       await deletePost(postId);
-      showToast({ message: "포스트가 성공적으로 삭제되었습니다.", type: "success" });
+      showToast({ message: "Post deleted successfully.", type: "success" });
       router.push("/post");
     } catch (error) {
       console.error(error);
       showToast({
-        message: "삭제 중 오류가 발생했습니다. 권한을 확인해주세요.",
+        message: "Failed to delete. Check your permission.",
         type: "error",
       });
     }
@@ -50,7 +50,7 @@ export default function PostActions({ postId, postAuthorId }) {
           cursor: "pointer",
         }}
       >
-        수정
+        Edit
       </button>
       <button
         onClick={handleDelete}
@@ -63,7 +63,7 @@ export default function PostActions({ postId, postAuthorId }) {
           cursor: "pointer",
         }}
       >
-        삭제
+        Delete
       </button>
     </div>
   );

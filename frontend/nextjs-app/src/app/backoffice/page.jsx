@@ -29,7 +29,7 @@ function checkSearchService() {
   return fetch(`${API_BASE}/api/search?q=test&limit=2`, { credentials: "include" })
     .then((res) => (res.ok ? "UP" : null))
     .catch(() => null)
-    .then((status) => ({ status: status ?? "DOWN", message: status ? "검색 API 정상" : "연결 실패" }));
+    .then((status) => ({ status: status ?? "DOWN", message: status ? "Search API OK" : "Connection failed" }));
 }
 
 function checkChatService() {

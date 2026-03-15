@@ -6,13 +6,14 @@ import Comments from "../../../components/Comments/Comments";
 import MarkdownRenderer from "../../../components/MarkdownRenderer";
 import PostActions from "./PostActions";
 import RelatedPosts from "../../../components/Post/RelatedPosts";
+import TableOfContents from "../../../components/Post/TableOfContents";
 import "../../../styles/globals.css";
 import { notFound } from "next/navigation";
 
 // 날짜 포맷팅 헬퍼 함수
 const formatDate = (dateString) => {
   // 🌟 수정: 한국어 포맷으로 변경
-  return new Date(dateString).toLocaleDateString("ko-KR", {
+  return new Date(dateString).toLocaleDateString("en-US", {
     year: "numeric",
     month: "long",
     day: "numeric",
@@ -38,24 +39,35 @@ export async function generateMetadata({ params }) {
 
   if (!post) {
     return {
-      title: "포스트를 찾을 수 없음",
-      description: "요청하신 포스트를 찾을 수 없습니다.",
+      title: "Post not found",
+      description: "The requested post could not be found.",
     };
   }
 
-  const title = post.title || "제목 없음";
+  const title = post.title || "Untitled";
   const description = post.content
     ? post.content.substring(0, 150) + "..."
-    : "이 포스트에 대한 자세한 내용을 확인하세요.";
+    : "Read more about this post.";
 
+  const canonicalUrl = `https://minkowskim.com/post/${post.id}`;
   return {
-    // 🌟 한국어 우선 SEO 메타데이터 적용
-    title: title,
-    description: description,
+    title,
+    description,
     keywords: [...(post.tagNames || []), post.categoryName].filter(Boolean),
     alternates: {
-      canonical: `https://your-blog-url.com/post/${post.id}`,
+      canonical: canonicalUrl,
+      languages: { ko: canonicalUrl, en: canonicalUrl, "x-default": canonicalUrl },
     },
+    openGraph: {
+      title,
+      description,
+      url: canonicalUrl,
+      type: "article",
+      locale: "ko_KR",
+      alternateLocale: ["en_US"],
+    },
+    twitter: { card: "summary_large_image", title, description },
+    robots: { index: true, follow: true },
   };
 }
 
@@ -71,11 +83,27 @@ export default async function PostDetailPage({ params }) {
   // 포스트 작성자 ID
   const postAuthorId = post.authorId;
 
+  const jsonLd = {
+    "@context": "https://schema.org",
+    "@type": "Article",
+    headline: post.title || "Untitled",
+    description: (post.content || "").substring(0, 160) + "...",
+    datePublished: post.createdAt,
+    dateModified: post.updatedAt || post.createdAt,
+    author: { "@type": "Person", name: post.authorNickname || "MinKowskiM" },
+    url: `https://minkowskim.com/post/${post.id}`,
+    publisher: { "@type": "Organization", name: "MinKowskiM" },
+  };
+
   return (
     <div
       className="post-detail-container"
       style={{ maxWidth: "800px", margin: "0 auto", padding: "40px 0" }}
     >
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
+      />
       <article>
         {/* 1. 포스트 제목 및 메타 정보 */}
         <h1
@@ -88,34 +116,43 @@ export default async function PostDetailPage({ params }) {
           }}
         >
           {/* 🌟 UI 텍스트 한국어 우선: 제목 없음 */}
-          {post.title || "제목 없음"}
+          {post.title || "Untitled"}
         </h1>
         <div
           style={{
             display: "flex",
             justifyContent: "space-between",
             alignItems: "center",
+            flexWrap: "wrap",
+            gap: "12px",
             marginBottom: "30px",
             borderBottom: "1px solid var(--color-border)",
             paddingBottom: "15px",
           }}
         >
           <span style={{ color: "var(--color-text-sub)" }}>
-            {/* 🌟 UI 텍스트 한국어 우선: 작성자 알 수 없음 */}
-            작성자:{" "}
+            Author:{" "}
             <span style={{ fontWeight: 600, color: "var(--color-accent)" }}>
-              {post.authorNickname || "작성자 알 수 없음"}
+              {post.authorNickname || "Unknown"}
             </span>
           </span>
-          <span style={{ color: "var(--color-text-sub)", fontSize: "0.9em" }}>
-            작성일: {formatDate(post.createdAt)}
-          </span>
+          <div style={{ display: "flex", alignItems: "center", gap: "16px", fontSize: "0.9em", color: "var(--color-text-sub)" }}>
+            <span title="View count">
+              Views: <strong style={{ color: "var(--color-text-main)" }}>{post.viewCount ?? 0}</strong>
+            </span>
+            <span>
+              {formatDate(post.createdAt)}
+            </span>
+          </div>
         </div>
 
         {/* 2. 수정/삭제 버튼 (Client Component) */}
         <PostActions postId={postId} postAuthorId={postAuthorId} />
 
-        {/* 3. 포스트 내용 (Markdown 렌더링) */}
+        {/* 2-1. 목차 (헤딩이 있을 때만 표시) */}
+        <TableOfContents content={post.content || ""} />
+
+        {/* 3. 포스트 내용 (Markdown 렌더링, 코드 하이라이팅·헤딩 id 적용) */}
         <div style={{ marginTop: "40px", paddingBottom: "40px" }}>
           <MarkdownRenderer content={post.content || ""} />
         </div>

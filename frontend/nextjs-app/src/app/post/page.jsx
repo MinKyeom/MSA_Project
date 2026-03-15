@@ -7,11 +7,11 @@ import PostCard from "../../components/Post/PostCard";
 import "../../styles/globals.css"; 
 import { notFound } from "next/navigation"; 
 
-// 🌟 SEO 메타데이터
 export const metadata = {
-  title: "전체 포스트 목록",
-  description: "MinKowski 개발 블로그의 모든 포스트 목록입니다. 관심 있는 글을 찾아보세요.",
-  keywords: ["전체 포스트", "개발 아티클", "기술 아카이브"], 
+  title: "All posts",
+  description: "Browse all posts on MinKowskiM. Development, tech, and in-depth articles.",
+  keywords: ["posts", "articles", "tech", "MinKowskiM"],
+  alternates: { canonical: "https://minkowskim.com/post" },
 };
 
 // 데이터를 가져오는 함수

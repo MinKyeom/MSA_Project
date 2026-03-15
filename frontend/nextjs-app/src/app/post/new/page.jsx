@@ -33,7 +33,7 @@ const renderMarkdown = (markdown) => {
 export default function WritePage() {
   const router = useRouter();
   const searchParams = useSearchParams();
-  const { isAuthenticated, id: currentUserId, isAuthInitialized } = useAuth();
+  const { isAuthenticated, id: currentUserId, isAdmin, isAuthInitialized } = useAuth();
   const { showToast } = useToast();
 
   // URL 파라미터에 id가 있으면 수정 모드, 없으면 새 글 작성 모드
@@ -47,13 +47,19 @@ export default function WritePage() {
   const [isLoading, setIsLoading] = useState(isEdit);
   const [submitLoading, setSubmitLoading] = useState(false);
 
-  // 1. 보안 점검: 로그인하지 않은 사용자가 접근하면 로그인 페이지로 리다이렉트
+  // 1. 보안 점검: 로그인하지 않았거나 관리자가 아니면 리다이렉트 (포스트 작성은 관리자만)
   useEffect(() => {
-    if (isAuthInitialized && !isAuthenticated) {
-      showToast({ message: "로그인이 필요한 서비스입니다.", type: "error" });
+    if (!isAuthInitialized) return;
+    if (!isAuthenticated) {
+      showToast({ message: "Please log in to continue.", type: "error" });
       router.push("/signin");
+      return;
     }
-  }, [isAuthInitialized, isAuthenticated, router, showToast]);
+    if (!isAdmin) {
+      showToast({ message: "Only administrators can create posts.", type: "error" });
+      router.push("/post");
+    }
+  }, [isAuthInitialized, isAuthenticated, isAdmin, router, showToast]);
 
   // 2. 수정 모드일 때 기존 데이터 로드 및 본인 확인
   useEffect(() => {
@@ -62,8 +68,8 @@ export default function WritePage() {
         .then((data) => {
           // Spring Boot 백엔드에서 내려준 작성자 ID와 현재 로그인 유저 ID 비교
           // PostResponse.java의 authorId 필드와 대조합니다.
-          if (data.authorId !== currentUserId) {
-            showToast({ message: "수정 권한이 없습니다.", type: "error" });
+          if (String(data.authorId) !== String(currentUserId)) {
+            showToast({ message: "You do not have permission to edit this post.", type: "error" });
             router.push("/post");
             return;
           }
@@ -75,7 +81,7 @@ export default function WritePage() {
         })
         .catch((err) => {
           console.error("데이터 로드 실패:", err);
-          showToast({ message: "게시글을 불러오는 중 오류가 발생했습니다.", type: "error" });
+          showToast({ message: "Failed to load the post.", type: "error" });
           router.push("/post");
         });
     }
@@ -86,7 +92,7 @@ export default function WritePage() {
     
     // 최종 제출 전 인증 확인 (HttpOnly 쿠키 방식 대응)
     if (!isAuthenticated) {
-      showToast({ message: "인증 세션이 만료되었습니다. 다시 로그인해주세요.", type: "error" });
+      showToast({ message: "Your session has expired. Please sign in again.", type: "error" });
       return;
     }
     
@@ -107,30 +113,31 @@ export default function WritePage() {
       if (isEdit) {
         // PUT /api/posts/{id} 호출
         await updatePost(editId, postRequestData);
-        showToast({ message: "게시글이 성공적으로 수정되었습니다.", type: "success" });
+        showToast({ message: "Post updated successfully.", type: "success" });
       } else {
         // POST /api/posts 호출 (슬래시 없는 경로 사용)
         await createPost(postRequestData);
-        showToast({ message: "게시글이 성공적으로 작성되었습니다.", type: "success" });
+        showToast({ message: "Post published successfully.", type: "success" });
       }
-      router.push("/post"); // 성공 시 목록 페이지로 이동
+      await router.push("/post");
+      router.refresh(); // 목록 페이지 캐시 무효화로 새 글이 바로 보이도록 함
     } catch (error) {
       console.error("저장 실패:", error);
       // 403 Forbidden 에러 발생 시의 안내 메시지 강화
       const errorMsg = error.response?.status === 403 
-        ? "접근 권한이 없거나 인증이 만료되었습니다. (403)" 
-        : "서버 통신 중 오류가 발생했습니다.";
+        ? "Access denied or session expired (403)" 
+        : "A server error occurred.";
       showToast({ message: errorMsg, type: "error" });
     } finally {
       setSubmitLoading(false);
     }
   };
 
-  // 인증 초기화 대기 및 데이터 로딩 처리
-  if (!isAuthInitialized || isLoading) {
+  // 인증 초기화 대기, 관리자 여부 확인, 및 데이터 로딩 처리
+  if (!isAuthInitialized || isLoading || (isAuthenticated && isAdmin === false)) {
     return (
       <div className="container" style={{ padding: "100px", textAlign: "center" }}>
-        <p style={{ color: "var(--color-text-main)" }}>페이지를 준비 중입니다...</p>
+        <p style={{ color: "var(--color-text-main)" }}>Loading...</p>
       </div>
     );
   }
@@ -139,7 +146,7 @@ export default function WritePage() {
     <div className="container" style={{ padding: "40px 20px", maxWidth: "1200px", margin: "0 auto" }}>
       <header style={{ marginBottom: "30px" }}>
         <h1 style={{ color: "var(--color-text-main)", fontSize: "2rem" }}>
-          {isEdit ? "포스트 수정" : "새 포스트 작성"}
+          {isEdit ? "Edit post" : "New post"}
         </h1>
       </header>
 
@@ -150,7 +157,7 @@ export default function WritePage() {
             type="text"
             value={title}
             onChange={(e) => setTitle(e.target.value)}
-            placeholder="제목을 입력하세요"
+            placeholder="Enter title"
             style={{
               width: "100%",
               padding: "15px",
@@ -169,7 +176,7 @@ export default function WritePage() {
               type="text"
               value={category}
               onChange={(e) => setCategory(e.target.value)}
-              placeholder="카테고리명"
+              placeholder="Category"
               style={{
                 flex: 1,
                 padding: "12px",
@@ -183,7 +190,7 @@ export default function WritePage() {
               type="text"
               value={tags}
               onChange={(e) => setTags(e.target.value)}
-              placeholder="태그 (쉼표로 구분)"
+              placeholder="Tags (comma-separated)"
               style={{
                 flex: 2,
                 padding: "12px",
@@ -201,7 +208,7 @@ export default function WritePage() {
             <textarea
               value={content}
               onChange={(e) => setContent(e.target.value)}
-              placeholder="마크다운으로 내용을 작성해 보세요..."
+              placeholder="Write your content in Markdown..."
               style={{
                 flex: 1,
                 padding: "20px",
@@ -239,14 +246,14 @@ export default function WritePage() {
               className="btn-secondary"
               style={{ textDecoration: "none", display: "inline-flex", alignItems: "center" }}
             >
-              취소
+              Cancel
             </Link>
             <button
               type="submit"
               className="btn-primary"
               disabled={submitLoading || !title || !content}
             >
-              {submitLoading ? "저장 중..." : isEdit ? "수정 완료" : "작성 완료"}
+              {submitLoading ? "Saving..." : isEdit ? "Update" : "Publish"}
             </button>
           </div>
         </div>
