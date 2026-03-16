@@ -10,10 +10,10 @@
   /* 🌟 감성적 디자인을 위한 필기체 폰트 변수 */
   /* --font-family-cursive: 'Sacramento', cursive; */
   --font-family-cursive: var(--font-caveat), cursive;
-  /* 라이트 모드 색상 (세련된 톤) */
-  --color-background: #fcfcfc; /* 화면 배경 전체 (미묘한 오프 화이트) */
-  --color-primary: #ffffff; /* UI 카드, 헤더, 사이드바 배경 */
-  --color-secondary: #f0f0f0; /* 보조 배경 (폼 배경, 태그 배경) */
+  /* 라이트 모드 (가을 이미지 톤에 맞춤) */
+  --color-background: #faf5ee; /* 가을 하늘과 어울리는 담황색 */
+  --color-primary: #fdfbf7; /* 카드·헤더 (따뜻한 화이트) */
+  --color-secondary: #f3ebe0; /* 보조 배경 */
   --color-text-main: #212121; /* 기본 텍스트 (진한 회색) */
   --color-text-sub: #757575; /* 서브 텍스트 (중간 회색) */
 
@@ -33,20 +33,21 @@
 /* --- 2. 다크 모드 --- */
 /* ---------------------------------------------------------------- */
 body.dark-mode {
-  --color-background: #121212;
-  --color-primary: #1e1e1e;
-  --color-secondary: #2c2c2c;
-  --color-text-main: #e0e0e0;
-  --color-text-sub: #9e9e9e;
+  /* 🌟 남색 대신 검은색에 가까운 다크 톤 */
+  --color-background: #07080a;
+  --color-primary: #0c0d10;
+  --color-secondary: #12141a;
+  --color-text-main: #e2e6ee;
+  --color-text-sub: #9ca8b8;
 
-  /* 🌟 로고/강조색 변경 (다크 모드 버전) */
-  --color-accent: #b0bec5; /* 강조 색상 (밝은 청회색) */
-  --color-link: #cfd8dc; /* 링크 색상 */
-  --color-logo: #e0e0e0; /* 🌟 로고 색상 (라이트 모드 대비) */
+  /* 🌟 로고/강조색 (밤하늘 톤에 맞춤) */
+  --color-accent: #8ba3c7;
+  --color-link: #b8c8dc;
+  --color-logo: #e2e6ee;
 
-  --color-border: rgba(255, 255, 255, 0.1); /* 테두리 (다크) */
-  --color-shadow: rgba(0, 0, 0, 0.3); /* 얕은 그림자 (다크) */
-  --color-shadow-strong: rgba(0, 0, 0, 0.6); /* 강한 그림자 (다크) */
+  --color-border: rgba(255, 255, 255, 0.12);
+  --color-shadow: rgba(0, 0, 0, 0.35);
+  --color-shadow-strong: rgba(0, 0, 0, 0.5);
   --color-success: #66bb6a;
   --color-error: #ef5350;
 }
@@ -298,4 +299,186 @@ a:hover {
   border-color: var(--color-accent);
   box-shadow: 0 0 0 2px var(--color-accent);
   outline: none;
+}
+
+/* ---------------------------------------------------------------- */
+/* --- 9. 전체 사이트 배경: 가을 이미지 / 밤하늘 이미지 톤 --- */
+/* ---------------------------------------------------------------- */
+.global-bg {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  width: 100vw;
+  height: 100vh;
+  min-height: 100%;
+  z-index: -1;
+  pointer-events: none;
+  overflow: hidden;
+}
+
+/* 라이트: 나무길 가을 – 따뜻한 갈색·담황·부드러운 하늘 */
+.global-bg-leaves {
+  position: absolute;
+  inset: 0;
+  min-width: 100%;
+  min-height: 100%;
+  display: block;
+}
+
+body.dark-mode .global-bg-leaves {
+  display: none;
+}
+
+.global-bg-leaves-sky {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(
+    180deg,
+    #faf5ee 0%,
+    #f3e9dc 18%,
+    #eadcc8 38%,
+    #e0cfb8 58%,
+    #d4c2a8 78%,
+    #c9b598 100%
+  );
+}
+
+.global-bg-leaf {
+  position: absolute;
+  top: -5%;
+  width: 22px;
+  height: 36px;
+  color: var(--leaf-color, #b85c38);
+  transform: translateX(-50%) scale(var(--leaf-scale, 1)) rotate(var(--leaf-rotate-start, 0deg));
+  animation: globalLeafFall ease-in-out infinite;
+  opacity: 0;
+}
+
+.global-bg-leaf-svg {
+  width: 100%;
+  height: 100%;
+  filter: drop-shadow(0 1px 2px rgba(0,0,0,0.08));
+}
+
+@keyframes globalLeafFall {
+  0% {
+    transform: translateX(-50%) translateY(0) scale(var(--leaf-scale, 1)) rotate(var(--leaf-rotate-start, 0deg));
+    opacity: 0;
+  }
+  2% { opacity: 0.82; }
+  22% {
+    transform: translateX(calc(-50% + 5px)) translateY(22vh) scale(var(--leaf-scale, 1)) rotate(calc(var(--leaf-rotate-start, 0deg) + 55deg));
+  }
+  48% {
+    transform: translateX(calc(-50% - 4px)) translateY(48vh) scale(var(--leaf-scale, 1)) rotate(calc(var(--leaf-rotate-start, 0deg) + 140deg));
+  }
+  72% {
+    transform: translateX(calc(-50% + 6px)) translateY(72vh) scale(var(--leaf-scale, 1)) rotate(calc(var(--leaf-rotate-start, 0deg) + 240deg));
+  }
+  98% { opacity: 0.55; }
+  100% {
+    transform: translateX(calc(-50% + var(--leaf-sway, 0px))) translateY(106vh) scale(var(--leaf-scale, 1)) rotate(calc(var(--leaf-rotate-start, 0deg) + 360deg));
+    opacity: 0;
+  }
+}
+
+/* 다크: 밤하늘 이미지 – 깊은 남색·은하수 느낌·자연스러운 유성 */
+.global-bg-night {
+  position: absolute;
+  inset: 0;
+  min-width: 100%;
+  min-height: 100%;
+  display: none;
+}
+
+body.dark-mode .global-bg-night {
+  display: block;
+}
+
+.global-bg-night-sky {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  /* 🌟 파란 느낌 줄이고 검은색에 가까운 그라데이션 */
+  background: linear-gradient(
+    180deg,
+    #050508 0%,
+    #08090c 25%,
+    #0a0b0f 45%,
+    #08090c 65%,
+    #060708 85%,
+    #040506 100%
+  );
+}
+
+.global-bg-milky {
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(
+    ellipse 120% 40% at 50% 35%,
+    rgba(120, 150, 220, 0.06) 0%,
+    transparent 55%
+  );
+  pointer-events: none;
+}
+
+.global-bg-stars {
+  position: absolute;
+  inset: 0;
+}
+
+.global-bg-star {
+  position: absolute;
+  border-radius: 50%;
+  background: #fff;
+  transform: translate(-50%, -50%);
+  box-shadow: 0 0 3px 1px rgba(255, 255, 255, 0.35);
+}
+
+.global-bg-star--twinkle {
+  animation: globalStarTwinkle 5.5s ease-in-out infinite;
+}
+
+@keyframes globalStarTwinkle {
+  0%, 100% { opacity: 0.25; transform: translate(-50%, -50%) scale(1); }
+  50% { opacity: 1; transform: translate(-50%, -50%) scale(1.12); }
+}
+
+.global-bg-meteors {
+  position: absolute;
+  inset: 0;
+}
+
+.global-bg-meteor {
+  position: absolute;
+  width: var(--meteor-width, 150px);
+  height: 2px;
+  transform: rotate(var(--meteor-angle, -62deg));
+  transform-origin: left center;
+  background: linear-gradient(
+    90deg,
+    rgba(255, 255, 255, 0.98) 0%,
+    rgba(255, 255, 255, 0.82) 12%,
+    rgba(200, 220, 255, 0.38) 38%,
+    rgba(160, 190, 255, 0.08) 62%,
+    transparent 82%
+  );
+  box-shadow: 0 0 8px 1px rgba(255, 255, 255, 0.3);
+  animation: globalMeteorFall ease-out infinite;
+}
+
+@keyframes globalMeteorFall {
+  0% {
+    opacity: 0;
+    transform: rotate(var(--meteor-angle, -62deg)) translateX(0) translateY(0);
+  }
+  4% { opacity: 1; }
+  88% { opacity: 0.75; }
+  100% {
+    opacity: 0;
+    transform: rotate(var(--meteor-angle, -62deg)) translateX(-78vw) translateY(88vh);
+  }
 }

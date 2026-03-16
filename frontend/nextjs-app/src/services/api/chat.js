@@ -35,7 +35,7 @@ export const sendChatMessage = async (session_id, message) => {
       return "챗봇 서버(502)에 연결할 수 없습니다. 서버에서 API Gateway와 챗봇 서비스가 실행 중인지 확인해 주세요.";
     }
     if (status === 504 || msg.includes("timeout")) {
-      return "응답 대기 시간이 초과되었습니다. 다시 시도해 주세요.";
+      return "Request timed out. Please try again.";
     }
     return "챗봇 서버에 연결할 수 없거나, 통신 오류가 발생했습니다.";
   }

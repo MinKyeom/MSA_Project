@@ -41,6 +41,21 @@ export const fetchPosts = async (
 };
 
 /**
+ * 조회수 기준 인기글 상위 N개 (메인 페이지 인기글)
+ */
+export const fetchPopularPosts = async (limit = 3) => {
+  try {
+    const response = await authAxios.get(`${POSTS_API_URL}/popular`, {
+      params: { limit },
+    });
+    return Array.isArray(response.data) ? response.data : [];
+  } catch (error) {
+    console.error("fetchPopularPosts 에러:", error);
+    return [];
+  }
+};
+
+/**
  * 게시글 상세 조회
  */
 export const fetchPostById = async (id, options = {}) => {

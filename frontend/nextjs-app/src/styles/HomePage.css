@@ -1,46 +1,185 @@
 /* src/styles/HomePage.css (전면 개편: 감성적인 Hero 및 포스트 목록) */
 
+/* --- 메인 페이지 래퍼 (배경은 전체 화면 레이어에서) --- */
+.homepage-wrapper {
+  position: relative;
+  min-height: 100vh;
+}
+
+/* 배경은 layout의 GlobalBackground + globals.css의 .global-bg 사용 (전체 페이지 공통) */
+
 /* --- 메인 컨테이너 --- */
 .homepage-container {
+  position: relative;
+  z-index: 0;
   max-width: 1100px;
   margin: 0 auto;
   padding: 0;
   text-align: left;
 }
 
+/* 다크 모드: 배경이 밤하늘이므로 섹션 제목·안내 문구 밝게 (가독성) */
+body.dark-mode .homepage-wrapper .latest-posts-section .section-title,
+body.dark-mode .homepage-wrapper .category-section .section-title {
+  color: rgba(255, 255, 255, 0.92);
+}
+
+body.dark-mode .homepage-wrapper .no-posts {
+  color: rgba(255, 255, 255, 0.72);
+}
+
+/* 라이트 모드: 낙엽 배경 위에서는 기본 텍스트 색 유지 (테마 변수) */
+.homepage-wrapper .latest-posts-section .section-title,
+.homepage-wrapper .category-section .section-title {
+  color: var(--color-text-main);
+}
+
 /* ---------------------------------------------------------------- */
-/* --- 1. 히어로 섹션 (감성적인 큰 타이포그래피) --- */
+/* --- 1. 히어로 섹션 (감성적인 큰 타이포그래피 + 애니메이션) --- */
 /* ---------------------------------------------------------------- */
 .hero-section {
   padding: 120px 40px;
   margin-bottom: 60px;
   background-color: var(--color-primary);
-  /* 🌟 디자인 개선: 그림자 강조 및 부드러운 테두리 */
-  border-radius: 16px; /* 더 둥글게 */
-  box-shadow: 0 15px 35px var(--color-shadow-strong); /* 더 강한 그림자 */
+  border-radius: 16px;
+  box-shadow: 0 15px 35px var(--color-shadow-strong);
   border: 1px solid var(--color-border);
   transition: all 0.3s;
   text-align: center;
+  overflow: hidden;
 }
 
-/* 🌟 수정: 블로그 이름에 필기체 폰트 적용 (MinKowski) */
-.hero-title {
-  /*font-family: var(--font-family-cursive); 필기체 폰트 적용 */
-  font-family: var(--font-family-cursive) !important;
-  font-size: 5rem; /* 더 크게 */
-  font-weight: 400; /* 필기체에 맞게 */
-  color: var(--color-logo); /* 로고 색상 변수 사용 */
+/* --- Hero: Trim Paths 스타일 드로잉 (SVG Mask, 28s 루프) --- */
+/* 그리기 → 오래 유지 → 부드럽게 페이드 (반복감 줄이고 남아있는 느낌) */
+
+.hero-stroke-wrap {
+  display: block;
+  text-align: center;
   margin-bottom: 25px;
+  font-family: var(--font-family-cursive), var(--font-caveat), Caveat, cursive;
+  font-weight: 400;
+}
+
+.hero-stroke-wrap.hero-subtitle {
+  margin-bottom: 30px;
+}
+
+.hero-stroke-svg {
+  display: block;
+  width: 100%;
+  max-width: 100%;
+  height: auto;
+  max-height: 80px;
+  overflow: visible;
+}
+
+.hero-subtitle .hero-stroke-svg {
+  max-height: 65px;
+}
+
+/* 마스크 선·면 레이어: 대기 중 0% 키프레임 적용(backwards), 잔상 없음 */
+.hero-mask-stroke,
+.hero-stroke-fill {
+  animation-fill-mode: backwards;
+}
+
+.hero-stroke-char-group {
+  animation-fill-mode: backwards;
+}
+
+/* 1. 선 그리기: 0~18% 그리기, 18~94% 오래 유지, 94~100% 부드럽게 페이드 */
+@keyframes heroStrokeDrawLoop {
+  0% {
+    stroke-dashoffset: var(--hero-len, 1000);
+    stroke-opacity: 0;
+  }
+  18% {
+    stroke-dashoffset: 0;
+    stroke-opacity: 1;
+  }
+  94% {
+    stroke-dashoffset: 0;
+    stroke-opacity: 1;
+  }
+  100% {
+    stroke-dashoffset: var(--hero-len, 1000);
+    stroke-opacity: 0;
+  }
+}
+
+/* 짧은 점/획 전용: 메인과 동일한 얇은 붓(6px)으로 톡 찍히는 느낌 */
+@keyframes heroDotPressure {
+  0% {
+    stroke-width: 0;
+    stroke-opacity: 0;
+  }
+  20% {
+    stroke-width: 6px;
+    stroke-opacity: 0.85;
+  }
+  35% {
+    stroke-width: 6px;
+    stroke-opacity: 1;
+  }
+  80% {
+    stroke-width: 6px;
+    stroke-opacity: 1;
+  }
+  100% {
+    stroke-width: 0;
+    stroke-opacity: 0;
+  }
+}
+
+/* 2. 면 레이어: 94%까지 유지, 94~100% 부드럽게 Fade-out (남아있다가 자연스럽게 사라짐) */
+@keyframes heroFillOpacityLoop {
+  0%, 94% { opacity: 1; }
+  97% { opacity: 0.4; }
+  100% { opacity: 0; }
+}
+
+/* MinKowskiM — 더 작은 크기, elegant calligraphy */
+.hero-title {
+  font-family: var(--font-family-cursive) !important;
+  font-size: 2.75rem;
+  font-weight: 400;
+  color: var(--color-logo);
   line-height: 1.1;
   transition: color 0.3s;
+  letter-spacing: 0.02em;
+  white-space: nowrap;
+  text-shadow: none;
 }
 
+.hero-title .hero-stroke-svg {
+  color: var(--color-logo);
+}
+
+/* Path 기반 타이틀: fill 없음, stroke만으로 외곽선 그리기 */
+.hero-path-title.hero-stroke-wrap {
+  display: block;
+}
+.hero-path-title .hero-path-svg {
+  color: var(--color-logo);
+}
+.hero-path-char {
+  fill: none;
+  stroke: currentColor;
+  vector-effect: non-scaling-stroke;
+}
+
+/* 부제 — 타이틀 쓰인 뒤 같은 Write-on 스타일 */
 .hero-subtitle {
-  font-size: 1.3em; /* 한국어 가독성을 위해 살짝 줄임 */
-  font-weight: 300;
+  font-family: var(--font-family-cursive) !important;
+  font-size: 2.35em;
+  font-weight: 400;
   color: var(--color-text-sub);
-  line-height: 1.8; /* 줄 간격 확대 */
-  margin-bottom: 30px;
+  line-height: 1.7;
+  text-shadow: none;
+}
+
+.hero-subtitle .hero-stroke-svg {
+  color: var(--color-text-sub);
 }
 
 .hero-search-wrap {
@@ -50,10 +189,32 @@
   margin-right: auto;
 }
 
+/* 🌟 CTA 버튼 — MinKowskiM과 같은 글씨체 + 등장 + 호버, 글씨 조금 더 크고 두껍게 */
 .hero-section .btn-primary {
+  font-family: var(--font-family-cursive) !important;
+  font-size: 1.14rem;
+  font-weight: 500;
   display: inline-block;
   margin-top: 28px;
   margin-bottom: 0;
+  opacity: 0;
+  animation: heroBtnIn 0.6s ease-out 0.75s forwards;
+  transform-origin: center;
+}
+
+.hero-section .btn-primary:hover {
+  transform: translateY(0) scale(1.04);
+}
+
+@keyframes heroBtnIn {
+  from {
+    opacity: 0;
+    transform: translateY(12px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }
 
 /* ---------------------------------------------------------------- */
@@ -175,6 +336,9 @@
   }
   .hero-title {
     font-size: 3.5rem;
+  }
+  .hero-subtitle {
+    font-size: 1.7rem;
   }
   .post-list {
     grid-template-columns: 1fr;
