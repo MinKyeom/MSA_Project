@@ -44,7 +44,7 @@ export default function SignupForm() {
     const timer = setTimeout(async () => {
       if (username.length >= 3) {
         const isDuplicate = await checkUsernameDuplicate(username);
-        if (isDuplicate) setUsernameError("이미 사용 중인 아이디입니다.");
+        if (isDuplicate) setUsernameError("This username is already taken.");
         else setUsernameError("");
       }
     }, 500);
@@ -58,7 +58,7 @@ export default function SignupForm() {
     }
     const timer = setTimeout(async () => {
       const isDuplicate = await checkNicknameDuplicate(nickname);
-      if (isDuplicate) setNicknameError("이미 사용 중인 닉네임입니다.");
+      if (isDuplicate) setNicknameError("This nickname is already taken.");
       else setNicknameError("");
     }, 500);
     return () => clearTimeout(timer);
@@ -66,27 +66,27 @@ export default function SignupForm() {
 
   const handleSendCode = async () => {
     if (!email || !email.includes("@")) {
-      setEmailError("유효한 이메일을 입력해주세요.");
+      setEmailError("Please enter a valid email address.");
       return;
     }
     setLoading(true);
     try {
       await sendVerificationCode(email);
-      showToast({ message: "인증번호가 발송되었습니다.", type: "success" });
+      showToast({ message: "Verification code has been sent.", type: "success" });
       setIsEmailSent(true);
       setEmailError("");
     } catch (error) {
       const status = error.response?.status;
       const msg = error.response?.data?.message || error.message;
       if (status === 502 || status === 503) {
-        showToast({ message: "메일 서비스를 일시적으로 사용할 수 없습니다. 잠시 후 다시 시도해주세요.", type: "error" });
-        setEmailError("메일 발송 서비스 일시 중단");
+        showToast({ message: "Mail service is temporarily unavailable. Please try again later.", type: "error" });
+        setEmailError("Mail service unavailable");
       } else if (status === 403) {
-        showToast({ message: "서버 접근 권한이 없습니다(403). 관리자에게 문의하세요.", type: "error" });
-        setEmailError("인증 요청 실패 (Security 설정 확인 필요)");
+        showToast({ message: "Server access denied (403). Contact the administrator.", type: "error" });
+        setEmailError("Verification request failed");
       } else {
-        showToast({ message: msg || "인증번호 발송에 실패했습니다.", type: "error" });
-        setEmailError(msg || "인증 요청 실패");
+        showToast({ message: msg || "Failed to send verification code.", type: "error" });
+        setEmailError(msg || "Verification request failed");
       }
     } finally {
       setLoading(false);
@@ -98,13 +98,13 @@ export default function SignupForm() {
     try {
       const success = await verifyCode(email, verificationCode);
       if (success) {
-        showToast({ message: "인증되었습니다.", type: "success" });
+        showToast({ message: "Verified successfully.", type: "success" });
         setIsVerified(true);
       } else {
-        showToast({ message: "인증번호가 일치하지 않습니다.", type: "error" });
+        showToast({ message: "Verification code does not match.", type: "error" });
       }
     } catch (error) {
-      showToast({ message: "인증 확인 중 오류 발생", type: "error" });
+      showToast({ message: "Verification failed.", type: "error" });
     } finally {
       setLoading(false);
     }
@@ -113,21 +113,21 @@ export default function SignupForm() {
   const handleSignup = async (e) => {
     e.preventDefault();
     if (password !== confirmPassword) {
-      showToast({ message: "비밀번호가 일치하지 않습니다.", type: "error" });
+      showToast({ message: "Passwords do not match.", type: "error" });
       return;
     }
     if (!isVerified) {
-      showToast({ message: "이메일 인증을 완료해주세요.", type: "error" });
+      showToast({ message: "Please complete email verification.", type: "error" });
       return;
     }
     setLoading(true);
     try {
       await registerAuth({ username, password, nickname, email });
-      showToast({ message: "가입을 환영합니다!", type: "success" });
+      showToast({ message: "Welcome! Your account has been created.", type: "success" });
       router.push("/signin");
     } catch (error) {
       showToast({
-        message: "가입 실패: " + (error.response?.data?.message || "오류 발생"),
+        message: "Sign up failed: " + (error.response?.data?.message || "An error occurred"),
         type: "error",
       });
     } finally {
@@ -137,15 +137,14 @@ export default function SignupForm() {
 
   return (
     <form className="signup-form" onSubmit={handleSignup}>
-      {/* 아이디 */}
       <div className="form-group">
-        <label>아이디</label>
+        <label>Username</label>
         <input
           type="text"
           value={username}
           onChange={(e) => setUsername(e.target.value)}
           required
-          placeholder="3자 이상"
+          placeholder="At least 3 characters"
         />
         {usernameError && (
           <span
@@ -157,9 +156,8 @@ export default function SignupForm() {
         )}
       </div>
 
-      {/* 닉네임 */}
       <div className="form-group">
-        <label>닉네임</label>
+        <label>Nickname</label>
         <input
           type="text"
           value={nickname}
@@ -176,9 +174,8 @@ export default function SignupForm() {
         )}
       </div>
 
-      {/* 이메일 & 인증요청 버튼 (디자인 깨짐 방지를 위해 flex 구조 개선) */}
       <div className="form-group">
-        <label>이메일 주소</label>
+        <label>Email</label>
         <div style={{ display: "flex", gap: "10px", alignItems: "flex-start" }}>
           <div style={{ flex: 1 }}>
             <input
@@ -197,7 +194,7 @@ export default function SignupForm() {
             className="btn-secondary-small verify-btn"
             style={{ whiteSpace: "nowrap", minHeight: "45px" }}
           >
-            {isEmailSent ? "재발송" : "인증요청"}
+            {isEmailSent ? "Resend" : "Send code"}
           </button>
         </div>
         {emailError && (
@@ -205,7 +202,6 @@ export default function SignupForm() {
         )}
       </div>
 
-      {/* 인증번호 입력란 - 이메일 발송 성공 시에만 노출 */}
       {isEmailSent && !isVerified && (
         <div
           className="form-group"
@@ -216,7 +212,7 @@ export default function SignupForm() {
             borderRadius: "8px",
           }}
         >
-          <label>인증번호 6자리</label>
+          <label>6-digit verification code</label>
           <div style={{ display: "flex", gap: "10px" }}>
             <input
               type="text"
@@ -236,15 +232,14 @@ export default function SignupForm() {
                 borderRadius: "4px",
               }}
             >
-              확인
+              Verify
             </button>
           </div>
         </div>
       )}
 
-      {/* 비밀번호 */}
       <div className="form-group">
-        <label>비밀번호</label>
+        <label>Password</label>
         <input
           type="password"
           value={password}
@@ -254,7 +249,7 @@ export default function SignupForm() {
       </div>
 
       <div className="form-group">
-        <label>비밀번호 확인</label>
+        <label>Confirm password</label>
         <input
           type="password"
           value={confirmPassword}
@@ -271,7 +266,7 @@ export default function SignupForm() {
         }
         style={{ marginTop: "20px" }}
       >
-        {loading ? "처리 중..." : "회원가입 완료"}
+        {loading ? "Processing..." : "Sign up"}
       </button>
     </form>
   );

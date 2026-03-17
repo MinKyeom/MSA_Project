@@ -3,11 +3,11 @@
 
 import React, { useState, useEffect } from "react";
 import Link from "next/link"; 
-import { 
-  fetchCommentsByPostId, 
-  createComment, 
-  updateComment, 
-  deleteComment 
+import {
+  fetchCommentsByPostId,
+  createComment,
+  updateComment,
+  deleteComment,
 } from "../../services/api/comments"; 
 import { useAuth } from "../../providers/AuthProvider"; 
 import { useToast } from "../../hooks/useToast"; 
@@ -17,8 +17,8 @@ import "./Comments.css";
 // 날짜 포맷팅 헬퍼 함수
 const formatDate = (dateString) => {
     // 🌟 수정: 한국어 포맷으로 변경
-    return new Date(dateString).toLocaleDateString('ko-KR', {
-        year: 'numeric', month: 'long', day: 'numeric', hour: '2-digit', minute: '2-digit'
+    return new Date(dateString).toLocaleDateString("en-US", {
+        year: "numeric", month: "long", day: "numeric", hour: "2-digit", minute: "2-digit"
     });
 };
 
@@ -33,7 +33,7 @@ const CommentForm = ({ postId, onCommentCreated }) => {
     e.preventDefault();
     if (!content.trim()) {
         // 🌟 UI 텍스트 한국어 우선: 댓글 내용을 입력해주세요.
-        showToast({ message: "댓글 내용을 입력해주세요.", type: "warning" });
+        showToast({ message: "Please enter your comment.", type: "warning" });
         return;
     }
 
@@ -44,10 +44,10 @@ const CommentForm = ({ postId, onCommentCreated }) => {
       onCommentCreated(newComment); // 부모 상태 업데이트
       setContent(""); // 입력 필드 초기화
       // 🌟 UI 텍스트 한국어 우선: 댓글이 성공적으로 작성되었습니다.
-      showToast({ message: "댓글이 성공적으로 작성되었습니다.", type: "success" }); 
+      showToast({ message: "Comment posted.", type: "success" }); 
     } catch (error) {
       // 🌟 UI 텍스트 한국어 우선: 댓글 작성 실패: 권한 또는 서버 오류.
-      showToast({ message: error.message || "댓글 작성 실패: 권한 또는 서버 오류.", type: "error" }); 
+      showToast({ message: error.message || "Failed to post comment.", type: "error" }); 
       console.error(error);
     } finally {
       setLoading(false);
@@ -58,7 +58,7 @@ const CommentForm = ({ postId, onCommentCreated }) => {
     <form className="comment-form" onSubmit={handleSubmit}>
       <textarea
         // 🌟 UI 텍스트 한국어 우선: 댓글을 작성해주세요...
-        placeholder="댓글을 작성해주세요..."
+        placeholder="Write a comment..."
         value={content}
         onChange={(e) => setContent(e.target.value)}
         required
@@ -67,7 +67,7 @@ const CommentForm = ({ postId, onCommentCreated }) => {
       />
       <button type="submit" className="btn-primary" disabled={loading}>
         {/* 🌟 UI 텍스트 한국어 우선: 작성 / 작성 중... */}
-        {loading ? "작성 중..." : "작성"}
+        {loading ? "Posting..." : "Post"}
       </button>
     </form>
   );
@@ -86,13 +86,13 @@ const CommentItem = ({ comment, currentUserId, onDelete, onUpdate }) => {
   const handleUpdate = async () => {
     if (editContent.trim() === comment.content) {
         // 🌟 UI 텍스트 한국어 우선: 변경된 내용이 없습니다.
-        showToast({ message: "변경된 내용이 없습니다.", type: "info" });
+        showToast({ message: "No changes to save.", type: "info" });
         setIsEditing(false);
         return;
     }
     if (!editContent.trim()) {
         // 🌟 UI 텍스트 한국어 우선: 내용을 입력해주세요.
-        showToast({ message: "내용을 입력해주세요.", type: "warning" });
+        showToast({ message: "Please enter content.", type: "warning" });
         return;
     }
 
@@ -100,11 +100,11 @@ const CommentItem = ({ comment, currentUserId, onDelete, onUpdate }) => {
     try {
         await onUpdate(comment.id, editContent);
         // 🌟 UI 텍스트 한국어 우선: 댓글이 수정되었습니다.
-        showToast({ message: "댓글이 수정되었습니다.", type: "success" });
+        showToast({ message: "Comment updated.", type: "success" });
         setIsEditing(false);
     } catch (error) {
         // 🌟 UI 텍스트 한국어 우선: 댓글 수정 실패.
-        showToast({ message: error.message || "댓글 수정 실패.", type: "error" });
+        showToast({ message: error.message || "Failed to update comment.", type: "error" });
     } finally {
         setLoading(false);
     }
@@ -113,7 +113,7 @@ const CommentItem = ({ comment, currentUserId, onDelete, onUpdate }) => {
   // 삭제 핸들러 (UI에서 확인 후 호출)
   const handleDelete = () => {
     // 🌟 UI 텍스트 한국어 우선: 댓글을 삭제하시겠습니까?
-    if (window.confirm("댓글을 삭제하시겠습니까?")) {
+    if (window.confirm("Delete this comment?")) {
         onDelete(comment.id);
     }
   }
@@ -122,8 +122,8 @@ const CommentItem = ({ comment, currentUserId, onDelete, onUpdate }) => {
     <div className="comment-item">
       <div className="comment-meta">
         <div>
-          <span className="comment-author">{comment.authorNickname || '작성자 알 수 없음'}</span>
-          {isAuthor && <span className="comment-badge"> (내 댓글)</span>}
+          <span className="comment-author">{comment.authorNickname || "Unknown"}</span>
+          {isAuthor && <span className="comment-badge"> (you)</span>}
         </div>
         <span className="comment-date">{formatDate(comment.createdAt)}</span>
       </div>
@@ -145,7 +145,7 @@ const CommentItem = ({ comment, currentUserId, onDelete, onUpdate }) => {
                 disabled={loading}
             >
                 {/* 🌟 UI 텍스트 한국어 우선: 취소 */}
-                취소
+                Cancel
             </button>
             <button 
                 type="button" 
@@ -153,8 +153,7 @@ const CommentItem = ({ comment, currentUserId, onDelete, onUpdate }) => {
                 onClick={handleUpdate}
                 disabled={loading}
             >
-                {/* 🌟 UI 텍스트 한국어 우선: 저장 / 저장 중... */}
-                {loading ? "저장 중..." : "저장"}
+                {loading ? "Saving..." : "Save"}
             </button>
           </div>
         </div>
@@ -172,7 +171,7 @@ const CommentItem = ({ comment, currentUserId, onDelete, onUpdate }) => {
             style={{ marginRight: '10px' }}
           >
             {/* 🌟 UI 텍스트 한국어 우선: 수정 */}
-            수정
+            Edit
           </button>
           <button 
             type="button" 
@@ -180,8 +179,7 @@ const CommentItem = ({ comment, currentUserId, onDelete, onUpdate }) => {
             onClick={handleDelete}
             style={{ color: '#E53935' }}
           >
-            {/* 🌟 UI 텍스트 한국어 우선: 삭제 */}
-            삭제
+            Delete
           </button>
         </div>
       )}
@@ -204,7 +202,7 @@ export default function Comments({ postId }) {
       setComments(data);
     } catch (error) {
       // 🌟 UI 텍스트 한국어 우선: 댓글을 불러오는 데 실패했습니다.
-      showToast({ message: "댓글을 불러오는 데 실패했습니다.", type: "error" });
+      showToast({ message: "Failed to load comments.", type: "error" });
     } finally {
       setLoading(false);
     }
@@ -226,18 +224,19 @@ export default function Comments({ postId }) {
       // 삭제된 댓글을 목록에서 제거
       setComments((prev) => prev.filter((c) => c.id !== commentId));
       // 🌟 UI 텍스트 한국어 우선: 댓글이 삭제되었습니다.
-      showToast({ message: "댓글이 삭제되었습니다.", type: "success" });
+      showToast({ message: "Comment deleted.", type: "success" });
     } catch (error) {
       // 🌟 UI 텍스트 한국어 우선: 댓글 삭제 실패: 권한 또는 서버 오류.
-      showToast({ message: error.message || "댓글 삭제 실패: 권한 또는 서버 오류.", type: "error" }); 
+      showToast({ message: error.message || "Failed to delete comment.", type: "error" }); 
       console.error(error);
     }
   };
 
-  // 댓글 수정 처리
-  const handleCommentUpdated = (updatedComment) => {
-    setComments((prev) => 
-        prev.map((c) => (c.id === updatedComment.id ? updatedComment : c))
+  // 댓글 수정 처리 — CommentItem이 (commentId, editContent)로 호출
+  const handleCommentUpdated = async (commentId, editContent) => {
+    const updatedComment = await updateComment(commentId, { content: editContent });
+    setComments((prev) =>
+      prev.map((c) => (c.id === updatedComment.id ? updatedComment : c))
     );
   };
 
@@ -245,25 +244,21 @@ export default function Comments({ postId }) {
   return (
     <div className="comments-section">
       {/* 🌟 UI 텍스트 한국어 우선: 댓글 ({comments.length}) */}
-      <h2 className="section-title">댓글 ({comments.length})</h2> 
-      
-      {/* 댓글 작성 폼 (로그인 사용자에게만 표시) */}
+      <h2 className="section-title">Comments ({comments.length})</h2>
+
       {currentUserId ? (
         <CommentForm postId={postId} onCommentCreated={handleCommentCreated} />
       ) : (
         <p className="login-prompt">
-          {/* 🌟 UI 텍스트 한국어 우선: 로그인하시면 댓글을 작성할 수 있습니다. */}
-          <Link href="/signin" className="btn-link-primary">로그인</Link>
-          {" "}하시면 댓글을 작성할 수 있습니다.
+          <Link href="/signin" className="btn-link-primary">Sign in</Link>
+          {" "}to leave a comment.
         </p>
       )}
-      
-      {/* 댓글 목록 */}
+
       <div className="comments-list">
         {loading ? (
-          // 🌟 UI 텍스트 한국어 우선: 댓글을 불러오는 중입니다...
-          <p className="loading-message" style={{ textAlign: 'center', padding: '30px 0' }}>
-            댓글을 불러오는 중입니다...
+          <p className="loading-message" style={{ textAlign: "center", padding: "30px 0" }}>
+            Loading comments...
           </p>
         ) : comments.length > 0 ? (
           comments.map((comment) => (
@@ -277,7 +272,7 @@ export default function Comments({ postId }) {
           ))
         ) : (
             // 🌟 UI 텍스트 한국어 우선: 아직 댓글이 없습니다.
-            <p className="no-comments">아직 댓글이 없습니다. 첫 댓글을 남겨보세요!</p>
+            <p className="no-comments">No comments yet. Be the first to comment!</p>
         )}
       </div>
     </div>

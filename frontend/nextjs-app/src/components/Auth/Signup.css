@@ -3,32 +3,36 @@
 /* ---------------------------------------------------------------- */
 /* --- 1. 전체 페이지 (로그인/회원가입) --- */
 /* ---------------------------------------------------------------- */
-.auth-page { 
+.auth-page {
   width: 100%;
-  /* 헤더·푸터 제외한 본문 영역에서 정확히 중앙 정렬 */
   min-height: calc(100vh - 180px);
   display: flex;
   justify-content: center;
   align-items: center;
   margin: 0 auto;
   padding: 40px 20px;
-  background: var(--color-background);
+  background: transparent;
   font-family: var(--font-family-main);
-  transition: background 0.3s;
 }
 
 /* ---------------------------------------------------------------- */
-/* --- 2. 중앙 카드 --- */
+/* --- 2. 중앙 카드 (배경과 자연스럽게 blend) --- */
 /* ---------------------------------------------------------------- */
-.auth-container { 
+.auth-container {
   width: 100%;
-  max-width: 450px; 
-  padding: 3.5rem; /* 패딩 확대 */
+  max-width: 450px;
+  padding: 3.5rem;
   border-radius: 16px;
-  background-color: var(--color-primary); 
+  background-color: var(--color-primary);
   box-shadow: 0 10px 30px var(--color-shadow-strong);
   border: 1px solid var(--color-border);
   transition: all 0.3s;
+}
+
+body.dark-mode .auth-container {
+  background-color: rgba(12, 13, 16, 0.96);
+  border-color: rgba(255, 255, 255, 0.1);
+  box-shadow: 0 12px 40px rgba(0, 0, 0, 0.45);
 }
 
 .auth-link {

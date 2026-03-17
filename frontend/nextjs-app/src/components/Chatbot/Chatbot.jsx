@@ -77,18 +77,18 @@ export default function Chatbot({ setIsChatOpen }) {
         {messages.length === 0 && (
           <div className="chatbot-welcome" role="note" aria-label="챗봇 안내">
             <div className="chatbot-welcome-title">
-              궁금한 점을 물어보거나, 관심사·학습 노트를 가볍게 기록해보세요.
+              Ask questions or jot down notes and ideas.
             </div>
             <div className="chatbot-welcome-body">
               {currentUserId ? (
                 <>
-                  <span className="chatbot-welcome-badge">로그인됨</span>{" "}
-                  <strong>{currentUserNickname || currentUserId}</strong> 님으로 연결되어 있어요.
+                  <span className="chatbot-welcome-badge">Signed in</span>{" "}
+                  Connected as <strong>{currentUserNickname || currentUserId}</strong>.
                 </>
               ) : (
                 <>
-                  <span className="chatbot-welcome-badge ghost">비회원</span>{" "}
-                  지금은 임시 세션입니다. 로그인하면 기록을 계속 이어갈 수 있어요.
+                  <span className="chatbot-welcome-badge ghost">Guest</span>{" "}
+                  You are in a temporary session. Sign in to keep your history.
                 </>
               )}
             </div>
