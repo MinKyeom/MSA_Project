@@ -8,6 +8,7 @@ import Header from "../components/common/Header";
 
 import ChatbotWrapper from "../components/Chatbot/ChatbotWrapper";
 import OAuthCallbackHandler from "../components/Auth/OAuthCallbackHandler";
+import GlobalBackground from "../components/Hero/GlobalBackground";
 
 // 전역 스타일 임포트
 import "../styles/globals.css";
@@ -104,6 +105,7 @@ export default function RootLayout({ children }) {
     >
       <body>
         <ProvidersWrapper>
+          <GlobalBackground />
           <div className="App">
             <Header />
             <main className="main-content-container">{children}</main>

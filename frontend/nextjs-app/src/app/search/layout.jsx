@@ -1,6 +1,7 @@
 export const metadata = {
-  title: "검색",
-  description: "MinKowskiM 블로그 글 검색",
+  title: "Search",
+  description: "Search MinKowskiM blog posts",
+  alternates: { canonical: "https://minkowskim.com/search" },
 };
 
 export default function SearchLayout({ children }) {

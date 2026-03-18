@@ -34,7 +34,7 @@ function SearchResultsContent() {
       })
       .catch((err) => {
         if (!cancelled) {
-          setError(err?.message || "검색 중 오류가 발생했습니다.");
+          setError(err?.message || "Search failed.");
           setData({ results: [], query: q });
         }
       })
@@ -47,17 +47,17 @@ function SearchResultsContent() {
   return (
     <div className="search-page">
       <div className="search-page__bar">
-        <SearchBar variant="hero" placeholder="다시 검색하기..." />
+        <SearchBar variant="hero" placeholder="Search again..." />
       </div>
 
       {!q ? (
-        <p className="search-page__empty">검색어를 입력해 주세요.</p>
+        <p className="search-page__empty">Enter a search term.</p>
       ) : (
         <>
           <h1 className="search-page__title">
-            &ldquo;{q}&rdquo; 검색 결과
+            Results for &ldquo;{q}&rdquo;
           </h1>
-          {loading && <p className="search-page__loading">검색 중...</p>}
+          {loading && <p className="search-page__loading">Searching...</p>}
           {error && (
             <p className="search-page__error" role="alert">
               {error}
@@ -65,11 +65,11 @@ function SearchResultsContent() {
           )}
           {!loading && !error && data.results.length === 0 && q && (
             <p className="search-page__empty">
-              관련 글이 없습니다. 다른 키워드로 검색해 보세요.
+              No results. Try different keywords.
             </p>
           )}
           {!loading && !error && data.results.length > 0 && (
-            <ul className="search-results-list" aria-label="검색 결과 목록">
+            <ul className="search-results-list" aria-label="Search results">
               {data.results.map((item) => (
                 <li key={item.postId}>
                   <Link
@@ -77,7 +77,7 @@ function SearchResultsContent() {
                     className="search-result-card"
                   >
                     <h3 className="search-result-card__title">
-                      {item.title || "제목 없음"}
+                      {item.title || "Untitled"}
                     </h3>
                     {item.snippet && (
                       <p className="search-result-card__snippet">
@@ -86,7 +86,7 @@ function SearchResultsContent() {
                     )}
                     {item.score != null && (
                       <span className="search-result-card__score">
-                        유사도 {Math.round(item.score * 100)}%
+                        Score {Math.round(item.score * 100)}%
                       </span>
                     )}
                   </Link>
@@ -102,7 +102,7 @@ function SearchResultsContent() {
 
 export default function SearchPage() {
   return (
-    <Suspense fallback={<div className="search-page"><p className="search-page__loading">로딩 중...</p></div>}>
+    <Suspense fallback={<div className="search-page"><p className="search-page__loading">Loading...</p></div>}>
       <SearchResultsContent />
     </Suspense>
   );
