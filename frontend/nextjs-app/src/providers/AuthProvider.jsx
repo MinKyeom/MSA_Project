@@ -1,7 +1,7 @@
 "use client";
 
 import React, { createContext, useContext, useState, useEffect, useRef } from "react";
-import { getAuthUser, setOnUnauthorized, extendSession } from "../services/api/auth";
+import { getAuthUser, setOnUnauthorized, extendSession, fetchAuthMe } from "../services/api/auth";
 import { fetchMe } from "../services/api/user";
 
 const AuthContext = createContext();
@@ -16,6 +16,7 @@ export const AuthProvider = ({ children }) => {
     isAuthenticated: false,
     id: null,
     nickname: null,
+    isAdmin: false,
   });
   const [isAuthInitialized, setIsAuthInitialized] = useState(false);
   const sessionTimerRef = useRef(null);
@@ -24,12 +25,13 @@ export const AuthProvider = ({ children }) => {
     if (typeof window !== "undefined") {
       localStorage.removeItem("currentUserId");
       localStorage.removeItem("currentUserNickname");
+      sessionStorage.setItem("auth_logout", "1");
     }
     if (sessionTimerRef.current) {
       clearInterval(sessionTimerRef.current);
       sessionTimerRef.current = null;
     }
-    setAuthState({ isAuthenticated: false, id: null, nickname: null });
+    setAuthState({ isAuthenticated: false, id: null, nickname: null, isAdmin: false });
   };
 
   useEffect(() => {
@@ -60,19 +62,28 @@ export const AuthProvider = ({ children }) => {
 
   useEffect(() => {
     const initializeAuth = async () => {
+      if (typeof window !== "undefined" && sessionStorage.getItem("auth_logout")) {
+        sessionStorage.removeItem("auth_logout");
+        setAuthState({ isAuthenticated: false, id: null, nickname: null });
+        setIsAuthInitialized(true);
+        return;
+      }
+
       const localUser = getAuthUser();
       if (localUser.isAuthenticated) {
         setAuthState(localUser);
       }
 
       try {
-        const serverUser = await fetchMe();
+        const [serverUser, authMe] = await Promise.all([fetchMe(), fetchAuthMe().catch(() => null)]);
 
         if (serverUser && serverUser.id) {
+          const isAdmin = authMe?.role === "ROLE_ADMIN";
           const updatedState = {
             isAuthenticated: true,
             id: serverUser.id,
             nickname: serverUser.nickname,
+            isAdmin,
           };
           setAuthState(updatedState);
           localStorage.setItem("currentUserId", serverUser.id);
@@ -93,6 +104,27 @@ export const AuthProvider = ({ children }) => {
 
   const refreshAuth = () => {
     setAuthState(getAuthUser());
+  };
+
+  /** 로그인 직후 서버 응답으로 상태 즉시 반영 (새로고침 없이 로그아웃 버튼 등 표시) */
+  const setLoginState = async (user) => {
+    if (!user?.id) return;
+    let isAdmin = false;
+    try {
+      const authMe = await fetchAuthMe();
+      isAdmin = authMe?.role === "ROLE_ADMIN";
+    } catch (_) {}
+    const state = {
+      isAuthenticated: true,
+      id: user.id,
+      nickname: user.nickname ?? user.username ?? "",
+      isAdmin,
+    };
+    setAuthState(state);
+    if (typeof window !== "undefined") {
+      localStorage.setItem("currentUserId", user.id);
+      localStorage.setItem("currentUserNickname", state.nickname);
+    }
   };
 
   /** 수동 세션 연장 (버튼 클릭 시) — 30분 연장 */
@@ -117,6 +149,7 @@ export const AuthProvider = ({ children }) => {
   const value = {
     ...authState,
     refreshAuth,
+    setLoginState,
     isAuthInitialized,
     manualLogout,
     extendSessionManually,

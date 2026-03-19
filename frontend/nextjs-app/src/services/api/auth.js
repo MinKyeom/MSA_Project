@@ -90,8 +90,11 @@ export const logoutUser = async () => {
   try {
     await authAxios.post("/auth/logout");
   } finally {
-    localStorage.removeItem("currentUserId");
-    localStorage.removeItem("currentUserNickname");
+    if (typeof window !== "undefined") {
+      localStorage.removeItem("currentUserId");
+      localStorage.removeItem("currentUserNickname");
+      sessionStorage.setItem("auth_logout", "1");
+    }
   }
 };
 
@@ -104,6 +107,12 @@ export const extendSession = async () => {
 /** 리프레시 토큰으로 새 액세스 토큰 발급 */
 export const refreshSession = async () => {
   const res = await authAxios.post("/auth/refresh");
+  return res.data;
+};
+
+/** 현재 로그인 사용자 권한 정보 (id, username, role) — 관리자 여부 판단용 */
+export const fetchAuthMe = async () => {
+  const res = await authAxios.get("/auth/me");
   return res.data;
 };
 
@@ -129,6 +138,30 @@ export const verifyCode = async (email, code) => {
 export const registerAuth = async (userData) => {
   const response = await authAxios.post("/auth/signup", userData);
   return response.data;
+};
+
+/** 아이디 찾기: 이메일로 인증번호 발송 */
+export const sendFindUsernameCode = async (email) => {
+  const res = await authAxios.post("/auth/find-username/send", { email });
+  return res.data;
+};
+
+/** 아이디 찾기: 인증번호 확인 후 아이디 반환 */
+export const findUsernameVerify = async (email, code) => {
+  const res = await authAxios.post("/auth/find-username/verify", { email, code });
+  return res.data;
+};
+
+/** 비밀번호 찾기: 이메일로 인증번호 발송 */
+export const sendResetPasswordCode = async (email) => {
+  const res = await authAxios.post("/auth/reset-password/send", { email });
+  return res.data;
+};
+
+/** 비밀번호 찾기: 인증번호 + 새 비밀번호로 재설정 */
+export const resetPasswordVerify = async (email, code, newPassword) => {
+  const res = await authAxios.post("/auth/reset-password/verify", { email, code, newPassword });
+  return res.data;
 };
 
 export default authAxios;
