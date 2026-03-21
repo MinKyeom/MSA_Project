@@ -3,15 +3,24 @@
 
 import React from 'react';
 import ReactMarkdown from 'react-markdown';
-import remarkGfm from 'remark-gfm'; // GitHub Flavored Markdown (테이블, 체크박스 등)
-import rehypeRaw from 'rehype-raw'; // 마크다운 내부에 HTML 사용 허용
+import remarkGfm from 'remark-gfm';
+import rehypeRaw from 'rehype-raw';
 
-// ===================================================================
-// ⭐ 1. 구문 강조를 위한 라이브러리 임포트
 import { Prism as SyntaxHighlighter } from 'react-syntax-highlighter';
-// ⭐ 2. 사용할 테마 임포트 (여기서는 'darcula' 테마 사용)
 import { darcula } from 'react-syntax-highlighter/dist/cjs/styles/prism';
-// ===================================================================
+
+/** 목차 링크용 헤딩 id 생성 (TableOfContents와 동일 규칙) */
+function slugify(text) {
+  if (text == null) return '';
+  return String(text).trim().toLowerCase().replace(/\s+/g, '-').replace(/[^\w\uac00-\ud7a3-]/g, '');
+}
+
+function headingText(children) {
+  if (typeof children === 'string') return children;
+  if (Array.isArray(children)) return children.map(headingText).join('');
+  if (children?.props?.children != null) return headingText(children.props.children);
+  return '';
+}
 
 const MarkdownRenderer = ({ content }) => {
   return (
@@ -21,13 +30,18 @@ const MarkdownRenderer = ({ content }) => {
         remarkPlugins={[remarkGfm]}
         rehypePlugins={[rehypeRaw]}
         components={{
-          // 커스텀 컴포넌트 정의를 통해 디자인 유지 및 코드 블록 처리
-          
-          // 헤더 스타일을 위해 클래스 적용 (globals.css에 정의)
-          h1: ({ node, ...props }) => <h1 className="markdown-h1" {...props} />,
-          h2: ({ node, ...props }) => <h2 className="markdown-h2" {...props} />,
-          h3: ({ node, ...props }) => <h3 className="markdown-h3" {...props} />,
-          h4: ({ node, ...props }) => <h4 className="markdown-h4" {...props} />,
+          h1: ({ node, children, ...props }) => (
+            <h1 className="markdown-h1" id={slugify(headingText(children)) || undefined} {...props}>{children}</h1>
+          ),
+          h2: ({ node, children, ...props }) => (
+            <h2 className="markdown-h2" id={slugify(headingText(children)) || undefined} {...props}>{children}</h2>
+          ),
+          h3: ({ node, children, ...props }) => (
+            <h3 className="markdown-h3" id={slugify(headingText(children)) || undefined} {...props}>{children}</h3>
+          ),
+          h4: ({ node, children, ...props }) => (
+            <h4 className="markdown-h4" id={slugify(headingText(children)) || undefined} {...props}>{children}</h4>
+          ),
 
           // 인용구 스타일을 위해 클래스 적용 (globals.css에 정의)
           blockquote: ({ node, ...props }) => <blockquote className="markdown-blockquote" {...props} />,

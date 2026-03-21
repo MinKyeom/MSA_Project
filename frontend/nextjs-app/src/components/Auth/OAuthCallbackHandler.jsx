@@ -12,7 +12,7 @@ import { fetchMe } from "../../services/api/user";
 export default function OAuthCallbackHandler() {
   const searchParams = useSearchParams();
   const router = useRouter();
-  const { refreshAuth } = useAuth();
+  const { setLoginState } = useAuth();
   const { showToast } = useToast();
   const handled = useRef(false);
 
@@ -24,26 +24,32 @@ export default function OAuthCallbackHandler() {
     handled.current = true;
 
     const sync = async () => {
-      try {
-        const user = await fetchMe();
-        if (user?.id) {
-          if (typeof window !== "undefined") {
-            localStorage.setItem("currentUserId", user.id);
-            localStorage.setItem("currentUserNickname", user.nickname ?? user.username ?? "");
+      const maxAttempts = 4;
+      const delayMs = 600;
+
+      for (let attempt = 1; attempt <= maxAttempts; attempt++) {
+        try {
+          const user = await fetchMe();
+          if (user?.id) {
+            setLoginState(user);
+            showToast({ message: "Logged in successfully.", type: "success" });
+            router.replace("/", { scroll: false });
+            return;
           }
-          refreshAuth();
-          showToast({ message: "소셜 로그인 성공!", type: "success" });
+        } catch (e) {
+          if (attempt < maxAttempts) {
+            await new Promise((r) => setTimeout(r, delayMs * attempt));
+          } else {
+            console.error("OAuth callback sync error:", e);
+            showToast({ message: "Failed to load session.", type: "error" });
+          }
         }
-      } catch (e) {
-        console.error("OAuth callback sync error:", e);
-        showToast({ message: "로그인 상태를 불러오는 데 실패했습니다.", type: "error" });
-      } finally {
-        router.replace("/", { scroll: false });
       }
+      router.replace("/", { scroll: false });
     };
 
     sync();
-  }, [searchParams, router, refreshAuth, showToast]);
+  }, [searchParams, router, setLoginState, showToast]);
 
   return null;
 }
