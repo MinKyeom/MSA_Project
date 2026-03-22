@@ -14,7 +14,7 @@ import {
 import SearchBar from "../Search/SearchBar";
 
 export default function Sidebar({ isSidebarOpen, closeSidebar }) {
-  const { isAuthenticated, nickname, refreshAuth } = useAuth();
+  const { isAuthenticated, nickname, isAdmin, manualLogout } = useAuth();
   const { showToast } = useToast();
   const { isDarkMode, toggleTheme } = useTheme();
   const router = useRouter();
@@ -53,13 +53,14 @@ export default function Sidebar({ isSidebarOpen, closeSidebar }) {
   const handleLogout = async () => {
     try {
       await logoutUser();
-      refreshAuth();
-      showToast({ message: "로그아웃 되었습니다.", type: "success" });
+      manualLogout();
+      showToast({ message: "Signed out.", type: "success" });
       closeSidebar();
       router.push("/");
     } catch (error) {
-      showToast({ message: "로그아웃 중 오류가 발생했습니다.", type: "error" });
+      showToast({ message: "Failed to sign out.", type: "error" });
       console.error(error);
+      manualLogout();
     }
   };
 
@@ -83,15 +84,17 @@ export default function Sidebar({ isSidebarOpen, closeSidebar }) {
           <div className="sidebar-auth-section" style={{ marginBottom: "25px" }}>
             {isAuthenticated ? (
               <div className="sidebar-nav-list">
-                <p><strong>{nickname}</strong>님 반가워요!</p>
-                <Link href="/post/new" onClick={closeSidebar} className="btn-primary-small" style={{ textAlign: "center", marginTop: "10px", display: "block" }}>
-                  ✏️ 새 글 작성
-                </Link>
+                <p>Hello, <strong>{nickname}</strong>!</p>
+                {isAdmin && (
+                  <Link href="/post/new" onClick={closeSidebar} className="btn-primary-small" style={{ textAlign: "center", marginTop: "10px", display: "block" }}>
+                    ✏️ New post
+                  </Link>
+                )}
               </div>
             ) : (
               <div className="sidebar-nav-list" style={{ display: "flex", flexDirection: "column", gap: "8px" }}>
-                <Link href="/signin" onClick={closeSidebar} className="btn-primary-small" style={{ textAlign: "center" }}>로그인</Link>
-                <Link href="/signup" onClick={closeSidebar} className="btn-secondary-small" style={{ textAlign: "center" }}>회원가입</Link>
+                <Link href="/signin" onClick={closeSidebar} className="btn-primary-small" style={{ textAlign: "center" }}>Sign in</Link>
+                <Link href="/signup" onClick={closeSidebar} className="btn-secondary-small" style={{ textAlign: "center" }}>Sign up</Link>
               </div>
             )}
           </div>
@@ -100,6 +103,7 @@ export default function Sidebar({ isSidebarOpen, closeSidebar }) {
           <div className="sidebar-nav-list" style={{ marginTop: "10px", display: "flex", flexDirection: "column" }}>
             <Link href="/" onClick={closeSidebar} className="cursive-item">Home</Link>
             <Link href="/post" onClick={closeSidebar} className="cursive-item">All Posts</Link>
+            <Link href="/structure" onClick={closeSidebar} className="cursive-item">System Structure</Link>
           </div>
 
           <h3 className="sidebar-section-title cursive-title">Categories</h3>
@@ -113,7 +117,7 @@ export default function Sidebar({ isSidebarOpen, closeSidebar }) {
                 </Link>
               ))
             ) : (
-              <p style={{ fontSize: "0.85rem", color: "gray" }}>등록된 카테고리가 없습니다.</p>
+              <p style={{ fontSize: "0.85rem", color: "gray" }}>No categories yet.</p>
             )}
           </div>
 
@@ -128,18 +132,37 @@ export default function Sidebar({ isSidebarOpen, closeSidebar }) {
                 </Link>
               ))
             ) : (
-              <p style={{ fontSize: "0.85rem", color: "gray" }}>#태그없음</p>
+              <p style={{ fontSize: "0.85rem", color: "gray" }}>No tags</p>
             )}
           </div>
         </div>
 
         <div className="sidebar-footer" style={{ marginTop: "auto", paddingTop: "20px", borderTop: "1px solid var(--color-border)" }}>
-          <button onClick={toggleTheme} style={{ width: "100%", background: "none", border: "none", cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center", gap: "10px", color: "var(--color-text-main)", fontSize: "1rem", padding: "10px" }}>
-            {isDarkMode ? "🌞 라이트 모드로 변경" : "🌙 다크 모드로 변경"}
+          <button
+            onClick={toggleTheme}
+            className="sidebar-theme-btn"
+            style={{ width: "100%", background: "none", border: "none", cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center", gap: "10px", color: "var(--color-text-main)", fontFamily: "var(--font-family-cursive), var(--font-family-main)", fontSize: "1rem", padding: "10px" }}
+            aria-label={isDarkMode ? "Switch to light mode" : "Switch to dark mode"}
+          >
+            {isDarkMode ? (
+              <>
+                <span className="sidebar-theme-icon" aria-hidden>
+                  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="5"/><line x1="12" y1="1" x2="12" y2="3"/><line x1="12" y1="21" x2="12" y2="23"/><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/><line x1="1" y1="12" x2="3" y2="12"/><line x1="21" y1="12" x2="23" y2="12"/><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/></svg>
+                </span>
+                Light mode
+              </>
+            ) : (
+              <>
+                <span className="sidebar-theme-icon" aria-hidden>
+                  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg>
+                </span>
+                Dark mode
+              </>
+            )}
           </button>
           {isAuthenticated && (
-            <button onClick={handleLogout} style={{ width: "100%", marginTop: "10px", background: "none", border: "none", color: "var(--color-text-sub)", fontSize: "0.85rem", cursor: "pointer" }}>
-              로그아웃
+            <button onClick={handleLogout} style={{ width: "100%", marginTop: "10px", background: "none", border: "none", color: "var(--color-text-sub)", fontFamily: "var(--font-family-cursive), var(--font-family-main)", fontSize: "0.85rem", cursor: "pointer" }}>
+              Sign out
             </button>
           )}
         </div>
