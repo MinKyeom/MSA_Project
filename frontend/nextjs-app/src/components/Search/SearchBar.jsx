@@ -14,8 +14,8 @@ export default function SearchBar({ variant = "hero", onNavigate, placeholder })
 
   const defaultPlaceholder =
     variant === "sidebar"
-      ? "검색어 입력..."
-      : "키워드로 글 검색하기";
+      ? "Search..."
+      : "Search posts";
 
   const handleSubmit = (e) => {
     e.preventDefault();
@@ -37,10 +37,10 @@ export default function SearchBar({ variant = "hero", onNavigate, placeholder })
         placeholder={placeholder ?? defaultPlaceholder}
         value={query}
         onChange={(e) => setQuery(e.target.value)}
-        aria-label="검색어"
+        aria-label="Search"
         autoComplete="off"
       />
-      <button type="submit" className="search-bar__btn" aria-label="검색">
+      <button type="submit" className="search-bar__btn" aria-label="Search">
         <span className="search-bar__icon" aria-hidden>
           <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
             <circle cx="11" cy="11" r="8" />
